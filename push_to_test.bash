@@ -1,7 +1,10 @@
 #!/bin/bash
 
 CUR=`git rev-parse --abbrev-ref HEAD`
-TEST=test_apr13
+
+MONTH=`date +%b | tr '[A-Z]' '[a-z]'`
+YEAR=`date +%y`
+TEST=test_$MONTH$YEAR
 
 git checkout $TEST &&
 git pull origin $TEST &&
