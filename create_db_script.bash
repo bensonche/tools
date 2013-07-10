@@ -1,6 +1,18 @@
 #!/bin/bash
 
-LEFT=b8a15fa177907b37786fcb984d6529a26e044820
+if [ $# -ne 1 ]
+then
+	echo "Usage: create_db_script.bash <hash>"
+	echo
+	echo "The hash can be retrieved from the database with the following query:"
+	echo "    select Code"
+	echo "    from CODES"
+	echo "    where FieldName = 'CurrentGitCommit'"
+	
+	exit 1
+fi
+
+LEFT=$1
 RIGHT=head
 
 if [ -f db_script.sql ]
@@ -41,4 +53,6 @@ git diff --name-status $LEFT..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/
 
 ./db_files.txt
 
-git log -1 --format="%H" > /c/temp/test_hash.txt
+echo -n "update CODES\nset code = '"
+echo -n `git log -1 --format="%H"`
+echo -n "'\nwhere FieldName = 'CurrentGitCommit'"
