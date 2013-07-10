@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 CUR=`git rev-parse --abbrev-ref HEAD`
 
 # Use current month/year for branch name if not given
@@ -12,7 +14,7 @@ else
 	TEST=$1
 fi
 
-git checkout $TEST &&
-git pull origin $TEST &&
-git merge $CUR &&
+git checkout $TEST
+git pull origin $TEST
+git merge $CUR
 git push origin $TEST

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 if [ $# -ne 1 ]
 then
 	echo "Usage: create_db_script.bash <hash>"

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 BRANCH=release
 
 git checkout $1
