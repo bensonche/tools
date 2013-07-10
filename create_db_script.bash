@@ -55,6 +55,6 @@ git diff --name-status $LEFT..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/
 
 ./db_files.txt
 
-echo -n "update CODES\nset code = '"
-echo -n `git log -1 --format="%H"`
-echo -n "'\nwhere FieldName = 'CurrentGitCommit'"
+echo -en "update CODES\nset code = '" >> db_script.sql
+echo -en `git log -1 --format="%H"` >> db_script.sql
+echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
