@@ -1,5 +1,7 @@
 #!/bin/bash
 
+BRANCH=release
+
 git checkout $1
 if [ $? -ne 0 ]
 then
@@ -11,12 +13,12 @@ git pull origin $1
 updated=0
 
 echo ""
-if [ `git cherry -v head release | grep -c ""` -ne 0 ]
+if [ `git cherry -v head $BRANCH | grep -c ""` -ne 0 ]
 then
 	echo "Branch not updated"
 	echo ""
 	read -p "Press [Enter] key to auto-merge..."
-	git merge -sresolve release
+	git merge -sresolve $BRANCH
 	
 	if [ $? -ne 0 ]
 	then
@@ -27,18 +29,19 @@ then
 fi
 
 echo -e "\e[0;32mList of commits in this branch:\e[00m"
-#git cherry -v release head
-git log --left-right --cherry-pick --pretty=format:"%ad, %aN: %s" release..head
+#git cherry -v $BRANCH head
+git log --left-right --cherry-pick --pretty=format:"%ad, %aN: %s" $BRANCH..head
 echo ""
 read -p "Press [Enter] key to continue..."
 
 echo ""
 echo -e "\e[0;32mList of files modified by this branch:\e[00m"
-git diff --name-status release head
+git diff --name-status $BRANCH head
 echo ""
 read -p "Press [Enter] key to continue..."
 
-git diff -w release..head
+git difftool -w $BRANCH..head
+git diff -w $BRANCH..head
 
 if [ $updated -ne 0 ]
 then
