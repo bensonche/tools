@@ -51,7 +51,7 @@ git diff --name-status $LEFT..head Database/ | egrep '^D' | sed 's/^[A-Z][ \t]\+
 	sed 's/triggers\/\(.*\)/drop trigger \1/' |
 	sed 's/procs\/\(.*\)/drop proc \1/' |
 	sed 's/functions\/\(.*\)/drop function \1/' |
-	sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.txt
+	sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
 
 git diff --name-status $LEFT..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/^/cat \"/' | sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
 
