@@ -21,9 +21,7 @@ trap cleanup SIGINT
 
 # create blank file
 BLANK=$RANDOM
-echo "" > $BLANK
-
-echo $BLANK
+touch $BLANK
 
 if [ $LOCAL == "/dev/null" ]
 then
