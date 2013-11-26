@@ -64,3 +64,8 @@ echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
 cat db_deleted.sql
 
 start db_script.sql
+
+if [ -s db_deleted.sql ]
+then
+	start db_deleted.sql
+fi
