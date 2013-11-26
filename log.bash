@@ -2,6 +2,9 @@
 
 set -e
 
+# Navigate to root of git repo
+cd "$(git rev-parse --show-toplevel)"
+
 echo $1
 echo
 

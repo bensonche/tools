@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Navigate to root of git repo
+cd "$(git rev-parse --show-toplevel)"
+
 if [ $# -ne 1 ]
 then
 	echo "Usage: create_db_script.bash <hash>"
