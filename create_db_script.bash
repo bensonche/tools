@@ -8,7 +8,7 @@ then
 	echo "Usage: create_db_script.bash <hash>"
 	echo
 	echo "The hash can be retrieved from the database with the following query:"
-	echo "    select Code"
+	echo "    select 'db ' + Code"
 	echo "    from CODES"
 	echo "    where FieldName = 'CurrentGitCommit'"
 	
