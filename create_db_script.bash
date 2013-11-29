@@ -102,16 +102,28 @@ git diff --name-status $LEFT..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/
 
 ./db_files.txt
 
-echo -en "update CODES\nset code = '" >> db_script.sql
-echo -en `git log -1 --format="%H"` >> db_script.sql
-echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
+if [ -s db_script.sql ]
+then
+	echo -en "update CODES\nset code = '" >> db_script.sql
+	echo -en `git log -1 --format="%H"` >> db_script.sql
+	echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
+else
+	echo "No database script created because there were no changes"
+fi
 
 cat db_deleted.sql
 
-FILES="db_script.sql"
+FILES=""
+if [ -s db_script.sql ]
+then
+	FILES="$FILES db_script.sql"
+fi
 if [ -s db_deleted.sql ]
 then
 	FILES="$FILES db_deleted.sql"
 fi
 
-$START_SSMS $FILES &
+if [ ! $FILES == "" ]
+then
+	$START_SSMS $FILES &
+fi
