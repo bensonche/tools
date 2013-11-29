@@ -1,5 +1,22 @@
 #!/bin/bash
 
+
+
+function create_commit_hash_query
+{
+	echo "select 'db ' + Code" > create_commit_hash_query.sql
+	echo "from CODES" >> create_commit_hash_query.sql
+	echo "where FieldName = 'CurrentGitCommit'" >> create_commit_hash_query.sql
+	echo "go" >> create_commit_hash_query.sql
+}
+
+SQLCMD_PATH="sqlcmd"
+START_SSMS="start"
+
+DEV="-S sql-intranet2 -d RDI_Development"
+TEST="-S sqlserver3 -d RDI_Test"
+PROD="-S sqlserver3 -d RDI_Production"
+
 # Navigate to root of git repo
 cd "$(git rev-parse --show-toplevel)"
 
@@ -15,7 +32,33 @@ then
 	exit 1
 fi
 
-LEFT=$1
+BATCHREAD=0
+if [ $1 = "dev" ]
+then
+	ENV=$DEV
+	BATCHREAD=1
+elif [ $1 = "test" ]
+then
+	ENV=$TEST
+	BATCHREAD=1
+elif [ $1 = "prod" ]
+then
+	ENV=$PROD
+	BATCHREAD=1
+else
+	HASH=$1
+fi
+
+if [ $BATCHREAD -eq 1 ]
+then
+	create_commit_hash_query
+	HASH=`$SQLCMD_PATH $ENV -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\) *$/\1/"`
+	echo $HASH
+	
+	START_SSMS="ssms $ENV"
+fi
+
+LEFT=$HASH
 RIGHT=head
 
 if [ -f db_script.sql ]
@@ -66,9 +109,10 @@ echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
 
 cat db_deleted.sql
 
-start db_script.sql
-
+FILES="db_script.sql"
 if [ -s db_deleted.sql ]
 then
-	start db_deleted.sql
+	FILES="$FILES db_deleted.sql"
 fi
+
+$START_SSMS $FILES &
