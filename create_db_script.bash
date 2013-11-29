@@ -1,7 +1,5 @@
 #!/bin/bash
 
-
-
 function create_commit_hash_query
 {
 	echo "select 'db ' + Code" > create_commit_hash_query.sql
@@ -23,6 +21,7 @@ cd "$(git rev-parse --show-toplevel)"
 if [ $# -ne 1 ]
 then
 	echo "Usage: create_db_script.bash <hash>"
+	echo "   Or: create_db_script.bash [dev|test|prod]"
 	echo
 	echo "The hash can be retrieved from the database with the following query:"
 	echo "    select 'db ' + Code"
