@@ -123,7 +123,7 @@ then
 	FILES="$FILES db_deleted.sql"
 fi
 
-if [ ! $FILES == "" ]
+if [ ! "$FILES" == "" ]
 then
 	$START_SSMS $FILES &
 fi
