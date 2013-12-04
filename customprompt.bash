@@ -10,4 +10,4 @@ smiley () {
 	fi
 }
 
-export PS1="\$(smiley) ${bold}\w${normal}\n$ "
+export PS1="\n\$(smiley) ${bold}\[\033[33m\]\w${normal}\[\033[0m\]\n$ "
