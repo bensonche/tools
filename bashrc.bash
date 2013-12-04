@@ -13,7 +13,9 @@ then
 	alias log="${TOOLS_DIR}log.bash"
 fi
 
-local GIT_CONF="git config --global"
+alias ls="ls --color=auto"
+
+GIT_CONF="git config --global"
 
 $GIT_CONF alias.gr "!git reset --hard && git clean -dfx"
 $GIT_CONF alias.cm commit
