@@ -1,5 +1,5 @@
-bold=$(tput bold)
-normal=$(tput sgr0)
+bold="\033[1m"
+normal="\033[0m"
 
 smiley () {
 	if [ $? -eq 0 ]
