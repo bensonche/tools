@@ -4,7 +4,7 @@ smiley ()
 	then
 		echo ":)"
 	else
-		echo "x("
+		echo -e "\033[1m\033[31mx(\033[0m\033\0m"
 	fi
 }
 

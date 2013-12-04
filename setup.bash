@@ -39,3 +39,5 @@ bc_setup ()
 
 	cp vimrc ~/.vimrc
 }
+
+bc_setup
