@@ -10,5 +10,4 @@ smiley () {
 	fi
 }
 
-export PROMPT_COMMAND="echo -n \"\$(smiley) \""
-export PS1="${bold}\w${normal}\n$ "
+export PS1="\$(smiley) ${bold}\w${normal}\n$ "
