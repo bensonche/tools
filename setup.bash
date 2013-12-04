@@ -13,3 +13,5 @@ then
 	echo "" >> ~/.bashrc
 	echo $CMD >> ~/.bashrc
 fi
+
+cp vimrc ~/.vimrc
