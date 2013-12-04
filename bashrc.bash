@@ -1,6 +1,8 @@
-cd /c/svn/Intranet
+if [ -d "/c/svn/Intranet" ]
+then
+	# intranet specific settings
+	cd /c/svn/Intranet
 
-function create_aliases {
 	local TOOLS_DIR='/c/svn/tools/'
 	
 	alias cb="${TOOLS_DIR}check_branch.bash"
@@ -9,6 +11,8 @@ function create_aliases {
 	alias pt="${TOOLS_DIR}push_to_test.bash"
 	alias db="${TOOLS_DIR}create_db_script.bash"
 	alias log="${TOOLS_DIR}log.bash"
-}
+fi
 
-create_aliases
+git config --global alias.gr "!git reset --hard && git clean -dfx"
+
+source ~/.custom_prompt

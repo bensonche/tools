@@ -1,11 +1,15 @@
 #!/bin/bash
 
-#grep -q intranet_settings ~/.bashrc
-#if [ $? -ne 0 ]
-#then
-#	echo -e "\n\n./.intranet_settings" >> ~/.bashrc
-#fi
+cp bashrc.bash ~/.custom_bashrc
+cp customprompt.bash ~/.custom_prompt
 
-#cp bashrc.bash ~/.intranet_settings
+chmod 777 ~/.custom_bashrc
+chmod 777 ~/.custom_prompt
 
-cp bashrc.bash ~/.bashrc
+CMD="source ~/.custom_bashrc"
+grep -q "$CMD" ~/.bashrc
+if [ $? -ne 0 ]
+then
+	echo "" >> ~/.bashrc
+	echo $CMD >> ~/.bashrc
+fi
