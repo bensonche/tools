@@ -1,3 +1,10 @@
+home () {
+	if [ -d "/c/svn/Intranet" ]
+	then
+		cd /c/svn/Intranet
+	fi
+}
+
 custom_bashrc () {
 	if [ -d "/c/svn/Intranet" ]
 	then
