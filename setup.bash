@@ -1,17 +1,41 @@
 #!/bin/bash
 
-cp bashrc.bash ~/.custom_bashrc
-cp customprompt.bash ~/.custom_prompt
+bc_setup ()
+{
+	cp bashrc.bash ~/.custom_bashrc
+	cp customprompt.bash ~/.custom_prompt
 
-chmod 777 ~/.custom_bashrc
-chmod 777 ~/.custom_prompt
+	chmod 777 ~/.custom_bashrc
+	chmod 777 ~/.custom_prompt
 
-CMD="source ~/.custom_bashrc"
-grep -q "$CMD" ~/.bashrc
-if [ $? -ne 0 ]
-then
-	echo "" >> ~/.bashrc
-	echo $CMD >> ~/.bashrc
-fi
+	local cmd="source ~/.custom_bashrc"
+	grep -q "$cmd" ~/.bashrc
+	if [ $? -ne 0 ]
+	then
+		echo "" >> ~/.bashrc
+		echo $cmd >> ~/.bashrc
+	fi
+	
+	# set up git config if git is installed
+	type git > /dev/null
+	if [ $? -eq 1 ]
+	then
+		local git_conf="git config --global"
+		$git_conf alias.gr "!git reset --hard && git clean -dfx"
+		$git_conf alias.cm commit
+		$git_conf alias.s status
+		$git_conf alias.l "log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold red)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%an - %s%C(reset)%C(bold yellow)%d%C(reset)'"
+		$git_conf alias.mt "mergetool --no-prompt"
+		$git_conf alias.m merge
+		$git_conf alias.dt difftool
+		$git_conf alias.d diff
+		$git_conf alias.a add
+		$git_conf alias.co checkout
+		$git_conf alias.mprod "merge --no-ff -sresolve"
+		$git_conf alias.po "!git pull origin \$(git rev-parse --abbrev-ref HEAD)"
+		$git_conf push.default current
+		$git_conf color.status always
+	fi
 
-cp vimrc ~/.vimrc
+	cp vimrc ~/.vimrc
+}

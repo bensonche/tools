@@ -1,20 +1,26 @@
 #!/bin/bash
 
-set -e
+bc_ptt ()
+{
+	set -e
 
-CUR=`git rev-parse --abbrev-ref HEAD`
+	local cur=`git rev-parse --abbrev-ref HEAD`
 
-# Use current month/year for branch name if not given
-if [ $# -lt 1 ]
-then
-	MONTH=`date +%b | tr '[A-Z]' '[a-z]'`
-	YEAR=`date +%y`
-	TEST=test_$MONTH$YEAR
-else
-	TEST=$1
-fi
+	# Use current month/year for branch name if not given
+	local test=""
+	if [ $# -lt 1 ]
+	then
+		local month=`date +%b | tr '[A-Z]' '[a-z]'`
+		local year=`date +%y`
+		test=test_$month$year
+	else
+		test=$1
+	fi
 
-git checkout $TEST
-git pull origin $TEST
-git merge $CUR
-git push origin $TEST
+	git checkout $test
+	git pull origin $test
+	git merge $cur
+	git push origin $test
+}
+
+bc_ptt $1

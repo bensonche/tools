@@ -2,36 +2,42 @@
 
 cleanup()
 {
-	rm $BLANK
+	rm $blank
 	exit $?
 }
 
-LOCAL=$1
-REMOTE=$2
+bc_diff ()
+{
+	local mine=$1
+	local remote=$2
+	
+	local command=""
+	if [ $# -eq 3 ]
+	then
+		command=$3
+	else
+		command="sgdm.exe"
+	fi
 
-if [ $# -eq 3 ]
-then
-	COMMAND=$3
-else
-	COMMAND="sgdm.exe"
-fi
+	# trap ctrl-c to run cleanup code
+	trap cleanup SIGINT
 
-# trap ctrl-c to run cleanup code
-trap cleanup SIGINT
+	# create blank file
+	local blank=$RANDOM
+	touch $blank
 
-# create blank file
-BLANK=$RANDOM
-touch $BLANK
+	if [ $mine == "/dev/null" ]
+	then
+		mine=$blank
+	fi
+	if [ $remote == "/dev/null" ]
+	then
+		remote=$blank
+	fi
 
-if [ $LOCAL == "/dev/null" ]
-then
-	LOCAL=$BLANK
-fi
-if [ $REMOTE == "/dev/null" ]
-then
-	REMOTE=$BLANK
-fi
+	$command "$mine" "$remote"
 
-$COMMAND "$LOCAL" "$REMOTE"
+	rm $blank
+}
 
-rm $BLANK
+bc_diff $1 $2 $3

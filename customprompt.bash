@@ -1,4 +1,5 @@
-smiley () {
+smiley ()
+{
 	if [ $? -eq 0 ]
 	then
 		echo ":)"
@@ -7,7 +8,8 @@ smiley () {
 	fi
 }
 
-create_prompt () {
+create_prompt ()
+{
 	bold="\033[1m"
 	normal="\033[0m"
 
