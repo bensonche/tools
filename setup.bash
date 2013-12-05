@@ -18,7 +18,7 @@ bc_setup ()
 	
 	# set up git config if git is installed
 	type git > /dev/null
-	if [ $? -eq 1 ]
+	if [ $? -eq 0 ]
 	then
 		local git_conf="git config --global"
 		$git_conf alias.gr "!git reset --hard && git clean -dfx"
