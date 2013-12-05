@@ -20,7 +20,17 @@ custom_bashrc () {
 		alias log="${tools_dir}log.bash"
 	fi
 
-	alias ls="ls --color=auto"
+	ls --color=auto > /dev/null
+	if [ $? -eq 0 ]
+	then
+		alias ls="ls --color=auto"
+	else
+		ls -G > /dev/null
+		if [ $? -eq 0 ]
+		then
+			alias ls="ls -G"
+		fi
+	fi
 		
 	source ~/.custom_prompt
 }
