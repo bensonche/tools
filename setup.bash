@@ -8,6 +8,11 @@ bc_setup ()
 	chmod 777 ~/.custom_bashrc
 	chmod 777 ~/.custom_prompt
 
+	if [ ! -e ~/.bashrc ]
+	then
+		touch ~/.bashrc
+	fi
+
 	local cmd="source ~/.custom_bashrc"
 	grep -q "$cmd" ~/.bashrc
 	if [ $? -ne 0 ]
