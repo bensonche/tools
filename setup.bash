@@ -8,6 +8,11 @@ bc_setup ()
 	chmod 777 ~/.custom_bashrc
 	chmod 777 ~/.custom_prompt
 
+	if [ ! -e ~/.bashrc ]
+	then
+		touch ~/.bashrc
+	fi
+
 	local cmd="source ~/.custom_bashrc"
 	grep -q "$cmd" ~/.bashrc
 	if [ $? -ne 0 ]
@@ -18,7 +23,7 @@ bc_setup ()
 	
 	# set up git config if git is installed
 	type git > /dev/null
-	if [ $? -eq 1 ]
+	if [ $? -eq 0 ]
 	then
 		local git_conf="git config --global"
 		$git_conf alias.gr "!git reset --hard && git clean -dfx"
