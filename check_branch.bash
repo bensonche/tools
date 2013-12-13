@@ -57,4 +57,4 @@ check_branch ()
 	fi
 }
 
-check_branch
+check_branch $1
