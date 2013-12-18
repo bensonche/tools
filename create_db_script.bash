@@ -113,7 +113,14 @@ function create_db_script ()
 
 	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/^/cat \"/' | sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
 	
-	./db_files.txt
+	if [ -s db_files.txt ]
+	then
+		echo -en "/*\nupdate CODES\nset code = '" >> db_script.sql
+		echo -n $left >> db_script.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n*/\n\n" >> db_script.sql
+		
+		./db_files.txt
+	fi
 
 	if [ -s db_script.sql ]
 	then
