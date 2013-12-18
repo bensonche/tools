@@ -77,6 +77,8 @@ function create_db_script ()
 
 	echo
 	echo
+	
+	local valid=1
 
 	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep |
 	while read line; do
@@ -84,17 +86,24 @@ function create_db_script ()
 		
 		grep -q ÿþ "$file"
 		if [ $? -eq 0 ]
-			then
+		then
+			$valid=0
 			echo "$file is in UTF-16"
 			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
 		fi
 		grep -q ï»¿ "$file"
 		if [ $? -eq 0 ]
-			then
+		then
+			$valid=0
 			echo "$file is in UTF-8 with BOM"
 			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
 		fi
 	done
+	
+	if [ $valid -eq 0 ]
+	then
+		exit 1
+	fi
 
 	git diff --name-status $left..head Database/ | egrep '^D' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/\(.*\)\.sql$/\1/' | sed 's/^Database\/repeatable\/\(.*\)/\1/' |
 		sed 's/triggers\/\(.*\)/drop trigger \1/' |
@@ -103,7 +112,7 @@ function create_db_script ()
 		sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
 
 	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/^/cat \"/' | sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
-
+	
 	./db_files.txt
 
 	if [ -s db_script.sql ]
