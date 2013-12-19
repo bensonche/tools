@@ -20,7 +20,7 @@ function create_db_script ()
 	# Navigate to root of git repo
 	cd "$(git rev-parse --show-toplevel)"
 
-	if [ $# -ne 1 ]
+	if [ $# -lt 1 ]
 	then
 		echo "Usage: create_db_script.bash <hash>"
 		echo "   Or: create_db_script.bash [dev|test|prod]"
@@ -133,6 +133,11 @@ function create_db_script ()
 
 	cat db_deleted.sql
 
+	if [ $# -gt 1 ] && [ -a $2 == "-s" ]
+	then
+		exit 0
+	fi
+
 	local files=""
 	if [ -s db_script.sql ]
 	then
@@ -145,8 +150,9 @@ function create_db_script ()
 
 	if [ ! "$files" == "" ]
 	then
+		echo "Starting ssms..."
 		$start_ssms $files &
 	fi
 }
 
-create_db_script $1
+create_db_script $@
