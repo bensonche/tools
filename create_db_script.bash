@@ -133,7 +133,7 @@ function create_db_script ()
 
 	cat db_deleted.sql
 
-	if [ $# -gt 1 ] && [ -a $2 == "-s" ]
+	if [ $# -gt 1 ] && [ $2 == "-s" ]
 	then
 		exit 0
 	fi
