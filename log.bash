@@ -10,18 +10,17 @@ bc_log ()
 	echo $1
 	echo
 
+	local right=$1
+
+	if [[ $1 != origin/* ]]
+	then
+		right=origin/$1
+	fi
+
 	local branch=release
 
-	git checkout $1
-	if [ $? -ne 0 ]
-	then
-		echo "Error checking out"
-		exit 1
-	fi
-	git pull origin $1
-
 	echo $1 >> log.txt
-	git log --left-right --cherry-pick --pretty=format:"%ad, %aN: %s" $branch..head >> log.txt
+	git log --left-right --cherry-pick --pretty=format:"%ad, %aN: %s" $branch..$right >> log.txt
 	echo -e "\n" >> log.txt
 
 	echo
