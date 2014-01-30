@@ -15,6 +15,11 @@ function mprod()
 		arg=origin/$1
 	fi
 
+	echo
+	echo
+	echo $arg
+	echo
+
 	git merge --no-ff -sresolve $arg
 }
 

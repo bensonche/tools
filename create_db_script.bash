@@ -87,14 +87,14 @@ function create_db_script ()
 		grep -q ÿþ "$file"
 		if [ $? -eq 0 ]
 		then
-			$valid=0
+			valid=0
 			echo "$file is in UTF-16"
 			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
 		fi
 		grep -q ï»¿ "$file"
 		if [ $? -eq 0 ]
 		then
-			$valid=0
+			valid=0
 			echo "$file is in UTF-8 with BOM"
 			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
 		fi
