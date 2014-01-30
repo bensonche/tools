@@ -18,6 +18,7 @@ custom_bashrc () {
 		alias pt="${tools_dir}push_to_test.bash"
 		alias db="${tools_dir}create_db_script.bash"
 		alias log="${tools_dir}log.bash"
+		alias mprod="${tools_dir}mprod.bash"
 	fi
 
 	ls --color=auto > /dev/null
