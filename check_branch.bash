@@ -1,5 +1,14 @@
 #!/bin/bash
 
+cleanup()
+{
+	echo -e "\n\n"
+	echo "cleaning up"
+	git reset --hard
+	git checkout $head
+	exit $?
+}
+
 check_branch ()
 {
 	set -e
@@ -29,6 +38,7 @@ check_branch ()
 		set -e
 
 		git checkout -b temp_bc_check_branch $right
+		trap cleanup SIGINT
 		git merge -sresolve $branch
 
 		right=temp_bc_check_branch
