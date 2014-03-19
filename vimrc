@@ -1,3 +1,11 @@
+function! NumToggle()
+	if(&rnu == 1)
+		set nu
+	else
+		set rnu
+	endif
+endfunc
+
 set nocompatible
 
 filetype indent plugin on
