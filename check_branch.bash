@@ -7,7 +7,8 @@ check_branch ()
 	# Navigate to root of git repo
 	cd "$(git rev-parse --show-toplevel)"
 
-	local branch=release
+	#local branch=release
+	local branch=origin/master
 
 	local right=$1
 
@@ -54,7 +55,11 @@ check_branch ()
 	echo ""
 	read -p "Press [Enter] key to continue..."
 
-	git difftool -w $branch..$right
+	for name in $(git diff --name-only $branch $right);
+	do
+		git difftool -w $branch $right -- "$name" &
+	done
+	#git difftool -w $branch..$right
 	git diff -w $branch..$right
 
 	#if [ $updated -ne 0 ]
