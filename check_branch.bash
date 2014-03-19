@@ -8,7 +8,7 @@ check_branch ()
 	cd "$(git rev-parse --show-toplevel)"
 
 	#local branch=release
-	local branch=origin/master
+	local branch=origin/release
 
 	local right=$1
 
@@ -27,11 +27,23 @@ check_branch ()
 
 	#local updated=0
 
+	local head=$(git rev-parse --abbrev-ref HEAD)
+
 	echo ""
-	if [ `git cherry -v head $branch | grep -c ""` -ne 0 ]
+	if [ `git cherry -v $right $branch | grep -c ""` -ne 0 ]
 	then
 		echo "Branch not updated"
 		echo ""
+
+		set +e
+		git branch -D temp_bc_check_branch
+		set -e
+
+		git checkout -b temp_bc_check_branch $right
+		git merge -sresolve $branch
+
+		right=temp_bc_check_branch
+
 		#read -p "Press [Enter] key to auto-merge..."
 		#git merge -sresolve $branch
 		#
@@ -61,6 +73,11 @@ check_branch ()
 	done
 	#git difftool -w $branch..$right
 	git diff -w $branch..$right
+
+	if [ $(git rev-parse --abbrev-ref HEAD) != $head ]
+	then
+		git checkout $head
+	fi
 
 	#if [ $updated -ne 0 ]
 	#then
