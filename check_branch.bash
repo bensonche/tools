@@ -38,8 +38,34 @@ check_branch ()
 		set -e
 
 		git checkout -b temp_bc_check_branch $right
+
 		trap cleanup SIGINT
+		set +e
 		git merge -sresolve $branch
+		if [ $? -ne 0 ]
+		then
+			echo -e "\n"
+			echo "Error updating the branch,"
+			read -p "return to previous branch ${head}? [y/n] " response
+
+			while true;
+			do
+				if [ -z $response ]
+				then
+					read -p "please reply with y or n: " response
+				elif [ $response == "y" ]
+				then
+					cleanup
+				elif [ $response == "n" ]
+				then
+					exit 1
+				else
+					read -p "please reply with y or n: " response
+				fi
+			done
+		fi
+
+		set -e
 
 		right=temp_bc_check_branch
 	fi
