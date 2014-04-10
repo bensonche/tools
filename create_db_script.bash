@@ -83,20 +83,25 @@ function create_db_script ()
 	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep |
 	while read line; do
 		local file=$line
+		local fileWin=$(echo $file | sed 's/\//\\/g')
 		
 		grep -q ÿþ "$file"
 		if [ $? -eq 0 ]
 		then
 			valid=0
 			echo "$file is in UTF-16"
-			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
+
+			cmd //c type "$fileWin" > cb_temp_sql
+			cp cb_temp_sql "$file"
 		fi
 		grep -q ï»¿ "$file"
 		if [ $? -eq 0 ]
 		then
 			valid=0
 			echo "$file is in UTF-8 with BOM"
-			/c/Program\ Files\ \(x86\)/Notepad++/notepad++.exe "$file" &
+
+			cmd //c type "$fileWin" > cb_temp_sql
+			cp cb_temp_sql "$file"
 		fi
 	done
 	
