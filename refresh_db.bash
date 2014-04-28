@@ -12,6 +12,8 @@ function create_db_script ()
 
 	echo "Checking files..."
 
+	local valid=1
+
 	find Database/repeatable -name \*.sql | egrep sql$ |
 	while read line; do
 		local file=$line
