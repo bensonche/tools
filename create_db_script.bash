@@ -129,6 +129,8 @@ function create_db_script ()
 
 	if [ -s db_script.sql ]
 	then
+		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script.sql
+		echo >> db_script.sql
 		echo -en "update CODES\nset code = '" >> db_script.sql
 		echo -en `git log -1 --format="%H"` >> db_script.sql
 		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
