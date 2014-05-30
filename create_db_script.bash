@@ -8,6 +8,24 @@ create_commit_hash_query ()
 	echo "go" >> create_commit_hash_query.sql
 }
 
+cmdline()
+{
+	while getopts ":s" OPTION
+	do
+		case $OPTION in
+			s)
+				readonly SILENT=1
+				;;
+			\?)
+				echo "Invalid option: -$OPTARG"
+				exit 1
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+	readonly COMMIT=$1
+}
+
 function create_db_script ()
 {
 	local sqlcmd_path="sqlcmd"
@@ -16,6 +34,8 @@ function create_db_script ()
 	local dev="-S sql-intranet2 -d RDI_Development"
 	local test="-S sqlserver3 -d RDI_Test"
 	local prod="-S sqlserver3 -d RDI_Production"
+
+	cmdline $@
 
 	# Navigate to root of git repo
 	cd "$(git rev-parse --show-toplevel)"
@@ -36,20 +56,20 @@ function create_db_script ()
 	local batchread=0
 	local env=""
 	local hash=""
-	if [ $1 = "dev" ]
+	if [ $COMMIT = "dev" ]
 	then
 		env=$dev
 		batchread=1
-	elif [ $1 = "test" ]
+	elif [ $COMMIT = "test" ]
 	then
 		env=$test
 		batchread=1
-	elif [ $1 = "prod" ]
+	elif [ $COMMIT = "prod" ]
 	then
 		env=$prod
 		batchread=1
 	else
-		hash=$1
+		hash=$COMMIT
 	fi
 
 	if [ $batchread -eq 1 ]
@@ -140,7 +160,7 @@ function create_db_script ()
 
 	cat db_deleted.sql
 
-	if [ $# -gt 1 ] && [ $2 == "-s" ]
+	if [ $# -gt 1 ] && [ $SILENT == 1 ]
 	then
 		exit 0
 	fi
