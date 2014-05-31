@@ -33,3 +33,6 @@ set ts=4
 set sw=4
 
 nnoremap <C-n> :call NumToggle()<cr>
+
+set guifont=Lucida_Console:h12
+colorscheme torte
