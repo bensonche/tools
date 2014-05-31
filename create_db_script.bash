@@ -10,11 +10,18 @@ create_commit_hash_query ()
 
 cmdline()
 {
-	while getopts ":s" OPTION
+	while getopts ":sha" OPTION
 	do
 		case $OPTION in
 			s)
 				readonly SILENT=1
+				;;
+			h)
+				usage
+				exit 0
+				;;
+			a)
+				readonly ALL=1
 				;;
 			\?)
 				echo "Invalid option: -$OPTARG"
@@ -24,6 +31,17 @@ cmdline()
 	done
 	shift $((OPTIND-1))
 	readonly COMMIT=$1
+}
+
+usage ()
+{
+	echo "Usage: create_db_script.bash <hash>"
+	echo "   Or: create_db_script.bash [dev|test|prod]"
+	echo
+	echo "The hash can be retrieved from the database with the following query:"
+	echo "    select 'db ' + Code"
+	echo "    from CODES"
+	echo "    where FieldName = 'CurrentGitCommit'"
 }
 
 function create_db_script ()
@@ -40,16 +58,9 @@ function create_db_script ()
 	# Navigate to root of git repo
 	cd "$(git rev-parse --show-toplevel)"
 
-	if [ $# -lt 1 ]
+	if [ -z $COMMIT ]
 	then
-		echo "Usage: create_db_script.bash <hash>"
-		echo "   Or: create_db_script.bash [dev|test|prod]"
-		echo
-		echo "The hash can be retrieved from the database with the following query:"
-		echo "    select 'db ' + Code"
-		echo "    from CODES"
-		echo "    where FieldName = 'CurrentGitCommit'"
-		
+		usage		
 		exit 1
 	fi
 
@@ -100,6 +111,8 @@ function create_db_script ()
 	
 	local valid=1
 
+	#local filelist=$(git diff --name-status $left..head Database/)
+
 	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep |
 	while read line; do
 		local file=$line
@@ -130,13 +143,23 @@ function create_db_script ()
 		exit 1
 	fi
 
-	git diff --name-status $left..head Database/ | egrep '^D' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/\(.*\)\.sql$/\1/' | sed 's/^Database\/repeatable\/\(.*\)/\1/' |
+	git diff --name-status $left..head Database/ |
+		egrep '^D' |
+		sed 's/^[A-Z][ \t]\+//' |
+		grep Database/rep |
+		sed 's/\(.*\)\.sql$/\1/' |
+		sed 's/^Database\/repeatable\/\(.*\)/\1/' |
 		sed 's/triggers\/\(.*\)/drop trigger \1/' |
 		sed 's/procs\/\(.*\)/drop proc \1/' |
 		sed 's/functions\/\(.*\)/drop function \1/' |
 		sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
 
-	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep | sed 's/^/cat \"/' | sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
+	git diff --name-status $left..head Database/ |
+		egrep '^[a-ce-zA-CE-Z]' |
+		sed 's/^[A-Z][ \t]\+//' |
+		grep Database/rep |
+		sed 's/^/cat \"/' |
+		sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
 	
 	if [ -s db_files.txt ]
 	then
