@@ -58,106 +58,105 @@ function create_db_script ()
 	# Navigate to root of git repo
 	cd "$(git rev-parse --show-toplevel)"
 
-	if [ -z $COMMIT ]
+	if [ -z $COMMIT ] && [ -z $ALL ]
 	then
 		usage		
 		exit 1
 	fi
 
-	local batchread=0
-	local env=""
-	local hash=""
-	if [ $COMMIT = "dev" ]
+	if [ -z $ALL ]
 	then
-		env=$dev
-		batchread=1
-	elif [ $COMMIT = "test" ]
-	then
-		env=$test
-		batchread=1
-	elif [ $COMMIT = "prod" ]
-	then
-		env=$prod
-		batchread=1
-	else
-		hash=$COMMIT
-	fi
+		local batchread=0
+		local env=""
+		local hash=""
+		if [ $COMMIT = "dev" ]
+		then
+			env=$dev
+			batchread=1
+		elif [ $COMMIT = "test" ]
+		then
+			env=$test
+			batchread=1
+		elif [ $COMMIT = "prod" ]
+		then
+			env=$prod
+			batchread=1
+		else
+			hash=$COMMIT
+		fi
 
-	if [ $batchread -eq 1 ]
-	then
-		create_commit_hash_query
-		hash=`$sqlcmd_path $env -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\) *$/\1/"`
-		echo $hash
-		
-		start_ssms="ssms $env"
-	fi
+		if [ $batchread -eq 1 ]
+		then
+			create_commit_hash_query
+			hash=`$sqlcmd_path $env -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\) *$/\1/"`
+			echo $hash
+			
+			start_ssms="ssms $env"
+		fi
 
-	local left=$hash
-	local right=head
+		local left=$hash
+		local right=head
+
+		git diff --name-status $left..head Database/
+
+		read -p "Press [Enter] key to continue..."
+
+		git diff -w $left..head Database/
+
+		echo
+		echo
+	fi
 
 	if [ -f db_script.sql ]
 	then
 		rm db_script.sql
 	fi
 
-	git diff --name-status $left..head Database/
-
-	read -p "Press [Enter] key to continue..."
-
-	git diff -w $left..head Database/
-
-	echo
-	echo
-	
-	local valid=1
-
-	#local filelist=$(git diff --name-status $left..head Database/)
-
-	git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep |
-	while read line; do
-		local file=$line
-		local fileWin=$(echo $file | sed 's/\//\\/g')
-		
-		grep -q ÿþ "$file"
-		if [ $? -eq 0 ]
-		then
-			valid=0
-			echo "$file is in UTF-16"
-
-			cmd //c type "$fileWin" > cb_temp_sql
-			cp cb_temp_sql "$file"
-		fi
-		grep -q ï»¿ "$file"
-		if [ $? -eq 0 ]
-		then
-			valid=0
-			echo "$file is in UTF-8 with BOM"
-
-			cmd //c type "$fileWin" > cb_temp_sql
-			cp cb_temp_sql "$file"
-		fi
-	done
-	
-	if [ $valid -eq 0 ]
+	if [ -z $ALL ]
 	then
-		exit 1
+		local filelist=$(git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep) 
+	else
+		local filelist=$(du -a Database/ | cut -f2 | sed '/sql$/!d')
 	fi
 
-	git diff --name-status $left..head Database/ |
-		egrep '^D' |
-		sed 's/^[A-Z][ \t]\+//' |
-		grep Database/rep |
-		sed 's/\(.*\)\.sql$/\1/' |
-		sed 's/^Database\/repeatable\/\(.*\)/\1/' |
-		sed 's/triggers\/\(.*\)/drop trigger \1/' |
-		sed 's/procs\/\(.*\)/drop proc \1/' |
-		sed 's/functions\/\(.*\)/drop function \1/' |
-		sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
+	echo "$filelist" |
+		while read line; do
+			local file=$line
+			local fileWin=$(echo $file | sed 's/\//\\/g')
+			
+			grep -q ÿþ "$file"
+			if [ $? -eq 0 ]
+			then
+				echo "$file is in UTF-16"
 
-	git diff --name-status $left..head Database/ |
-		egrep '^[a-ce-zA-CE-Z]' |
-		sed 's/^[A-Z][ \t]\+//' |
-		grep Database/rep |
+				cmd //c type "$fileWin" > cb_temp_sql
+				cp cb_temp_sql "$file"
+			fi
+			grep -q ï»¿ "$file"
+			if [ $? -eq 0 ]
+			then
+				echo "$file is in UTF-8 with BOM"
+
+				cmd //c type "$fileWin" > cb_temp_sql
+				cp cb_temp_sql "$file"
+			fi
+		done
+
+	if [ -z $ALL ]
+	then	
+		git diff --name-status $left..head Database/ |
+			egrep '^D' |
+			sed 's/^[A-Z][ \t]\+//' |
+			grep Database/rep |
+			sed 's/\(.*\)\.sql$/\1/' |
+			sed 's/^Database\/repeatable\/\(.*\)/\1/' |
+			sed 's/triggers\/\(.*\)/drop trigger \1/' |
+			sed 's/procs\/\(.*\)/drop proc \1/' |
+			sed 's/functions\/\(.*\)/drop function \1/' |
+			sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
+	fi
+
+	echo "$filelist" |
 		sed 's/^/cat \"/' |
 		sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
 	
