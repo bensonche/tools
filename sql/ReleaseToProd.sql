@@ -1,23 +1,26 @@
-with mainDev as (
-	select a.rdiitemid, b.fullname2, b.userid, sum(amount) amt
-	from time_sht a
-		left join allusers b
-	on a.empid = b.USERID
-	group by rdiitemid, FULLNAME2, USERID
-),
-lastQA as (
-    select rdiitemid, max(ChangeDate) changeDate
+with lastQA as
+(
+    select RDIItemId, max(changedate) date
     from RDIItemHistory
     where StatusId = 8
     group by RDIItemId
+),
+lastReview as
+(
+    select row_number() over (partition by a.rdiitemid order by changedate) seq, a.RDIItemId, a.UpdatedBy
+    from RDIItemHistory a
+        left join lastQA b
+            on a.RDIItemId = b.RDIItemId
+    where a.StatusId = 7
+    and a.AssignedTo = 10000
+    and (b.date is null or a.ChangeDate > b.date)
 )
 select a.RDIItemId a, FeatureBranch,
 	case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
 	case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
 	c.FULLNAME2,
-	c.empid,
-	c.amt
+	c.empid
 from RDIItem a
 left join (
 	select a.rdiitemid, count(*) sql_ct
@@ -29,18 +32,14 @@ left join (
         left join lastQA d
             on a.RDIItemId = d.RDIItemId
 	where DOC_EXTENSION = '.sql'
-        and (d.changeDate is null or a.ins_date > d.changeDate)
+        and (d.date is null or a.ins_date > d.date)
 	group by a.rdiitemid ) b
 on a.RDIItemId = b.RDIItemId
 left join (
-	select a.RDIItemId, a.FULLNAME2, a.userid as empid, a.amt
-	from mainDev a
-	inner join (
-		select rdiitemid, max(amt) amt
-		from mainDev
-		group by rdiitemid
-	) b
-	on (a.RDIItemId = b.RDIItemId and a.amt = b.amt)
+	select a.RDIItemId, b.FULLNAME2, b.userid as empid
+	from lastReview a
+	    inner join allusers b
+            on a.UpdatedBy = b.USERID
 ) c
 on a.RDIItemId = c.RDIItemId
 left join (
