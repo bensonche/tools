@@ -1,3 +1,8 @@
 a#githubCompare {
-	margin-left:5px;
+	margin-left: 5px;
+}
+
+input#QAButton {
+	position: absolute;
+	margin-left: 100px;
 }
