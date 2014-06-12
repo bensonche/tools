@@ -1,4 +1,56 @@
 (function () {
+	var selfID = 320;
+
+	function subscribeSelfCheckbox() {
+		if($("input#subscribeSelf").length > 0) {
+			return;
+		}
+
+		var container = $("div#_NotificationsContainer tr").eq(1).find("td").eq(1).first();
+
+		if(container.length == 0) {
+			return;
+		}
+
+		if($("input#subscribeSelf").length > 0) {
+			return;
+		}
+
+		container.prepend("<input type='checkbox' id='subscribeSelf' class='bc_vertMiddle' /><span class='bc_vertMiddle' >Subscribe myself</span>");
+		container.css("text-align", "left");
+
+		toggleCheckbox();
+
+		$("input#subscribeSelf").change(function () {
+			var left = $("select[id$=Notifications__RDIUsers]");
+			var right = $("select[id$=Notifications__NotifyList]");
+
+			if($(this).prop("checked")) {
+				left.val(selfID);
+				$("input[id$=Notifications_btnAddUser]").click();
+			} else {
+				right.val(selfID);
+				$("input[id$=btnDeleteNotify]").click();
+			}
+		});
+	}
+
+	function toggleCheckbox() {
+		if($("input#subscribeSelf").length == 0) {
+			return;
+		}
+
+		var left = $("select[id$=Notifications__RDIUsers]");
+		var right = $("select[id$=Notifications__NotifyList]");
+
+		var me = right.findSelf();
+		$("input#subscribeSelf").prop("checked", me.length > 0);
+	}
+
+	$.fn.findSelf = function () {
+		return $(this[0]).find("option[value=" + selfID + "]");
+	}
+
 	function buildQAButton() {
 		if(isRTP()) {
 			if($("input#QAButton").length > 0) {
@@ -68,6 +120,7 @@
 	function init() {
 		buildCompareButton();
 		buildQAButton();
+		subscribeSelfCheckbox();
 	}
 
 	document.addEventListener("DOMSubtreeModified", function(){

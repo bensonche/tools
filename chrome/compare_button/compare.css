@@ -6,3 +6,7 @@ input#QAButton {
 	position: absolute;
 	margin-left: 100px;
 }
+
+.bc_vertMiddle {
+	vertical-align: middle;
+}
