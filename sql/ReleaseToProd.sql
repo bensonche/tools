@@ -15,43 +15,49 @@ lastReview as
     and a.AssignedTo = 10000
     and (b.date is null or a.ChangeDate > b.date)
 )
-select a.RDIItemId a, FeatureBranch,
+select
+    a.RDIItemId a,
+    FeatureBranch,
 	case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
 	case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
 	c.FULLNAME2,
 	c.empid
 from RDIItem a
-left join (
-	select a.rdiitemid, count(*) sql_ct
-	from ItemFile a
-	    inner join DOCS b
-	        on a.DocID = b.DOC_ID
-	    left join DOC_METADATA c
-	        on b.DOC_ID = c.DOC_ID
-        left join lastQA d
-            on a.RDIItemId = d.RDIItemId
-	where DOC_EXTENSION = '.sql'
-        and (d.date is null or a.ins_date > d.date)
-	group by a.rdiitemid ) b
-on a.RDIItemId = b.RDIItemId
-left join (
-	select a.RDIItemId, b.FULLNAME2, b.userid as empid
-	from lastReview a
-	    inner join allusers b
-            on a.UpdatedBy = b.USERID
-) c
-on a.RDIItemId = c.RDIItemId
-left join (
-	select a.rdiitemid, count(*) sql_ct
-	from ItemFile a
-	    inner join DOCS b
-	        on a.DocID = b.DOC_ID
-	    left join DOC_METADATA c
-	        on b.DOC_ID = c.DOC_ID
-	where DOC_EXTENSION = '.sql'
-	group by a.rdiitemid ) d
-on a.RDIItemId = d.RDIItemId
+    left join (
+	    select a.rdiitemid, count(*) sql_ct
+	    from ItemFile a
+	        inner join DOCS b
+	            on a.DocID = b.DOC_ID
+	        left join DOC_METADATA c
+	            on b.DOC_ID = c.DOC_ID
+            left join lastQA d
+                on a.RDIItemId = d.RDIItemId
+	    where DOC_EXTENSION = '.sql'
+            and (d.date is null or a.ins_date > d.date)
+	    group by a.rdiitemid ) b
+    on a.RDIItemId = b.RDIItemId
+
+    left join (
+	    select a.RDIItemId, b.FULLNAME2, b.userid as empid
+	    from lastReview a
+	        inner join allusers b
+                on a.UpdatedBy = b.USERID
+        where seq = 1
+    ) c
+    on a.RDIItemId = c.RDIItemId
+
+    left join (
+	    select a.rdiitemid, count(*) sql_ct
+	    from ItemFile a
+	        inner join DOCS b
+	            on a.DocID = b.DOC_ID
+	        left join DOC_METADATA c
+	            on b.DOC_ID = c.DOC_ID
+	    where DOC_EXTENSION = '.sql'
+	    group by a.rdiitemid ) d
+    on a.RDIItemId = d.RDIItemId
+
 where
     a.CLIENT_ID = 363
     and a.PROJECT_NO = 9
