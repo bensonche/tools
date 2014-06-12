@@ -119,6 +119,13 @@ function create_db_script ()
 		local filelist=$(du -a Database/ | cut -f2 | sed '/sql$/!d')
 	fi
 
+	if [ -z "$filelist" ]
+	then
+		echo "No database script created because there were no changes"
+		exit 0
+	fi
+
+
 	echo "$filelist" |
 		while read line; do
 			local file=$line
