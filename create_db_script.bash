@@ -189,7 +189,7 @@ function create_db_script ()
 
 	cat db_deleted.sql
 
-	if [ $# -gt 1 ] && [ $SILENT == 1 ]
+	if [ $# -gt 1 ] && [ -n $SILENT ]
 	then
 		exit 0
 	fi
