@@ -4,16 +4,6 @@ with lastQA as
     from RDIItemHistory
     where StatusId = 8
     group by RDIItemId
-),
-lastReview as
-(
-    select row_number() over (partition by a.rdiitemid order by changedate) seq, a.RDIItemId, a.UpdatedBy
-    from RDIItemHistory a
-        left join lastQA b
-            on a.RDIItemId = b.RDIItemId
-    where a.StatusId = 7
-    and a.AssignedTo = 10000
-    and (b.date is null or a.ChangeDate > b.date)
 )
 select
     a.RDIItemId a,
@@ -21,8 +11,7 @@ select
 	case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
 	case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
-	c.FULLNAME2,
-	c.empid
+	e.DeveloperName
 from RDIItem a
     left join (
 	    select a.rdiitemid, count(*) sql_ct
@@ -39,15 +28,6 @@ from RDIItem a
     on a.RDIItemId = b.RDIItemId
 
     left join (
-	    select a.RDIItemId, b.FULLNAME2, b.userid as empid
-	    from lastReview a
-	        inner join allusers b
-                on a.UpdatedBy = b.USERID
-        where seq = 1
-    ) c
-    on a.RDIItemId = c.RDIItemId
-
-    left join (
 	    select a.rdiitemid, count(*) sql_ct
 	    from ItemFile a
 	        inner join DOCS b
@@ -58,6 +38,7 @@ from RDIItem a
 	    group by a.rdiitemid ) d
     on a.RDIItemId = d.RDIItemId
 
+    cross apply RDI_GetPTReleaseInfo(a.rdiitemid) e
 where
     a.CLIENT_ID = 363
     and a.PROJECT_NO = 9
