@@ -10,7 +10,8 @@ bc_ptt ()
 	local test=""
 	if [ $# -lt 1 ]
 	then
-		test=$(testbranch.bash)
+		local path=$(dirname "$0")
+		test=$(${path}\\testbranch.bash)
 	else
 		test=$1
 	fi
