@@ -9,7 +9,7 @@
 	"content_scripts": 
 		[{
 			"matches": ["*://*/privatedn/ProjectTrack/IssueGrid.aspx*"],
-			"js": ["jquery-min.js", "compare.js"],
+			"js": ["jquery-min.js", "purl.js", "compare.js"],
 			"css": ["compare.css"]
 		}]
 }
