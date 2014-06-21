@@ -117,11 +117,38 @@
 		}
 	}
 
+	function readURL() {
+		var empid = $.url().param("bcempid");
+		if(!isNaN(empid)) {
+			return empid;
+		}
+		return null;
+	}
+
+	function reassignPTs() {
+		// Check that the empid supplied is valid
+		var empid = readURL();
+		if(!empid) {
+			return;
+		}
+
+		// Check that the QA button exists
+		if($("input#QAButton").length == 0) {
+			return;
+		}
+
+		$("select[id$=ddlAssignedTo]").val(empid);
+
+		$("input#QAButton").click();
+	}
+
 	function init() {
 		buildCompareButton();
 		buildQAButton();
 		subscribeSelfCheckbox();
 	}
+
+	reassignPTs();
 
 	document.addEventListener("DOMSubtreeModified", function(){
 		init();
