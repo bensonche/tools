@@ -11,7 +11,8 @@ select
 	case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
 	case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
-	e.DeveloperName
+	e.DeveloperName,
+    e.developerid
 from RDIItem a
     left join (
 	    select a.rdiitemid, count(*) sql_ct
@@ -93,13 +94,12 @@ from
 order by a.RDIItemId, sequence
 
 ----------------------------------------------------------
---select b.RDIItemId, b.upd_date, b.comments
---from RDIItemHistory b
---inner join rdiitem a
---	on a.RDIItemId = b.RDIItemId
---where a.CLIENT_ID = 363
---and a.PROJECT_NO = 9
---and a.StatusId = 48
---and a.AssignedTo = 10000
---and isnull(b.comments, '') <> ''
---order by b.RDIItemId, b.upd_date desc
+
+
+select @PTLink + convert(varchar, a.RDIItemId) + '&bcempid=' + convert(varchar, b.developerid) + '''>' + convert(varchar(10), a.RDIItemId) + '</a><br />'
+from rdiitem a
+cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) b
+where AssignedTo = 10000
+and StatusId = 48
+and client_id = 363
+and PROJECT_NO = 9

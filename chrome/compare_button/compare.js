@@ -1,5 +1,6 @@
 (function () {
 	var selfID = 320;
+	var ran = false;
 
 	function subscribeSelfCheckbox() {
 		if($("input#subscribeSelf").length > 0) {
@@ -126,6 +127,11 @@
 	}
 
 	function reassignPTs() {
+		if(ran) {
+			return;
+		}
+		ran = true;
+
 		// Check that the empid supplied is valid
 		var empid = readURL();
 		if(!empid) {
@@ -139,16 +145,18 @@
 
 		$("select[id$=ddlAssignedTo]").val(empid);
 
-		$("input#QAButton").click();
+		setTimeout(function() {
+			$("input#QAButton").first().click();
+		}, 5000);
 	}
 
 	function init() {
 		buildCompareButton();
 		buildQAButton();
 		subscribeSelfCheckbox();
+		reassignPTs();
 	}
 
-	reassignPTs();
 
 	document.addEventListener("DOMSubtreeModified", function(){
 		init();
