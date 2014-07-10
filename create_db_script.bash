@@ -137,16 +137,21 @@ function create_db_script ()
 				echo "$file is in UTF-16"
 
 				cmd //c type "$fileWin" > cb_temp_sql
+				rm "$file"
 				cp cb_temp_sql "$file"
 			fi
-			grep -q ﻿ "$file"
-			if [ $? -eq 0 ]
-			then
-				echo "$file is in UTF-8 with BOM"
+			#grep -q ﻿ "$file"
+			#if [ $? -eq 0 ]
+			#then
+				#echo "$file is in UTF-8 with BOM"
 
-				cmd //c type "$fileWin" > cb_temp_sql
-				cp cb_temp_sql "$file"
-			fi
+				#echo "$fileWin"
+				#echo "$file"
+
+				#cmd //c type "$fileWin" > cb_temp_sql
+				#rm "$file"
+				#cp cb_temp_sql "$file"
+			#fi
 		done
 
 	if [ -z $ALL ]
