@@ -129,29 +129,25 @@ function create_db_script ()
 	echo "$filelist" |
 		while read line; do
 			local file=$line
-			local fileWin=$(echo $file | sed 's/\//\\/g')
 			
 			grep -q ÿþ "$file"
 			if [ $? -eq 0 ]
 			then
 				echo "$file is in UTF-16"
 
-				cmd //c type "$fileWin" > cb_temp_sql
+				iconv -f utf-16 -t ascii//TRANSLIT "$file" > cb_temp_sql
 				rm "$file"
-				cp cb_temp_sql "$file"
+				mv cb_temp_sql "$file"
 			fi
-			#grep -q ï»¿ "$file"
-			#if [ $? -eq 0 ]
-			#then
-				#echo "$file is in UTF-8 with BOM"
+			grep -q ï»¿ "$file"
+			if [ $? -eq 0 ]
+			then
+				echo "$file is in UTF-8 with BOM"
 
-				#echo "$fileWin"
-				#echo "$file"
-
-				#cmd //c type "$fileWin" > cb_temp_sql
-				#rm "$file"
-				#cp cb_temp_sql "$file"
-			#fi
+				sed '1s/^ï»¿//' "$file" > cb_temp_sql
+				rm "$file"
+				mv cb_temp_sql "$file"
+			fi
 		done
 
 	if [ -z $ALL ]
