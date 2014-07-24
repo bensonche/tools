@@ -39,9 +39,9 @@ bc_setup ()
 		$git_conf alias.d diff
 		$git_conf alias.a add
 		$git_conf alias.co checkout
-		$git_conf alias.mprod "merge --no-ff -sresolve"
 		$git_conf alias.po "!git pull origin \$(git rev-parse --abbrev-ref HEAD)"
 		$git_conf alias.gp "!git grep --break --heading"
+		$git_conf alias.lt "!git for-each-ref --sort=taggerdate --format '%(refname) %09 %(color:yellow)%(taggerdate)' refs/tags | sed 's/^refs\/tags\///' | egrep '^Release'"
 		$git_conf push.default current
 		$git_conf rebase.autosquash true
 		$git_conf color.status always
