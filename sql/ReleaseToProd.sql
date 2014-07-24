@@ -1,3 +1,5 @@
+use rdi_production;
+
 with lastQA as
 (
     select RDIItemId, max(changedate) date
