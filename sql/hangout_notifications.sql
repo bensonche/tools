@@ -17,19 +17,19 @@ begin try
 	declare @id int
 
 	set @enddate = @startdate
-	set @title =  @join1 + '1PM AT'
+	set @title =  @join1 + '10AM AT'
 	exec Notification_Insert @title, 'https://join.me/RDIHangout', @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 0
 	exec Notification_LocationInsert @id, 1
 	exec Notification_LocationInsert @id, 2
 	exec Notification_LocationInsert @id, 4
-	set @title =  @join1 + '2PM PT'
+	set @title =  @join1 + '11AM PT'
 	exec Notification_Insert @title, 'https://join.me/RDIHangout', @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 6
-	set @title =  @join1 + '3PM MT'
+	set @title =  @join1 + '12PM MT'
 	exec Notification_Insert @title, 'https://join.me/RDIHangout', @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 3
-	set @title =  @join1 + '4PM CT'
+	set @title =  @join1 + '1PM CT'
 	exec Notification_Insert @title, 'https://join.me/RDIHangout', @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 5
 	exec Notification_LocationInsert @id, 7
