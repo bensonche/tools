@@ -1,10 +1,12 @@
 smiley ()
 {
-	if [ $? -eq 0 ]
+	local error=$?
+
+	if [ $error -eq 0 ]
 	then
 		echo -e "\033[1m\033[32m:)\033[0m"
 	else
-		echo -e "\033[1m\033[31mx( $?\033[0m"
+		echo -e "\033[1m\033[31mx( ${error}\033[0m"
 	fi
 }
 

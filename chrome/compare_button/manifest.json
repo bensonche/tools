@@ -1,0 +1,15 @@
+{
+	"manifest_version": 2,
+
+	"name": "GitHub Compare Button",
+	"description": "Adds a compare button to ProjectTrack",
+
+	"version": "1.0",
+
+	"content_scripts": 
+		[{
+			"matches": ["*://*/privatedn/ProjectTrack/IssueGrid.aspx*"],
+			"js": ["jquery-min.js", "purl.js", "compare.js"],
+			"css": ["compare.css"]
+		}]
+}

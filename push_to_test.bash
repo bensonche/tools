@@ -10,9 +10,8 @@ bc_ptt ()
 	local test=""
 	if [ $# -lt 1 ]
 	then
-		local month=`date +%b | tr '[A-Z]' '[a-z]'`
-		local year=`date +%y`
-		test=test_$month$year
+		local path=$(dirname "$0")
+		test=$(${path}\\testbranch.bash)
 	else
 		test=$1
 	fi
