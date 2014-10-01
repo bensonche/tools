@@ -1,5 +1,9 @@
- declare @dtFrom datetime = '7/27/14'
- , @dtTo datetime = '8/9/14'
+ declare @dtFrom datetime ,@dtTo datetime
+
+ set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
+ set @dtFrom = dateadd(d, -13, @dtto)
+
+ select @dtfrom, @dtto
 
 declare @dtFromMonthStart datetime = dateadd(m, -6, @dtTo)
 set @dtFromMonthStart = DATEADD(d, -(datepart(d, @dtFromMonthStart) - 1), @dtFromMonthStart)
@@ -88,7 +92,7 @@ from
 
 -- 7
 -- New staff < 6 months
-select au.fullname2, sum(t.amount)
+select au.fullname2 as NewStaff, sum(t.amount)
 from EmployeePosition ep
 	inner join allusers au on ep.empid = au.empid
 	inner join time_sht t on t.empid = ep.empid
@@ -214,3 +218,46 @@ pivot
 	)
 ) as p
 order by date
+
+
+select
+	a.LOCATION as Location,
+	case
+		when totalhours = 0
+			then 0
+		else
+			convert(numeric(18, 2), isnull(IntranetHours, 0) / TotalHours * 100)
+	end as Percentage
+from
+	(
+		select
+			LOCATION,
+			cast(datepart(yy, wk_date) as varchar(4))
+				+ '-'
+				+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
+			SUM(a.amount) TotalHours
+		from time_sht a
+			inner join RDI_Employee b
+				on a.EMPID = b.empid
+		where WK_DATE between CONVERT(VARCHAR(25),DATEADD(dd,-(DAY(getdate())-1),getdate()),101) and getdate()
+		group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+	) a
+	left join
+		(
+			select
+				LOCATION,
+				cast(datepart(yy, wk_date) as varchar(4))
+					+ '-'
+					+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
+				SUM(a.amount) IntranetHours
+			from time_sht a
+				inner join RDI_Employee b
+					on a.EMPID = b.empid
+			where
+				WK_DATE between CONVERT(VARCHAR(25),DATEADD(dd,-(DAY(getdate())-1),getdate()),101) and getdate()
+				and CLIENT_ID = 363
+				and PROJECT_NO = 9
+			group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+		) b
+		on a.LOCATION = b.location and a.date = b.date
+order by percentage desc
