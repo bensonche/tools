@@ -1,4 +1,4 @@
-declare @newDBName varchar(50) = 'RDI_Dev_62554'
+declare @newDBName varchar(50) = 'RDI_Development'
 
 declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
 declare @mdf varchar(1000) = @dir + @newDBName + '.mdf'
@@ -31,20 +31,12 @@ from disk = @bak
 with move 'resdat_be2000SQL_dat' to @mdf,
 move 'resdat_be2000SQL_log' to @ldf
 
-----Make Database to single user Mode
---ALTER DATABASE YourDB
---SET SINGLE_USER WITH
---ROLLBACK IMMEDIATE
-
-----Restore Database
---RESTORE DATABASE YourDB
---FROM DISK = 'D:BackUpYourBaackUpFile.bak'
---WITH MOVE 'YourMDFLogicalName' TO 'D:DataYourMDFFile.mdf',
---MOVE 'YourLDFLogicalName' TO 'D:DataYourLDFFile.ldf'
-
 set @sql = '
 	ALTER DATABASE ' + @newDBName + '
 	SET MULTI_USER'
 exec(@sql)
 
---exec rdi_cleandevdatabase
+--set @sql = '
+--    use ' + @newDBName + '
+--	exec rdi_cleandevdatabase'
+--exec(@sql)
