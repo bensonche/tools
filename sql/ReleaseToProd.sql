@@ -20,10 +20,8 @@ from RDIItem a
     left join (
 	    select a.rdiitemid, count(*) sql_ct
 	    from ItemFile a
-	        inner join DOCS b
-	            on a.DocID = b.DOC_ID
 	        left join DOC_METADATA c
-	            on b.DOC_ID = c.DOC_ID
+	            on a.itemfileid = c.itemfileid
             left join lastQA d
                 on a.RDIItemId = d.RDIItemId
 	    where DOC_EXTENSION = '.sql'
@@ -34,10 +32,8 @@ from RDIItem a
     left join (
 	    select a.rdiitemid, count(*) sql_ct
 	    from ItemFile a
-	        inner join DOCS b
-	            on a.DocID = b.DOC_ID
 	        left join DOC_METADATA c
-	            on b.DOC_ID = c.DOC_ID
+	            on a.itemfileid = c.itemfileid
 	    where DOC_EXTENSION = '.sql'
 	    group by a.rdiitemid ) d
     on a.RDIItemId = d.RDIItemId
@@ -92,10 +88,8 @@ from
 		left join (
 			select a.rdiitemid, ' - ' + convert(varchar, count(*)) as url
 			    from ItemFile a
-			        inner join DOCS b
-			            on a.DocID = b.DOC_ID
-			        left join DOC_METADATA c
-			            on b.DOC_ID = c.DOC_ID
+	                left join DOC_METADATA c
+	                    on a.itemfileid = c.itemfileid
                     left join lastQA d
                         on a.RDIItemId = d.RDIItemId
 			where DOC_EXTENSION = '.sql'
