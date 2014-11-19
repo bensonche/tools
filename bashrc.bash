@@ -20,7 +20,7 @@ custom_bashrc () {
 		alias log="${tools_dir}log.bash"
 		alias mprod="${tools_dir}mprod.bash"
 
-		alias testdb="cd /c/svn/db && git co $(${tools_dir}testbranch.bash) && git po && db test"
+		alias testdb="cd /c/svn/db && git grx && git co $(${tools_dir}testbranch.bash) && git po && db test"
 	fi
 
 	ls --color=auto > /dev/null

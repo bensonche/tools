@@ -27,7 +27,7 @@ bc_setup ()
 	then
 		local git_conf="git config --global"
 		$git_conf alias.gr "!git reset --hard && git clean -df"
-		$git_conf alias.grx "!git reset --hard && git clean -dfx --exclude='_Resharper*'"
+		$git_conf alias.grx "!git reset --hard && git clean -dfx --exclude='*sln.DotSettings.user' --exclude='_Resharper*'"
 		$git_conf alias.cm commit
 		$git_conf alias.ac "!git add -u && git commit"
 		$git_conf alias.s status
