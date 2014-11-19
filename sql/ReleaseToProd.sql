@@ -15,7 +15,7 @@ select
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
 	e.DeveloperName,
     e.developerid,
-    a.title
+    REPLACE(REPLACE(a.title, CHAR(13), ' '), CHAR(10), ' ')
 from RDIItem a
     left join (
 	    select a.rdiitemid, count(*) sql_ct
