@@ -136,13 +136,16 @@ from total_cte a
 
 -- 9
 -- people who billed time to the intranet last two weeks
-select au.fullname2, cast(sum(t.amount) as numeric(18,2)) as HrsLast2Wks, ho.home_office
+select
+    au.fullname2,
+    cast(sum(t.amount) as numeric(18,2)) as HrsLast2Wks,
+    ho.home_office + case when t.empid in (320, 198, 77) then ' (IG)' else '' end
 from time_sht t 
 	inner join allusers au on t.empid = au.empid
 	left join vw_all_active_employee_info ho on t.empid = ho.empid
 where t.client_id = 363 and t.project_no = 9
 	and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
-group by au.fullname2, ho.home_office
+group by au.fullname2, ho.home_office, t.empid
 having sum(t.amount) >= 4
 order by sum(t.amount) desc
 
