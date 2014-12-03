@@ -1,19 +1,13 @@
 (function () {
 	$(function() {
-		$("input#tbUserName").on("keyup", function () {
-			window.Extension = window.Extension || {};
-			
+		$("input#tbUserName").on("blur", function () {
 			if($(this).val() == "rda"
 				|| $(this).val() == "rdb"
 				|| $(this).val() == "rdp"
-				|| $(this).val() == "rde") {
+				|| $(this).val() == "rde")
 				$("input#tbPassword").val("rdiintranettestaccount");
-				window.Extension.AutoPW = true;
-			}
-			else if (window.Extension.AutoPW) {
+			else
 				$("input#tbPassword").val("");
-				window.Extension.AutoPW = false;
-			}
 		});
 	});
 })()
