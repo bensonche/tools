@@ -26,17 +26,28 @@ set @sql = '
 	ROLLBACK IMMEDIATE'
 exec( @sql)
 
+print 'Begin DB Restore'
+
 restore database @newDBName
 from disk = @bak
 with move 'resdat_be2000SQL_dat' to @mdf,
 move 'resdat_be2000SQL_log' to @ldf
 
+print 'DB Restore Finished'
+
+if @newDBName = 'RDI_Development'
+begin
+    print 'Begin scrub'
+
+    set @sql = '
+        use ' + @newDBName + '
+	    exec rdi_cleandevdatabase'
+    exec(@sql)
+
+    print 'End scrub'
+end
+
 set @sql = '
 	ALTER DATABASE ' + @newDBName + '
 	SET MULTI_USER'
 exec(@sql)
-
---set @sql = '
---    use ' + @newDBName + '
---	exec rdi_cleandevdatabase'
---exec(@sql)

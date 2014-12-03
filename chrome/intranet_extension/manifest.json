@@ -1,0 +1,21 @@
+{
+	"manifest_version": 2,
+
+	"name": "Intranet Extension",
+	"description": "Improvements for ProjectTrack",
+
+	"version": "1.0",
+
+	"content_scripts": 
+	[
+		{
+			"matches": ["*://*/privatedn/ProjectTrack/IssueGrid.aspx*"],
+			"js": ["jquery-min.js", "purl.js", "projecttrack.js"],
+			"css": ["intranet.css"]
+		},
+		{
+			"matches": [*://*/privatedn/security/login.aspx"],
+			"js": ["jquery-min.js", "login.js"]
+		}
+	]
+}
