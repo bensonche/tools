@@ -14,7 +14,7 @@
 			"css": ["intranet.css"]
 		},
 		{
-			"matches": [*://*/privatedn/security/login.aspx"],
+			"matches": ["*://*/privatedn/security/login.aspx"],
 			"js": ["jquery-min.js", "login.js"]
 		}
 	]
