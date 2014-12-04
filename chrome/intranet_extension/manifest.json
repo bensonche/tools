@@ -4,13 +4,18 @@
 	"name": "Intranet Extension",
 	"description": "Improvements for ProjectTrack",
 
-	"version": "1.0",
+	"version": "2.0",
 	
 	"options_page": "options.html",
 	
 	"permissions":
 	[
 		"storage"
+	],
+	
+	"web_accessible_resources":
+	[
+		"options.html"
 	],
 
 	"content_scripts": 

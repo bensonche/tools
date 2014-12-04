@@ -1,6 +1,7 @@
 (function () {
-	var selfID = 320;
 	var ran = false;
+	
+	var selfID = null;
 
 	function subscribeSelfCheckbox() {
 		if($("input#subscribeSelf").length > 0) {
@@ -19,6 +20,19 @@
 
 		container.prepend("<input type='checkbox' id='subscribeSelf' class='bc_vertMiddle' /><span class='bc_vertMiddle' >Subscribe myself</span>");
 		container.css("text-align", "left");
+		
+		if (isNaN(parseInt(selfID))) {
+			var span = $("<span style='color: red;'>Please set your employee ID <a target='_blank'>here</a> and refresh the page</span>");
+			
+			var url = span.find("a");
+			url.prop("href", chrome.extension.getURL("options.html"));
+			
+			container.append(span);
+			
+			$("#subscribeSelf").prop("disabled", "disabled");
+			
+			return;
+		}
 
 		toggleCheckbox();
 
@@ -151,10 +165,25 @@
 	}
 
 	function init() {
-		buildCompareButton();
-		buildQAButton();
-		subscribeSelfCheckbox();
-		reassignPTs();
+		var dfd = $.Deferred();
+		
+		if(isNaN(parseInt(selfID))) {
+			chrome.storage.sync.get({
+				empid: ''
+			}, function (item) {
+				selfID = item.empid;
+				dfd.resolve();
+			});
+		} else {
+			dfd.resolve();
+		}
+		
+		dfd.done(function () {
+			buildCompareButton();
+			buildQAButton();
+			subscribeSelfCheckbox();
+			reassignPTs();
+		});
 	}
 
 
