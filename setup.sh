@@ -30,7 +30,10 @@ setup_custom_home ()
 	then
 		if [ $default_dir == "" ]
 		then
-			DEFAULT_DIR="/c/svn/Intranet"
+			default_dir="/c/svn/Intranet"
+		elif [ $default_dir == "~" ]
+		then
+			default_dir="$(cd $(dirname $BASH_SOURCE[0]) && pwd)"
 		fi
 
 		if [ -d "$default_dir" ]
