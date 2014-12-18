@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bc_setup ()
+install_custom_bashrc ()
 {
 	cp bashrc.sh ~/.custom_bashrc
 	cp customprompt.sh ~/.custom_prompt
@@ -20,7 +20,61 @@ bc_setup ()
 		echo "" >> ~/.bashrc
 		echo $cmd >> ~/.bashrc
 	fi
-	
+}
+
+setup_custom_home ()
+{
+	local default_dir
+	read -e -p "Specify default home dir:" default_dir
+	if [ -n "$default_dir" ]
+	then
+		if [ $default_dir == "" ]
+		then
+			DEFAULT_DIR="/c/svn/Intranet"
+		fi
+
+		if [ -d "$default_dir" ]
+		then
+			echo "cd $default_dir" >> ~/.custom_bashrc
+			echo alias home="cd $default_dir" >> ~/.custom_bashrc
+		else
+			echo "Not a valid dir"
+			return 1
+		fi
+	fi
+}
+
+
+bc_setup ()
+{
+	install_custom_bashrc
+
+	# set up home alias and directory
+	setup_custom_home
+	while [ $? -ne 0 ]; do
+		setup_custom_home
+	done
+
+	echo $default_dir
+
+	local tools_dir=$(cd $(dirname $BASH_SOURCE[0]) && pwd)
+
+	echo "PATH=\$PATH:$tools_dir" >> ~/.custom_bashrc
+
+	local include_intranet
+	while [[ -z "$include_intranet"  \
+		|| ( "$include_intranet" != "n"  \
+			&& "$include_intranet" != "N" \
+			&& "$include_intranet" != "y" \
+			&& "$include_intranet" != "Y" ) ]]; do
+		read -p "Include Intranet tools?" include_intranet
+	done
+
+	if [[ "$include_intranet" == "y" || "$include_intranet" == "Y" ]]
+	then
+		echo "custom_bashrc_intranet" >> ~/.custom_bashrc
+	fi
+
 	# set up git config if git is installed
 	type git > /dev/null
 	if [ $? -eq 0 ]
