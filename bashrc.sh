@@ -13,15 +13,15 @@ custom_bashrc () {
 
 		local tools_dir='/c/svn/tools/'
 		
-		alias cb="${tools_dir}check_branch.bash"
-		alias gt="${tools_dir}tag.bash"
-		alias pt="${tools_dir}push_to_test.bash"
-		alias db="${tools_dir}create_db_script.bash"
-		alias log="${tools_dir}log.bash"
-		alias mprod="${tools_dir}mprod.bash"
-		alias ptt="${tools_dir}ptt.bash"
+		alias cb="${tools_dir}check_branch.sh"
+		alias gt="${tools_dir}tag.sh"
+		alias pt="${tools_dir}push_to_test.sh"
+		alias db="${tools_dir}create_db_script.sh"
+		alias log="${tools_dir}log.sh"
+		alias mprod="${tools_dir}mprod.sh"
+		alias ptt="${tools_dir}ptt.sh"
 
-		alias testdb="cd /c/svn/db && git grx && git co $(${tools_dir}testbranch.bash) && git po && db test"
+		alias testdb="cd /c/svn/db && git grx && git co $(${tools_dir}testbranch.sh) && git po && db test"
 	fi
 
 	ls --color=auto > /dev/null

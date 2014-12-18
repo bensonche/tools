@@ -2,8 +2,8 @@
 
 bc_setup ()
 {
-	cp bashrc.bash ~/.custom_bashrc
-	cp customprompt.bash ~/.custom_prompt
+	cp bashrc.sh ~/.custom_bashrc
+	cp customprompt.sh ~/.custom_prompt
 
 	chmod 777 ~/.custom_bashrc
 	chmod 777 ~/.custom_prompt
