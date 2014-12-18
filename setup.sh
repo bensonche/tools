@@ -57,7 +57,7 @@ bc_setup ()
 
 	echo $default_dir
 
-	local tools_dir=$(cd $(dirname $BASH_SOURCE[0]) && pwd)
+	local tools_dir=$(cd $(dirname $BASH_SOURCE[0]) && cd bin && pwd)
 
 	echo "PATH=\$PATH:$tools_dir" >> ~/.custom_bashrc
 
