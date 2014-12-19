@@ -39,7 +39,7 @@ setup_custom_home ()
 		if [ -d "$default_dir" ]
 		then
 			echo "cd $default_dir" >> ~/.custom_bashrc
-			echo alias home="cd $default_dir" >> ~/.custom_bashrc
+			echo alias home="\"cd $default_dir\"" >> ~/.custom_bashrc
 		else
 			echo "Not a valid dir"
 			return 1
@@ -70,7 +70,7 @@ bc_setup ()
 			&& "$include_intranet" != "N" \
 			&& "$include_intranet" != "y" \
 			&& "$include_intranet" != "Y" ) ]]; do
-		read -p "Include Intranet tools?" include_intranet
+		read -p "Include Intranet tools? " include_intranet
 	done
 
 	if [[ "$include_intranet" == "y" || "$include_intranet" == "Y" ]]
