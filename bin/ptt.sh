@@ -16,7 +16,7 @@ bc_ptt ()
 
 	git reset --hard origin/$sprint
 
-	/c/svn/tools/push_to_test.bash
+	push_to_test.sh
 }
 
 bc_ptt
