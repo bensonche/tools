@@ -113,7 +113,7 @@
 			return;
 		}
 
-		txtBranch.after("<a id='githubCompare' class='RDIHyperLink' href='#'>Compare</a>");
+		txtBranch.after("<a id='githubCompare' class='RDIHyperLink' href='#' target='_blank'>Compare</a>");
 
 		updateLink();
 
