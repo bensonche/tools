@@ -34,5 +34,7 @@ set sw=4
 
 nnoremap <C-n> :call NumToggle()<cr>
 
+au BufRead,BufNewFile *.md set filetype=markdown
+
 set guifont=Lucida_Console:h12
 silent! colorscheme torte
