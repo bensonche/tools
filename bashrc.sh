@@ -9,7 +9,7 @@ custom_bashrc_intranet ()
 	alias mprod="mprod.sh"
 	alias ptt="ptt.sh"
 
-	alias testdb="cd /c/svn/db && git grx && git co $(testbranch.sh) && git po && db test"
+	alias testdb="cd ../db && git grx && git co $(testbranch.sh) && git po && db test"
 }
 
 custom_bashrc ()
