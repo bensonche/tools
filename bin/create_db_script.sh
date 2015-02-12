@@ -10,7 +10,7 @@ create_commit_hash_query ()
 
 cmdline()
 {
-	while getopts ":sha" OPTION
+	while getopts ":sham" OPTION
 	do
 		case $OPTION in
 			s)
@@ -22,6 +22,9 @@ cmdline()
 				;;
 			a)
 				readonly ALL=1
+				;;
+			m)
+				readonly COPY=1
 				;;
 			\?)
 				echo "Invalid option: -$OPTARG"
@@ -189,6 +192,22 @@ function create_db_script ()
 	fi
 
 	cat db_deleted.sql
+
+	if [ $COPY ]
+	then
+		local date=`date +%Y-%m-%d`
+		local dir="/c/users/bche/Dropbox/work/release/${date}"
+
+		if [ -d "$dir" ]
+		then
+			mv db_script.sql "$dir"
+			mv db_files.txt "$dir"
+			mv db_deleted.sql "$dir"
+		else
+			echo "Destination directory does not exist: $dir"
+		fi
+	fi
+
 
 	if [ $# -gt 1 ] && [ -n $SILENT ]
 	then
