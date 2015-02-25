@@ -10,7 +10,7 @@ function bc_delete
 		exit 1
 	fi
 
-	local count=$(git log --left-right --cherry-pick release..origin/$1 | wc -l)
+	local count=$(git log --left-right --cherry-pick origin/release..origin/$1 | wc -l)
 
 	if [ $count -ne 0 ]
 	then

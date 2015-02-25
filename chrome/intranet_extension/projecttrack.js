@@ -94,7 +94,36 @@
 			$("input#QAButton").remove();
 		}
 	}
+	
+	function buildSQLCount() {
+		if($("span#SQLCount").length > 0) {
+			return;
+		}
+		
+		var table = $("[id$=tpFiles_FileList]");
+		var header = table.find(".RDIGridHeader td:contains(Extension)");
+		var colIndex = header.parent().children().index(header);
+		
+		var sqlCount = 0;
+		$.each(table.find("tr"), function(index, value) {
+			if(index == 0)
+				return true;
+			
+			if($(value).find("td").eq(colIndex).text().trim() == ".sql")
+				sqlCount++;
+		});
+		
+		var txtBranch = $("[id$=txtBranch]");
 
+		if(txtBranch.length == 0) {
+			return;
+		}
+		
+		if(sqlCount == 1)
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL file attached</span>");
+		else
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL files attached</span>");
+	}
 
 	function isRTP() {
 		if($("[id$=ddlStatus]").length > 0) {
@@ -179,6 +208,7 @@
 		}
 		
 		dfd.done(function () {
+			buildSQLCount();
 			buildCompareButton();
 			buildQAButton();
 			subscribeSelfCheckbox();
