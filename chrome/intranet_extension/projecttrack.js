@@ -2,6 +2,33 @@
 	var ran = false;
 	
 	var selfID = null;
+	
+	function GetLatestQA() {
+		var historyItems = $(".RDIHistory .RDIHistoryItem .RDIHistorySidebar");
+
+		var QADate = null;
+		$.each(historyItems, function(index, value) {
+			var found = false;
+			$.each($(value).find(".RDIRowChanged td"), function(index, value) {
+				var text = $(value).text().replace(/\240/g, " ").trim();
+				
+				if(text == "Release to Production to Quality Assurance") {
+					found = true;
+					return false;
+				}
+			});
+			
+			if(found) {
+				var dateString = $(value).find("tr").eq(0).text().substring(0, 10);
+				if(!isNaN(Date.parse(dateString))) {
+					QADate = new Date(dateString);
+					return false;
+				}
+			}
+		});
+		
+		return QADate;
+	}
 
 	function subscribeSelfCheckbox() {
 		if($("input#subscribeSelf").length > 0) {
@@ -101,16 +128,27 @@
 		}
 		
 		var table = $("[id$=tpFiles_FileList]");
-		var header = table.find(".RDIGridHeader td:contains(Extension)");
-		var colIndex = header.parent().children().index(header);
+		var extHeader = table.find(".RDIGridHeader td:contains(Extension)");
+		var updHeader = table.find(".RDIGridHeader td:contains(Updated)");
+		
+		var colExtIndex = extHeader.parent().children().index(extHeader);
+		var colUpdIndex = updHeader.parent().children().index(updHeader);
 		
 		var sqlCount = 0;
 		$.each(table.find("tr"), function(index, value) {
 			if(index == 0)
 				return true;
 			
-			if($(value).find("td").eq(colIndex).text().trim() == ".sql")
-				sqlCount++;
+			if($(value).find("td").eq(colExtIndex).text().trim() == ".sql") {
+				var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
+				if(!isNaN(Date.parse(dateString))) {
+					var updatedDate = new Date(dateString);
+					
+					console.log(GetLatestQA());
+					if(updatedDate > GetLatestQA())
+						sqlCount++;
+				}
+			}
 		});
 		
 		var txtBranch = $("[id$=txtBranch]");
@@ -120,9 +158,9 @@
 		}
 		
 		if(sqlCount == 1)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL file attached</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL file uploaded since last release</span>");
 		else
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL files attached</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL files uploaded since last release</span>");
 	}
 
 	function isRTP() {
