@@ -100,9 +100,14 @@ function create_db_script ()
 		local left=$hash
 		local right=head
 
-		git diff --name-status $left..head Database/
+		local diff=$(git diff --name-status $left..head Database/)
+		local diffCount=$(echo -n "$diff" | wc -l)
 
-		read -p "Press [Enter] key to continue..."
+		if [ $diffCount -gt "0" ]
+		then
+			echo "$diff"
+			read -p "Press [Enter] key to continue..."
+		fi
 
 		git diff -w $left..head Database/
 
