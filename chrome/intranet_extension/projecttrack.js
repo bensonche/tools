@@ -144,7 +144,6 @@
 				if(!isNaN(Date.parse(dateString))) {
 					var updatedDate = new Date(dateString);
 					
-					console.log(GetLatestQA());
 					if(updatedDate > GetLatestQA())
 						sqlCount++;
 				}
