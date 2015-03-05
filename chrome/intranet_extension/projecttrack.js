@@ -122,7 +122,13 @@
 		}
 	}
 	
+	var buildingSQL = false;
 	function buildSQLCount() {
+		if(buildingSQL)
+			return;
+		
+		buildingSQL = true;
+		
 		if($("span#SQLCount").length > 0) {
 			return;
 		}
@@ -156,10 +162,14 @@
 			return;
 		}
 		
-		if(sqlCount == 1)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL file uploaded since last release</span>");
+		if(sqlCount == 0)
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL file uploaded since last release</span>");
+		else if(sqlCount == 1)
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file uploaded since last release</span>");
 		else
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>" + sqlCount + " SQL files uploaded since last release</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files uploaded since last release</span>");
+		
+		buildingSQL = false;
 	}
 
 	function isRTP() {
