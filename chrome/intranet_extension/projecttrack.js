@@ -180,7 +180,7 @@
 	}
 
 	function buildCompareButton () {
-		if($("a#githubCompare").length > 0) {
+		if($("a.githubCompare").length > 0) {
 			return;
 		}
 		var txtBranch = $("[id$=txtBranch]");
@@ -189,22 +189,28 @@
 			return;
 		}
 
-		txtBranch.after("<a id='githubCompare' class='RDIHyperLink' href='#' target='_blank'>Compare</a>");
+		var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
+		var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'>[p]</a>");
+		
+		txtBranch.after(compare);
+		compare.after(comparePublic);
 
 		updateLink();
 
 		txtBranch.keyup(function () {
 			updateLink();
 		});
-
-
-		function getURL(branch) {
-			var github = "https://github.com/ResourceDataInc/Intranet/compare/";
+		
+		function getURL(branch, repo) {
+			var github = "https://github.com/ResourceDataInc/" + repo + "/compare/";
 			return github + branch;
 		}
 
 		function updateLink() {
-			$("a#githubCompare").prop("href", getURL(txtBranch.val()));
+			$("a.githubCompare").each(function (i, v) {
+				var repo = $(v).data("repo");
+				$(v).prop("href", getURL(txtBranch.val(), repo));
+			});
 		}
 	}
 
