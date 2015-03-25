@@ -17,7 +17,7 @@ bc_log ()
 		right=origin/$1
 	fi
 
-	local branch=release
+	local branch=HEAD
 
 	echo $1 >> log.txt
 	git log --left-right --cherry-pick --pretty=format:"%ad, %aN: %s" $branch..$right >> log.txt
