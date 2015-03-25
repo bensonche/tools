@@ -190,7 +190,7 @@
 		}
 
 		var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
-		var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'>[p]</a>");
+		var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'> [p]</a>");
 		
 		txtBranch.after(compare);
 		compare.after(comparePublic);
