@@ -1,3 +1,6 @@
+use rdi_production
+go
+
 select distinct a.empid, b.FULLNAME2, EMAIL
 from time_sht a
 inner join AllUsers b
