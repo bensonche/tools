@@ -1,4 +1,4 @@
 #!/bin/bash
 
-git tag -a Release_3.6.$1 -m "Release 3.6.$1" &&
-git push origin Release_3.6.$1
+git tag -a Release_4.5.$1 -m "Release 4.5.$1" &&
+git push origin Release_4.5.$1
