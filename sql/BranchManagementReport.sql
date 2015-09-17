@@ -88,6 +88,7 @@ from
 		and t.client_id = 363 and t.project_no = 9
 		and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
 	group by au.fullname2
+    having sum(t.amount) > 4
 	) a
 
 -- 7
@@ -101,6 +102,7 @@ where startdate >= dateadd(mm, -6, @dtTo)
 	and t.client_id = 363 and t.project_no = 9
 	and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
 group by au.fullname2
+having sum(t.amount) > 4
 order by au.fullname2
 
 -- 8

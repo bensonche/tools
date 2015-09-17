@@ -46,12 +46,15 @@ where
     and AssignedTo = 10000
 order by a.RDIItemId
 
+---------------------------------------------------------------------------------
+
 ;with cte as
 (
     select
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
         ,ROW_NUMBER() over (order by a.featurebranch desc) seq
+        ,ROW_NUMBER() over (order by a.featurebranch) reverseSeq
     from RDIItem a
     where
         a.CLIENT_ID = 363
@@ -65,13 +68,14 @@ cte1 as
     from cte
 )
 select
-    log + suffix,
-    mprod + suffix
+    log, suffix,
+    mprod + ' && echo "' + cast(seq as varchar) + ' remaining"', suffix
 from cte1
-order by log
+order by reverseSeq
 
 ---------------------------------------------
 declare @PTLink varchar(500)
+
 set @PTLink = '<a href=''https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=';
 
 with lastQA as
