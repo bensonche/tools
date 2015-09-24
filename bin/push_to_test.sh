@@ -20,6 +20,8 @@ bc_ptt ()
 	git pull origin $test
 	git merge $cur
 	git push origin $test
+
+	git checkout $cur
 }
 
 bc_ptt $1
