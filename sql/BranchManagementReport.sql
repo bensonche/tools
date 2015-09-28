@@ -1,3 +1,5 @@
+ use rdi_production
+ 
  declare @dtFrom datetime ,@dtTo datetime
 
  set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
