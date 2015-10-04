@@ -1,19 +1,38 @@
 #!/bin/bash
 
+cmdline()
+{
+	while getopts ":x" OPTION
+	do
+		case $OPTION in
+			x)
+				readonly CHANGEBRANCH=0
+				;;
+			\?)
+				echo "Invalid option: -$OPTARG"
+				exit 1
+				;;
+		esac
+	done
+	shift $((OPTIND-1))
+	readonly TARGETBRANCH=$1
+}
+
 bc_ptt ()
 {
 	set -e
+
+	cmdline $@
 
 	local cur=`git rev-parse --abbrev-ref HEAD`
 
 	# Use current month/year for branch name if not given
 	local test=""
-	if [ $# -lt 1 ]
+	if [ -n $TARGETBRANCH ]
 	then
-		
 		test=$(testbranch.sh)
 	else
-		test=$1
+		test=$TARGETBRANCH
 	fi
 
 	git checkout $test
@@ -21,7 +40,10 @@ bc_ptt ()
 	git merge $cur
 	git push origin $test
 
-	git checkout $cur
+	if [ -z "$CHANGEBRANCH" ]
+	then
+		git checkout $cur
+	fi
 }
 
 bc_ptt $1
