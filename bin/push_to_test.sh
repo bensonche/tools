@@ -28,7 +28,7 @@ bc_ptt ()
 
 	# Use current month/year for branch name if not given
 	local test=""
-	if [ -n $TARGETBRANCH ]
+	if [ -z $TARGETBRANCH ]
 	then
 		test=$(testbranch.sh)
 	else
@@ -46,4 +46,4 @@ bc_ptt ()
 	fi
 }
 
-bc_ptt $1
+bc_ptt $@
