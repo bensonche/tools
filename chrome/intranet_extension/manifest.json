@@ -4,7 +4,7 @@
 	"name": "Intranet Extension",
 	"description": "Improvements for ProjectTrack",
 
-	"version": "3.6",
+	"version": "4.0",
 	
 	"options_page": "options.html",
 	
@@ -40,6 +40,13 @@
 				"*://*/privatedn/Security/Login.aspx"
 			],
 			"js": ["jquery-min.js", "login.js"]
+		},
+		{
+			"matches":
+			[
+				"*://*/privatedn/About/IntranetCurrentWork.aspx"
+			],
+			"js": ["jquery-min.js", "ciw.js"]
 		}
 	]
 }
