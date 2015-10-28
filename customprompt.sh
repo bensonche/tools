@@ -22,8 +22,10 @@ create_prompt ()
 	then
 		GIT_PS1="\$(__git_ps1)"
 	fi
-
-	export PS1="\n${bold}\[\033[33m\][\!] \[\033[0m\]\$(smiley) ${bold}\[\033[33m\]\w${GIT_PS1}${normal}\[\033[0m\]\n$ "
+	
+	#Fix weird parsing issue with new version of git bash
+	#export PS1="\n${bold}\[\033[33m\][\!] \[\033[0m\]\$(smiley) ${bold}\[\033[33m\]\w${GIT_PS1}${normal}\[\033[0m\]\n$ "
+	export PS1="\n${bold}\[\033[33m\][\!] \[\033[0m\]\$(smiley) ${bold}\[\033[33m\]\w${GIT_PS1}${normal}\[\033[0m\]"$'\n$ '
 }
 
 create_prompt
