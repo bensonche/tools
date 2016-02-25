@@ -20,7 +20,7 @@ function mprod()
 	echo $arg
 	echo
 
-	git merge --no-ff -sresolve $arg
+	git merge --no-ff $arg
 }
 
 mprod $@
