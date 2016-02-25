@@ -114,11 +114,11 @@ result as
 
     union all
 
-    select '<br /><br /><br /><br /><br />', 88888
+    select '<br /><br /><br /><br /><br />', 9988888
 
     union all
 
-    select @PTLink + convert(varchar, a.RDIItemId) + '&bcempid=' + convert(varchar, b.developerid) + '''>' + convert(varchar(10), a.RDIItemId) + '</a><br />', 99997
+    select @PTLink + convert(varchar, a.RDIItemId) + '&bcempid=' + convert(varchar, b.developerid) + '''>' + convert(varchar(10), a.RDIItemId) + '</a><br />', 9999997
     from rdiitem a
     cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) b
     where AssignedTo = 10000
@@ -128,30 +128,30 @@ result as
 
     union all
 
-    select '<br /><br /><br /><br /><br />', 99998
+    select '<br /><br /><br /><br /><br />', 9999998
 
     union all
 
-    select '<a href="https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx">https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx">https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx">https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx">https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/Deposit.aspx">https://www.resdat.com/privatedn/Invoicing/Deposit.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx">https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx">https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx">https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4">https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx">https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320">https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Timesheet">https://www.resdat.com/privatedn/Timesheet</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/default.aspx">https://www.resdat.com/privatedn/ProjectTrack/default.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348">https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx">https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx">https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx</a>', 99999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/invoicing/invoicelist.aspx">https://www.resdat.com/privatedn/invoicing/invoicelist.aspx</a>', 99999
-    union all select '<br/><a href="http://www.resdat.com/careers/apply">http://www.resdat.com/careers/apply</a>', 99999
+    select '<a href="https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx">https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx">https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx">https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx">https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/Deposit.aspx">https://www.resdat.com/privatedn/Invoicing/Deposit.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx">https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx">https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx">https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4">https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx">https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320">https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Timesheet">https://www.resdat.com/privatedn/Timesheet</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/default.aspx">https://www.resdat.com/privatedn/ProjectTrack/default.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348">https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx">https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx">https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx</a>', 9999999
+    union all select '<br/><a href="https://www.resdat.com/privatedn/invoicing/invoicelist.aspx">https://www.resdat.com/privatedn/invoicing/invoicelist.aspx</a>', 9999999
+    union all select '<br/><a href="http://www.resdat.com/careers/apply">http://www.resdat.com/careers/apply</a>', 9999999
 )
 select url
 from result

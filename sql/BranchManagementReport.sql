@@ -5,7 +5,7 @@
  set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
  set @dtFrom = dateadd(d, -13, @dtto)
 
- select @dtfrom, @dtto
+ select @dtfrom, @dtto, '\\192.168.20.50\data\Projects\363 Intranet\Managment Meeting Reports'
 
 declare @dtFromMonthStart datetime = dateadd(m, -6, @dtTo)
 set @dtFromMonthStart = DATEADD(d, -(datepart(d, @dtFromMonthStart) - 1), @dtFromMonthStart)
