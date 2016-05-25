@@ -2,8 +2,12 @@
 	var ran = false;
 	
 	var selfID = null;
-	
-    function getPullRequests() {
+    var oauth = null;
+    
+    function buildPullRequestLink() {
+        if($("#github-PR").length > 0)
+            return;
+        
         var allMatches = [];
         $.each($(".RDIHistorySection p"), function(i, v) {
             var body = $(v).text();
@@ -15,18 +19,32 @@
             }
         });
         
-        if(allMatches.length === 0)
-            return $("<span id='github-PR' class='RDIText'>No pull requests</span>");
-        if(allMatches.length > 1)
-            return $("<span id='github-PR' class='RDIText'>Multiple pull requests</span>");
-        return $("<a id='github-PR' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + allMatches[0].match(/\d+$/) +"</a>");
-    }
-    
-    function buildPullRequestLink() {
-        if($("#github-PR").length > 0)
-            return;
+        var $link;
         
-        $("[id$=txtBranch]").parents("td").first().append(getPullRequests());
+        if(allMatches.length === 0)
+            $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
+        else if(allMatches.length > 1)
+            $link = $("<div id='github-PR' class='RDIText'>" + allMatches.length + " PRs</div>");
+        else {
+            var prId = allMatches[0].match(/\d+$/);
+            $link = $("<div id='github-PR'><a class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId +"</a><div class='circle circle-orange'></div></div>");
+            
+            if(oauth !== null && oauth.length > 0) {
+                $.ajax({
+                    url: "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/" + prId + "?access_token=" + oauth
+                }).done(function(d) {
+                    if(d && d.head && d.head.ref) {
+                        var branchname = d.head.ref;
+                        if($("[id$=txtBranch]").val() === branchname)
+                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-green");
+                        else
+                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-red");
+                    }
+                });
+            }
+        }
+        
+        $("[id$=txtBranch]").parents("td").first().append($link);
     }
     
 	function getLatestQA() {
@@ -277,9 +295,11 @@
 		
 		if(isNaN(parseInt(selfID))) {
 			chrome.storage.sync.get({
-				empid: ''
+				empid: '',
+                oauth: ''
 			}, function (item) {
 				selfID = item.empid;
+				oauth = item.oauth;
 				dfd.resolve();
 			});
 		} else {

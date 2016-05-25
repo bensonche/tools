@@ -10,3 +10,28 @@ input#QAButton {
 .bc_vertMiddle {
 	vertical-align: middle;
 }
+
+#github-PR {
+    display: inline-block;
+    margin-left: 2px;
+}
+
+.circle {
+	border-radius: 50%;
+	width: 10px;
+	height: 10px;
+    display: inline-block;
+    margin-left: 2px;
+}
+
+.circle-red {
+    background-color: red;
+}
+
+.circle-green {
+    background-color: green;
+}
+
+.circle-orange {
+    background-color: orange;
+}
