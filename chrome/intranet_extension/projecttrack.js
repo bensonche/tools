@@ -3,7 +3,33 @@
 	
 	var selfID = null;
 	
-	function GetLatestQA() {
+    function getPullRequests() {
+        var allMatches = [];
+        $.each($(".RDIHistorySection p"), function(i, v) {
+            var body = $(v).text();
+            
+            var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
+            
+            if(matches) {
+                allMatches = allMatches.concat(matches);
+            }
+        });
+        
+        if(allMatches.length === 0)
+            return $("<span id='github-PR' class='RDIText'>No pull requests</span>");
+        if(allMatches.length > 1)
+            return $("<span id='github-PR' class='RDIText'>Multiple pull requests</span>");
+        return $("<a id='github-PR' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + allMatches[0].match(/\d+$/) +"</a>");
+    }
+    
+    function buildPullRequestLink() {
+        if($("#github-PR").length > 0)
+            return;
+        
+        $("[id$=txtBranch]").parents("td").first().append(getPullRequests());
+    }
+    
+	function getLatestQA() {
 		var historyItems = $(".RDIHistory .RDIHistoryItem .RDIHistorySidebar");
 
 		var QADate = null;
@@ -150,7 +176,7 @@
 				if(!isNaN(Date.parse(dateString))) {
 					var updatedDate = new Date(dateString);
 					
-					if(updatedDate > GetLatestQA())
+					if(updatedDate > getLatestQA())
 						sqlCount++;
 				}
 			}
@@ -264,6 +290,7 @@
 			buildSQLCount();
 			buildCompareButton();
 			buildQAButton();
+            buildPullRequestLink();
 			subscribeSelfCheckbox();
 			reassignPTs();
 		});
