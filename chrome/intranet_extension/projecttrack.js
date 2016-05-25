@@ -20,15 +20,22 @@
         });
         
         var $link;
+        var validLink = false;
+        var prId;
         
         if(allMatches.length === 0)
             $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
         else if(allMatches.length > 1)
             $link = $("<div id='github-PR' class='RDIText'>" + allMatches.length + " PRs</div>");
         else {
-            var prId = allMatches[0].match(/\d+$/);
+            prId = allMatches[0].match(/\d+$/);
             $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId +"</a><div class='circle circle-orange'></div></div>");
-            
+            validLink = true;
+        }
+        
+        $("[id$=txtBranch]").parents("td").first().append($link);
+        
+        if(validLink) {
             if(oauth !== null && oauth.length > 0) {
                 $.ajax({
                     url: "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/" + prId + "?access_token=" + oauth
@@ -40,11 +47,14 @@
                         else
                             $("#github-PR .circle").removeClass("circle-orange").addClass("circle-red");
                     }
+                }).fail(function(d) {
+                    $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Bad OAth token</a>");
                 });
             }
+            else {
+                $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Missing OAth token</a>");
+            }
         }
-        
-        $("[id$=txtBranch]").parents("td").first().append($link);
     }
     
 	function getLatestQA() {

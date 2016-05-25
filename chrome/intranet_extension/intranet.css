@@ -35,3 +35,7 @@ input#QAButton {
 .circle-orange {
     background-color: orange;
 }
+
+.error-link {
+    display: inline-block;
+}
