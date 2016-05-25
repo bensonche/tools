@@ -27,7 +27,7 @@
             $link = $("<div id='github-PR' class='RDIText'>" + allMatches.length + " PRs</div>");
         else {
             var prId = allMatches[0].match(/\d+$/);
-            $link = $("<div id='github-PR'><a class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId +"</a><div class='circle circle-orange'></div></div>");
+            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId +"</a><div class='circle circle-orange'></div></div>");
             
             if(oauth !== null && oauth.length > 0) {
                 $.ajax({
