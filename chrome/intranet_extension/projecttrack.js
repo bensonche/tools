@@ -207,11 +207,11 @@
 		}
 		
 		if(sqlCount == 0)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL file uploaded since last release</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL</span>");
 		else if(sqlCount == 1)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file uploaded since last release</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file</span>");
 		else
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files uploaded since last release</span>");
+			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files</span>");
 		
 		buildingSQL = false;
 	}
