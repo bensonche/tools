@@ -5,6 +5,10 @@
     var oauth = null;
     
     function buildPullRequestLink() {
+        function getPRId(url) {
+            return parseInt(url.match(/\d+$/));
+        }
+        
         if($("#github-PR").length > 0)
             return;
         
@@ -19,17 +23,24 @@
             }
         });
         
+        allMatches = _.sortBy(allMatches, function(x) {
+            return -getPRId(x);
+        });
+        
+        allMatches = _.uniq(allMatches, true);
+        
         var $link;
         var validLink = false;
         var prId;
         
         if(allMatches.length === 0)
             $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
-        else if(allMatches.length > 1)
-            $link = $("<div id='github-PR' class='RDIText'>" + allMatches.length + " PRs</div>");
         else {
-            prId = allMatches[0].match(/\d+$/);
-            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId +"</a><div class='circle circle-orange'></div></div>");
+            prId = getPRId(allMatches[0]);
+            var prCount = "";
+            if(allMatches.length > 1)
+                prCount = "(" + allMatches.length + ")";
+            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
             validLink = true;
         }
         

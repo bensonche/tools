@@ -4,7 +4,7 @@
 	"name": "Intranet Extension",
 	"description": "Improvements for ProjectTrack",
 
-	"version": "5.4",
+	"version": "5.5",
 	
 	"options_page": "options.html",
 	
@@ -28,7 +28,7 @@
 				"*://*/privatedn/ProjectTrack/issuegrid.aspx*",
 				"*://*/privatedn/projecttrack/IssueGrid.aspx*"
 			],
-			"js": ["jquery-min.js", "purl.js", "projecttrack.js"],
+			"js": ["jquery-min.js", "underscore-min.js", "purl.js", "projecttrack.js"],
 			"css": ["intranet.css"]
 		},
 		{
