@@ -1,52 +1,52 @@
 {
-	"manifest_version": 2,
+    "manifest_version": 2,
 
-	"name": "Intranet Extension",
-	"description": "Improvements for ProjectTrack",
+    "name": "Intranet Extension",
+    "description": "Improvements for ProjectTrack",
 
-	"version": "5.5",
-	
-	"options_page": "options.html",
-	
-	"permissions":
-	[
-		"storage"
-	],
-	
-	"web_accessible_resources":
-	[
-		"options.html"
-	],
+    "version": "5.5",
+    
+    "options_page": "options.html",
+    
+    "permissions":
+    [
+        "storage"
+    ],
+    
+    "web_accessible_resources":
+    [
+        "options.html"
+    ],
 
-	"content_scripts": 
-	[
-		{
-			"matches":
-			[
-				"*://*/privatedn/ProjectTrack/IssueGrid.aspx*",
-				"*://*/privatedn/projecttrack/issuegrid.aspx*",
-				"*://*/privatedn/ProjectTrack/issuegrid.aspx*",
-				"*://*/privatedn/projecttrack/IssueGrid.aspx*"
-			],
-			"js": ["lib/jquery-3.0.0.min.js", "lib/underscore-1.8.3.min.js", "lib/purl.js", "projecttrack.js"],
-			"css": ["intranet.css"]
-		},
-		{
-			"matches":
-			[
-				"*://*/privatedn/security/login.aspx",
-				"*://*/privatedn/Security/login.aspx",
-				"*://*/privatedn/security/Login.aspx",
-				"*://*/privatedn/Security/Login.aspx"
-			],
-			"js": ["lib/jquery-3.0.0.min.js", "login.js"]
-		},
-		{
-			"matches":
-			[
-				"*://*/privatedn/About/IntranetCurrentWork.aspx"
-			],
-			"js": ["lib/jquery-3.0.0.min.js", "ciw.js"]
-		}
-	]
+    "content_scripts": 
+    [
+        {
+            "matches":
+            [
+                "*://*/privatedn/ProjectTrack/IssueGrid.aspx*",
+                "*://*/privatedn/projecttrack/issuegrid.aspx*",
+                "*://*/privatedn/ProjectTrack/issuegrid.aspx*",
+                "*://*/privatedn/projecttrack/IssueGrid.aspx*"
+            ],
+            "js": ["lib/jquery-3.0.0.min.js", "lib/underscore-1.8.3.min.js", "lib/purl.js", "projecttrack.js"],
+            "css": ["intranet.css"]
+        },
+        {
+            "matches":
+            [
+                "*://*/privatedn/security/login.aspx",
+                "*://*/privatedn/Security/login.aspx",
+                "*://*/privatedn/security/Login.aspx",
+                "*://*/privatedn/Security/Login.aspx"
+            ],
+            "js": ["lib/jquery-3.0.0.min.js", "login.js"]
+        },
+        {
+            "matches":
+            [
+                "*://*/privatedn/About/IntranetCurrentWork.aspx"
+            ],
+            "js": ["lib/jquery-3.0.0.min.js", "ciw.js"]
+        }
+    ]
 }

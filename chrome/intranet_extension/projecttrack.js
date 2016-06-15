@@ -1,7 +1,7 @@
 (function () {
-	var ran = false;
-	
-	var selfID = null;
+    var ran = false;
+    
+    var selfID = null;
     var oauth = null;
     
     function buildPullRequestLink() {
@@ -68,277 +68,277 @@
         }
     }
     
-	function getLatestQA() {
-		var historyItems = $(".RDIHistory .RDIHistoryItem .RDIHistorySidebar");
+    function getLatestQA() {
+        var historyItems = $(".RDIHistory .RDIHistoryItem .RDIHistorySidebar");
 
-		var QADate = null;
-		$.each(historyItems, function(index, value) {
-			var found = false;
-			$.each($(value).find(".RDIRowChanged td"), function(index, value) {
-				var text = $(value).text().replace(/\240/g, " ").trim();
-				
-				if(text == "Release to Production to Quality Assurance") {
-					found = true;
-					return false;
-				}
-			});
-			
-			if(found) {
-				var dateString = $(value).find("tr").eq(0).text().substring(0, 10);
-				if(!isNaN(Date.parse(dateString))) {
-					QADate = new Date(dateString);
-					return false;
-				}
-			}
-		});
-		
-		return QADate;
-	}
+        var QADate = null;
+        $.each(historyItems, function(index, value) {
+            var found = false;
+            $.each($(value).find(".RDIRowChanged td"), function(index, value) {
+                var text = $(value).text().replace(/\240/g, " ").trim();
+                
+                if(text == "Release to Production to Quality Assurance") {
+                    found = true;
+                    return false;
+                }
+            });
+            
+            if(found) {
+                var dateString = $(value).find("tr").eq(0).text().substring(0, 10);
+                if(!isNaN(Date.parse(dateString))) {
+                    QADate = new Date(dateString);
+                    return false;
+                }
+            }
+        });
+        
+        return QADate;
+    }
 
-	function subscribeSelfCheckbox() {
-		if($("input#subscribeSelf").length > 0) {
-			return;
-		}
+    function subscribeSelfCheckbox() {
+        if($("input#subscribeSelf").length > 0) {
+            return;
+        }
 
-		var container = $("div#_NotificationsContainer tr").eq(1).find("td").eq(1).first();
+        var container = $("div#_NotificationsContainer tr").eq(1).find("td").eq(1).first();
 
-		if(container.length == 0) {
-			return;
-		}
+        if(container.length == 0) {
+            return;
+        }
 
-		if($("input#subscribeSelf").length > 0) {
-			return;
-		}
+        if($("input#subscribeSelf").length > 0) {
+            return;
+        }
 
-		container.prepend("<input type='checkbox' id='subscribeSelf' class='bc_vertMiddle' /><span class='bc_vertMiddle' >Subscribe myself</span>");
-		container.css("text-align", "left");
-		
-		if (isNaN(parseInt(selfID))) {
-			var span = $("<span style='color: red;'>Please set your employee ID <a target='_blank'>here</a> and refresh the page</span>");
-			
-			var url = span.find("a");
-			url.prop("href", chrome.extension.getURL("options.html"));
-			
-			container.append(span);
-			
-			$("#subscribeSelf").prop("disabled", "disabled");
-			
-			return;
-		}
+        container.prepend("<input type='checkbox' id='subscribeSelf' class='bc_vertMiddle' /><span class='bc_vertMiddle' >Subscribe myself</span>");
+        container.css("text-align", "left");
+        
+        if (isNaN(parseInt(selfID))) {
+            var span = $("<span style='color: red;'>Please set your employee ID <a target='_blank'>here</a> and refresh the page</span>");
+            
+            var url = span.find("a");
+            url.prop("href", chrome.extension.getURL("options.html"));
+            
+            container.append(span);
+            
+            $("#subscribeSelf").prop("disabled", "disabled");
+            
+            return;
+        }
 
-		toggleCheckbox();
+        toggleCheckbox();
 
-		$("input#subscribeSelf").change(function () {
-			var left = $("select[id$=Notifications__RDIUsers]");
-			var right = $("select[id$=Notifications__NotifyList]");
+        $("input#subscribeSelf").change(function () {
+            var left = $("select[id$=Notifications__RDIUsers]");
+            var right = $("select[id$=Notifications__NotifyList]");
 
-			if($(this).prop("checked")) {
-				left.val(selfID);
-				$("input[id$=Notifications_btnAddUser]").click();
-			} else {
-				right.val(selfID);
-				$("input[id$=btnDeleteNotify]").click();
-			}
-		});
-	}
+            if($(this).prop("checked")) {
+                left.val(selfID);
+                $("input[id$=Notifications_btnAddUser]").click();
+            } else {
+                right.val(selfID);
+                $("input[id$=btnDeleteNotify]").click();
+            }
+        });
+    }
 
-	function toggleCheckbox() {
-		if($("input#subscribeSelf").length == 0) {
-			return;
-		}
+    function toggleCheckbox() {
+        if($("input#subscribeSelf").length == 0) {
+            return;
+        }
 
-		var left = $("select[id$=Notifications__RDIUsers]");
-		var right = $("select[id$=Notifications__NotifyList]");
+        var left = $("select[id$=Notifications__RDIUsers]");
+        var right = $("select[id$=Notifications__NotifyList]");
 
-		var me = right.findSelf();
-		$("input#subscribeSelf").prop("checked", me.length > 0);
-	}
+        var me = right.findSelf();
+        $("input#subscribeSelf").prop("checked", me.length > 0);
+    }
 
-	$.fn.findSelf = function () {
-		return $(this[0]).find("option[value=" + selfID + "]");
-	}
+    $.fn.findSelf = function () {
+        return $(this[0]).find("option[value=" + selfID + "]");
+    }
 
-	function buildQAButton() {
-		if(isRTP()) {
-			if($("input#QAButton").length > 0) {
-				return;
-			}
+    function buildQAButton() {
+        if(isRTP()) {
+            if($("input#QAButton").length > 0) {
+                return;
+            }
 
-			var assignTo = $("span#assignedToDdSpan");
+            var assignTo = $("span#assignedToDdSpan");
 
-			if(assignTo.length == 0) {
-				return;
-			}
+            if(assignTo.length == 0) {
+                return;
+            }
 
-			assignTo.after("<input type='button' id='QAButton' value='QA' class='RDIButton' />");
+            assignTo.after("<input type='button' id='QAButton' value='QA' class='RDIButton' />");
 
-			$("input#QAButton").click(function () {
-				if($("[id$=ddlAssignedTo]").val() != 10000) {
-					$("select[id$=ddlStatus] option[value=8]").prop("selected", true);
-					$("textarea[id$=txtComments]").val("In prod, please review.");
+            $("input#QAButton").click(function () {
+                if($("[id$=ddlAssignedTo]").val() != 10000) {
+                    $("select[id$=ddlStatus] option[value=8]").prop("selected", true);
+                    $("textarea[id$=txtComments]").val("In prod, please review.");
 
-					$("input[id$=Submit]").click();
-				}
-			});
+                    $("input[id$=Submit]").click();
+                }
+            });
 
 
-		} else {
-			$("input#QAButton").remove();
-		}
-	}
-	
-	var buildingSQL = false;
-	function buildSQLCount() {
-		if(buildingSQL)
-			return;
-		
-		buildingSQL = true;
-		
-		if($("span#SQLCount").length > 0) {
-			return;
-		}
-		
-		var table = $("[id$=tpFiles_FileList]");
-		var extHeader = table.find(".RDIGridHeader td:contains(Extension)");
-		var updHeader = table.find(".RDIGridHeader td:contains(Updated)");
-		
-		var colExtIndex = extHeader.parent().children().index(extHeader);
-		var colUpdIndex = updHeader.parent().children().index(updHeader);
-		
-		var sqlCount = 0;
-		$.each(table.find("tr"), function(index, value) {
-			if(index == 0)
-				return true;
-			
-			if($(value).find("td").eq(colExtIndex).text().trim() == ".sql") {
-				var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
-				if(!isNaN(Date.parse(dateString))) {
-					var updatedDate = new Date(dateString);
-					
-					if(updatedDate > getLatestQA())
-						sqlCount++;
-				}
-			}
-		});
-		
-		var txtBranch = $("[id$=txtBranch]");
+        } else {
+            $("input#QAButton").remove();
+        }
+    }
+    
+    var buildingSQL = false;
+    function buildSQLCount() {
+        if(buildingSQL)
+            return;
+        
+        buildingSQL = true;
+        
+        if($("span#SQLCount").length > 0) {
+            return;
+        }
+        
+        var table = $("[id$=tpFiles_FileList]");
+        var extHeader = table.find(".RDIGridHeader td:contains(Extension)");
+        var updHeader = table.find(".RDIGridHeader td:contains(Updated)");
+        
+        var colExtIndex = extHeader.parent().children().index(extHeader);
+        var colUpdIndex = updHeader.parent().children().index(updHeader);
+        
+        var sqlCount = 0;
+        $.each(table.find("tr"), function(index, value) {
+            if(index == 0)
+                return true;
+            
+            if($(value).find("td").eq(colExtIndex).text().trim() == ".sql") {
+                var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
+                if(!isNaN(Date.parse(dateString))) {
+                    var updatedDate = new Date(dateString);
+                    
+                    if(updatedDate > getLatestQA())
+                        sqlCount++;
+                }
+            }
+        });
+        
+        var txtBranch = $("[id$=txtBranch]");
 
-		if(txtBranch.length == 0) {
-			return;
-		}
-		
-		if(sqlCount == 0)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL</span>");
-		else if(sqlCount == 1)
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file</span>");
-		else
-			txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files</span>");
-		
-		buildingSQL = false;
-	}
+        if(txtBranch.length == 0) {
+            return;
+        }
+        
+        if(sqlCount == 0)
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL</span>");
+        else if(sqlCount == 1)
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file</span>");
+        else
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files</span>");
+        
+        buildingSQL = false;
+    }
 
-	function isRTP() {
-		if($("[id$=ddlStatus]").length > 0) {
-			return $("[id$=ddlStatus]").val() == '48';
-		}
-		return false;
-	}
+    function isRTP() {
+        if($("[id$=ddlStatus]").length > 0) {
+            return $("[id$=ddlStatus]").val() == '48';
+        }
+        return false;
+    }
 
-	function buildCompareButton () {
-		if($("a.githubCompare").length > 0) {
-			return;
-		}
-		var txtBranch = $("[id$=txtBranch]");
+    function buildCompareButton () {
+        if($("a.githubCompare").length > 0) {
+            return;
+        }
+        var txtBranch = $("[id$=txtBranch]");
 
-		if(txtBranch.length == 0) {
-			return;
-		}
+        if(txtBranch.length == 0) {
+            return;
+        }
 
-		var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
-		var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'> [p]</a>");
-		
-		txtBranch.after(compare);
-		compare.after(comparePublic);
+        var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
+        var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'> [p]</a>");
+        
+        txtBranch.after(compare);
+        compare.after(comparePublic);
 
-		updateLink();
+        updateLink();
 
-		txtBranch.keyup(function () {
-			updateLink();
-		});
-		
-		function getURL(branch, repo) {
-			var github = "https://github.com/ResourceDataInc/" + repo + "/compare/";
-			return github + branch;
-		}
+        txtBranch.keyup(function () {
+            updateLink();
+        });
+        
+        function getURL(branch, repo) {
+            var github = "https://github.com/ResourceDataInc/" + repo + "/compare/";
+            return github + branch;
+        }
 
-		function updateLink() {
-			$("a.githubCompare").each(function (i, v) {
-				var repo = $(v).data("repo");
-				$(v).prop("href", getURL(txtBranch.val(), repo));
-			});
-		}
-	}
+        function updateLink() {
+            $("a.githubCompare").each(function (i, v) {
+                var repo = $(v).data("repo");
+                $(v).prop("href", getURL(txtBranch.val(), repo));
+            });
+        }
+    }
 
-	function readURL() {
-		var empid = $.url().param("bcempid");
-		if(!isNaN(empid)) {
-			return empid;
-		}
-		return null;
-	}
+    function readURL() {
+        var empid = $.url().param("bcempid");
+        if(!isNaN(empid)) {
+            return empid;
+        }
+        return null;
+    }
 
-	function reassignPTs() {
-		if(ran) {
-			return;
-		}
-		ran = true;
+    function reassignPTs() {
+        if(ran) {
+            return;
+        }
+        ran = true;
 
-		// Check that the empid supplied is valid
-		var empid = readURL();
-		if(!empid) {
-			return;
-		}
+        // Check that the empid supplied is valid
+        var empid = readURL();
+        if(!empid) {
+            return;
+        }
 
-		// Check that the QA button exists
-		if($("input#QAButton").length == 0) {
-			return;
-		}
+        // Check that the QA button exists
+        if($("input#QAButton").length == 0) {
+            return;
+        }
 
-		$("select[id$=ddlAssignedTo]").val(empid);
+        $("select[id$=ddlAssignedTo]").val(empid);
 
-		setTimeout(function() {
-			$("input#QAButton").first().click();
-		}, 5000);
-	}
+        setTimeout(function() {
+            $("input#QAButton").first().click();
+        }, 5000);
+    }
 
-	function init() {
-		var dfd = $.Deferred();
-		
-		if(isNaN(parseInt(selfID))) {
-			chrome.storage.sync.get({
-				empid: '',
+    function init() {
+        var dfd = $.Deferred();
+        
+        if(isNaN(parseInt(selfID))) {
+            chrome.storage.sync.get({
+                empid: '',
                 oauth: ''
-			}, function (item) {
-				selfID = item.empid;
-				oauth = item.oauth;
-				dfd.resolve();
-			});
-		} else {
-			dfd.resolve();
-		}
-		
-		dfd.done(function () {
-			buildSQLCount();
-			buildCompareButton();
-			buildQAButton();
+            }, function (item) {
+                selfID = item.empid;
+                oauth = item.oauth;
+                dfd.resolve();
+            });
+        } else {
+            dfd.resolve();
+        }
+        
+        dfd.done(function () {
+            buildSQLCount();
+            buildCompareButton();
+            buildQAButton();
             buildPullRequestLink();
-			subscribeSelfCheckbox();
-			reassignPTs();
-		});
-	}
+            subscribeSelfCheckbox();
+            reassignPTs();
+        });
+    }
 
 
-	document.addEventListener("DOMSubtreeModified", function(){
-		init();
-	});
+    document.addEventListener("DOMSubtreeModified", function(){
+        init();
+    });
 })()

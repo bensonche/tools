@@ -1,14 +1,14 @@
 a#githubCompare {
-	margin-left: 5px;
+    margin-left: 5px;
 }
 
 input#QAButton {
-	position: absolute;
-	margin-left: 100px;
+    position: absolute;
+    margin-left: 100px;
 }
 
 .bc_vertMiddle {
-	vertical-align: middle;
+    vertical-align: middle;
 }
 
 #github-PR {
@@ -17,9 +17,9 @@ input#QAButton {
 }
 
 .circle {
-	border-radius: 50%;
-	width: 10px;
-	height: 10px;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
     display: inline-block;
     margin-left: 2px;
 }
