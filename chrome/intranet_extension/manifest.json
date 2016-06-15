@@ -28,7 +28,7 @@
 				"*://*/privatedn/ProjectTrack/issuegrid.aspx*",
 				"*://*/privatedn/projecttrack/IssueGrid.aspx*"
 			],
-			"js": ["lib/jquery-min.js", "lib/underscore-min.js", "lib/purl.js", "projecttrack.js"],
+			"js": ["lib/jquery-3.0.0.min.js", "lib/underscore-1.8.3.min.js", "lib/purl.js", "projecttrack.js"],
 			"css": ["intranet.css"]
 		},
 		{
@@ -39,14 +39,14 @@
 				"*://*/privatedn/security/Login.aspx",
 				"*://*/privatedn/Security/Login.aspx"
 			],
-			"js": ["lib/jquery-min.js", "login.js"]
+			"js": ["lib/jquery-3.0.0.min.js", "login.js"]
 		},
 		{
 			"matches":
 			[
 				"*://*/privatedn/About/IntranetCurrentWork.aspx"
 			],
-			"js": ["lib/jquery-min.js", "ciw.js"]
+			"js": ["lib/jquery-3.0.0.min.js", "ciw.js"]
 		}
 	]
 }
