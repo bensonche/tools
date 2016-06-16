@@ -1,52 +1,57 @@
 {
     "manifest_version": 2,
-
     "name": "Intranet Extension",
     "description": "Improvements for ProjectTrack",
-
     "version": "5.5",
-    
     "options_page": "options.html",
-    
-    "permissions":
-    [
+    "permissions": [
         "storage"
     ],
-    
-    "web_accessible_resources":
-    [
+    "web_accessible_resources": [
         "options.html"
     ],
-
-    "content_scripts": 
-    [
+    "content_scripts": [
         {
-            "matches":
-            [
+            "matches": [
                 "*://*/privatedn/ProjectTrack/IssueGrid.aspx*",
                 "*://*/privatedn/projecttrack/issuegrid.aspx*",
                 "*://*/privatedn/ProjectTrack/issuegrid.aspx*",
                 "*://*/privatedn/projecttrack/IssueGrid.aspx*"
             ],
-            "js": ["lib/jquery-3.0.0.min.js", "lib/underscore-1.8.3.min.js", "lib/purl.js", "projecttrack.js"],
-            "css": ["intranet.css"]
+            "js": [
+                "lib/react-15.1.0.min.js",
+                "lib/react-dom-15.1.0.min.js",
+                "lib/jquery-3.0.0.min.js",
+                "lib/underscore-1.8.3.min.js",
+                "lib/purl.js",
+                "CompareLink.js",
+                "SQLCount.js",
+                "projecttrack.js"
+            ],
+            "css": [
+                "intranet.css"
+            ]
         },
         {
-            "matches":
-            [
+            "matches": [
                 "*://*/privatedn/security/login.aspx",
                 "*://*/privatedn/Security/login.aspx",
                 "*://*/privatedn/security/Login.aspx",
                 "*://*/privatedn/Security/Login.aspx"
             ],
-            "js": ["lib/jquery-3.0.0.min.js", "login.js"]
+            "js": [
+                "lib/jquery-3.0.0.min.js",
+                "login.js"
+            ]
         },
         {
-            "matches":
-            [
+            "matches": [
                 "*://*/privatedn/About/IntranetCurrentWork.aspx"
             ],
-            "js": ["lib/jquery-3.0.0.min.js", "ciw.js"]
+            "js": [
+                "lib/jquery-3.0.0.min.js",
+                "ciw.js"
+            ]
         }
     ]
 }
