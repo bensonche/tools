@@ -69,7 +69,7 @@ cte1 as
 )
 select
     log, suffix,
-    mprod + ' && echo "' + cast(seq as varchar) + ' remaining"', suffix
+    mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix
 from cte1
 order by reverseSeq
 
