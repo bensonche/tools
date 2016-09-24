@@ -42,7 +42,7 @@ var Task = React.createClass({
 
     getElapsedTime: function () {
         if (this.state.timeList.length === 0)
-            return "0:00";
+            return 0;
         else {
             var elapsed = 0;
             _.each(this.state.timeList, function (i) {
@@ -51,22 +51,36 @@ var Task = React.createClass({
                 else
                     elapsed += Date.now() - i.start;
             });
-
-            if (elapsed === 0)
-                return "0:00";
-
-            var seconds = elapsed / 1000;
-            seconds %= 60;
-
-            var minutes = seconds / 60;
-            minutes %= 60;
-
-            seconds = parseInt(seconds);
-            if (seconds < 10)
-                seconds = "0" + seconds;
-
-            return parseInt(minutes) + ":" + seconds;
+            return elapsed;
         }
+    },
+
+    getElapsedTimeString: function () {
+        var elapsed = this.getElapsedTime();
+
+        console.log(elapsed);
+
+        if (elapsed === 0)
+            return "0:00";
+
+        var seconds = parseInt(elapsed / 1000);
+        var minutes = parseInt(seconds / 60);
+        var hours = parseInt(minutes / 60);
+
+        seconds %= 60;
+        minutes %= 60;
+
+        if (seconds < 10)
+            seconds = "0" + seconds;
+
+        var displayString = "";
+
+        if (hours > 0)
+            displayString = hours + ":";
+
+        displayString += parseInt(minutes) + ":" + seconds;
+
+        return displayString;
     },
 
     render() {
@@ -79,7 +93,7 @@ var Task = React.createClass({
         return (
             <div className="task">
                 <div>{this.props.name}</div>
-                <div>Time elapsed: {this.getElapsedTime() }</div>
+                <div>Time elapsed: {this.getElapsedTimeString() }</div>
                 {StartStop}
             </div>
         );
