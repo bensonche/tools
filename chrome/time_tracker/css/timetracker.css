@@ -1,0 +1,12 @@
+.task
+{
+    border: 1px solid black;
+    display: inline-block;
+    padding: 1em;
+}
+
+.taskList
+{
+    padding: 1em;
+    display: inline-block;
+}
