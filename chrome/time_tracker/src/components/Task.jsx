@@ -1,6 +1,7 @@
 import React from "react"
 import $ from "jquery"
 import _ from "underscore"
+import * as Util from "../util/util.js"
 
 var Task = React.createClass({
     isStarted: function () {
@@ -8,47 +9,6 @@ var Task = React.createClass({
             return false;
         
         return this.props.timer[this.props.timer.length - 1].stop === undefined;
-    },
-
-    getElapsedTime: function () {
-        if (!this.props.timer || this.props.timer.length === 0)
-            return 0;
-        else {
-            var elapsed = 0;
-            _.each(this.props.timer, function (i) {
-                if (i.stop !== undefined)
-                    elapsed += i.stop - i.start;
-                else
-                    elapsed += Date.now() - i.start;
-            });
-            return elapsed;
-        }
-    },
-
-    getElapsedTimeString: function () {
-        var elapsed = this.getElapsedTime();
-
-        if (elapsed === 0)
-            return "0:00";
-
-        var seconds = parseInt(elapsed / 1000);
-        var minutes = parseInt(seconds / 60);
-        var hours = parseInt(minutes / 60);
-
-        seconds %= 60;
-        minutes %= 60;
-
-        if (seconds < 10)
-            seconds = "0" + seconds;
-
-        var displayString = "";
-
-        if (hours > 0)
-            displayString = hours + ":";
-
-        displayString += parseInt(minutes) + ":" + seconds;
-
-        return displayString;
     },
 
     render() {
@@ -68,7 +28,7 @@ var Task = React.createClass({
         return (
             <div className="task">
                 {input}
-                <div>Time elapsed: {this.getElapsedTimeString() }</div>
+                <div>Time elapsed: {Util.getElapsedTimeString(this.props.timer) }</div>
                 {StartStop}
             </div>
         );

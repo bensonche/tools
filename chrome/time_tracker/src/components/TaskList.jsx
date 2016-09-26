@@ -1,6 +1,7 @@
 import React from "react"
 import $ from "jquery"
 import _ from "underscore"
+import * as Util from "../util/util.js"
 
 import Task from "./Task.jsx"
 
@@ -34,6 +35,15 @@ var TaskList = React.createClass({
                 }
             ]
         };
+    },
+
+    getTotalTime: function () {
+        var elapsed = 0; 
+        _.each(this.state.taskList, function (v) {
+            elapsed += Util.getElapsedTime(v.timer);
+        });
+        
+        return Util.timeToString(elapsed);
     },
 
     start: function (name) {
@@ -112,6 +122,7 @@ var TaskList = React.createClass({
 
         return (
             <div className="taskList">
+                <span>{this.getTotalTime()}</span>
                 {taskList}
                 <Task name="" nameChanged={self.nameChanged.bind(null, null) }/>
             </div>
