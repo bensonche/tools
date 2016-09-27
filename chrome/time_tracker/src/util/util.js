@@ -20,7 +20,7 @@ export function getElapsedTimeString(timer) {
     return timeToString(this.getElapsedTime(timer));
 }
 
-export function timeToString(elapsed) {
+export function timeToString(elapsed, showHours) {
     if (elapsed === 0)
         return "0:00";
 
@@ -31,10 +31,18 @@ export function timeToString(elapsed) {
     seconds %= 60;
     minutes %= 60;
 
+    var displayString = "";
+
+    if (showHours) {
+        if (hours > 0)
+            displayString = hours + "h";
+        
+        displayString += parseInt(minutes) + "m";
+        return displayString;
+    }
+
     if (seconds < 10)
         seconds = "0" + seconds;
-
-    var displayString = "";
 
     if (hours > 0)
         displayString = hours + ":";
@@ -42,4 +50,25 @@ export function timeToString(elapsed) {
     displayString += parseInt(minutes) + ":" + seconds;
 
     return displayString;
+}
+
+export function getTotalTimeString(timerList, showHours) {
+    var elapsed = 0;
+    _.each(timerList, function (v) {
+        elapsed += getElapsedTime(v.timer);
+    });
+
+    return timeToString(elapsed, showHours);
+}
+
+export function isStarted(timerList) {
+    var started = _.find(timerList, function (v) {
+        if (v.timer.length === 0)
+            return false;
+        
+        if (v.timer[v.timer.length - 1].stop === undefined)
+            return true;    
+    });
+
+    return started !== undefined;
 }

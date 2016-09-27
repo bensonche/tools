@@ -1,54 +1,59 @@
 import React from "react"
 import $ from "jquery"
 import _ from "underscore"
-import * as Util from "../util/util.js"
 
 import Task from "./Task.jsx"
+import * as Util from "../util/util.js"
 
 var TaskList = React.createClass({
     getInitialState: function () {
+        if (this.props.taskList)
+            return { taskList: this.props.taskList };
+
         return {
             taskList: [
-                {
-                    name: "test1",
-                    timer: [{ start: 0, stop: 54353 }]
-                },
-                {
-                    name: "test2",
-                    timer: [{ start: 0, stop: 454654 }]
-                },
-                {
-                    name: "test3",
-                    timer: [{ start: 0, stop: 12252 }]
-                },
-                {
-                    name: "test4",
-                    timer: [{ start: 0, stop: 10000 }]
-                },
-                {
-                    name: "test5",
-                    timer: []
-                },
-                {
-                    name: "test6",
-                    timer: [{ start: Date.now() - 5000 }]
-                }
+                // {
+                //     name: "test1",
+                //     timer: [{ start: 0, stop: 54353 }]
+                // },
+                // {
+                //     name: "test2",
+                //     timer: [{ start: 0, stop: 454654 }]
+                // },
+                // {
+                //     name: "test3",
+                //     timer: [{ start: 0, stop: 12252 }]
+                // },
+                // {
+                //     name: "test4",
+                //     timer: [{ start: 0, stop: 10000 }]
+                // },
+                // {
+                //     name: "test5",
+                //     timer: []
+                // },
+                // {
+                //     name: "test6",
+                //     timer: [{ start: Date.now() - 5000 }]
+                // }
             ]
         };
     },
 
-    getTotalTime: function () {
-        var elapsed = 0; 
-        _.each(this.state.taskList, function (v) {
-            elapsed += Util.getElapsedTime(v.timer);
+    saveChanges: function () {
+        chrome.storage.local.set({
+            taskList: this.state.taskList
         });
-        
-        return Util.timeToString(elapsed);
+    },
+
+    getTotalTime: function () {
+        return Util.getTotalTimeString(this.state.taskList);
     },
 
     start: function (name) {
         if (name !== null) {
             var now = Date.now();
+
             _.each(this.state.taskList, function (v) {
                 if (v.timer.length > 0 && v.timer[v.timer.length - 1].stop === undefined)
                     v.timer[v.timer.length - 1].stop = now;
@@ -66,6 +71,8 @@ var TaskList = React.createClass({
             this.timer = setInterval(function () {
                 self.forceUpdate();
             }, 1000);
+
+            this.saveChanges();
         }
     },
 
@@ -79,6 +86,17 @@ var TaskList = React.createClass({
             });
 
             clearInterval(this.timer);
+
+            this.saveChanges();
+        }
+    },
+
+    componentDidMount: function () {
+        var self = this;
+        if (Util.isStarted(this.state.taskList)) {
+            this.timer = setInterval(function () {
+                self.forceUpdate();
+            }, 1000);
         }
     },
 
@@ -90,8 +108,7 @@ var TaskList = React.createClass({
         if (name === null)
             taskList.push({
                 name: newName,
-                isStarted: false,
-                elapsed: 0,
+                timer: [],
                 focus: true
             });
         else {
@@ -102,6 +119,14 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: taskList
+        });
+
+        this.saveChanges();
+    },
+
+    reset: function () {
+        this.setState({
+            taskList: []
         });
     },
 
@@ -122,9 +147,10 @@ var TaskList = React.createClass({
 
         return (
             <div className="taskList">
-                <span>{this.getTotalTime()}</span>
+                <button className="btn btn-danger" onClick={this.reset}>Reset</button>
+                <span>{this.getTotalTime() }</span>
                 {taskList}
-                <Task name="" nameChanged={self.nameChanged.bind(null, null) }/>
+                <Task name="" nameChanged={this.nameChanged.bind(null, null) }/>
             </div>
         );
     }

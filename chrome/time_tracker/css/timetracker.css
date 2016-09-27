@@ -1,7 +1,7 @@
 .task
 {
     border: 1px solid black;
-    display: inline-block;
+    display: block;
     padding: 1em;
 }
 
