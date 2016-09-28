@@ -40,6 +40,15 @@ var TaskList = React.createClass({
         };
     },
 
+    componentDidMount: function () {
+        var self = this;
+        if (Util.isStarted(this.state.taskList)) {
+            this.timer = setInterval(function () {
+                self.forceUpdate();
+            }, 1000);
+        }
+    },
+
     saveChanges: function () {
         chrome.storage.local.set({
             taskList: this.state.taskList
@@ -50,54 +59,62 @@ var TaskList = React.createClass({
         return Util.getTotalTimeString(this.state.taskList);
     },
 
-    start: function (name) {
-        if (name !== null) {
-            var now = Date.now();
+    start: function (id) {
+        var task = _.findWhere(this.state.taskList, { id: id });
 
-            _.each(this.state.taskList, function (v) {
-                if (v.timer.length > 0 && v.timer[v.timer.length - 1].stop === undefined)
-                    v.timer[v.timer.length - 1].stop = now;
+        var now = Date.now();
 
-                if (v.name === name) {
-                    v.timer.push({ start: now });
-                }
-            });
+        _.each(this.state.taskList, function (v) {
+            if (v.timer.length > 0 && v.timer[v.timer.length - 1].stop === undefined)
+                v.timer[v.timer.length - 1].stop = now;
+        });
 
-            this.setState({
-                taskList: this.state.taskList
-            });
+        task.timer.push({ start: now });
 
-            var self = this;
-            this.timer = setInterval(function () {
-                self.forceUpdate();
-            }, 1000);
+        this.setState({
+            taskList: this.state.taskList
+        });
 
-            this.saveChanges();
-        }
-    },
-
-    stop: function (name) {
-        if (name !== null) {
-            var task = _.findWhere(this.state.taskList, { name: name });
-            task.timer[task.timer.length - 1].stop = Date.now();
-
-            this.setState({
-                taskList: this.state.taskList
-            });
-
-            clearInterval(this.timer);
-
-            this.saveChanges();
-        }
-    },
-
-    componentDidMount: function () {
         var self = this;
-        if (Util.isStarted(this.state.taskList)) {
+
+        if (this.timer === undefined || this.timer === null) {
             this.timer = setInterval(function () {
                 self.forceUpdate();
             }, 1000);
         }
+
+        this.saveChanges();
+    },
+
+    stop: function (id) {
+        var task = _.findWhere(this.state.taskList, { id: id });
+        task.timer[task.timer.length - 1].stop = Date.now();
+
+        this.setState({
+            taskList: this.state.taskList
+        });
+
+        clearInterval(this.timer);
+        this.timer = null;
+
+        this.saveChanges();
+    },
+
+    delete: function (id) {
+        var index = _.findIndex(this.state.taskList, function (v) {
+            return v.id === id;
+        });
+
+        if (index === -1)
+            return;
+
+        var removed = this.state.taskList.splice(index, 1);
+
+        this.setState({
+            taskList: this.state.taskList
+        });
+
+        this.saveChanges();
     },
 
     nameChanged: function (name, event) {
@@ -105,13 +122,16 @@ var TaskList = React.createClass({
 
         var taskList = this.state.taskList;
 
-        if (name === null)
+        if (name === null) {
+            var now = Date.now();
             taskList.push({
                 name: newName,
                 timer: [],
-                focus: true
+                focus: true,
+                id: now
             });
-        else {
+            this.focus = now;
+        }else {
             var task = _.findWhere(taskList, { name: name });
 
             task.name = newName;
@@ -133,15 +153,25 @@ var TaskList = React.createClass({
     render: function () {
         var self = this;
 
-        var taskList = this.state.taskList.map(function (v, i) {
+        var sortedTaskList = _.sortBy(this.state.taskList, function (v) {
+            if (v.timer.length === 0)
+                return 0
+            return -v.timer[v.timer.length - 1].start;
+        });
+
+        var focusId = this.focus;
+        this.focus = null;
+
+        var taskList = sortedTaskList.map(function (v, i) {
             return <Task
-                key={i}
+                key={v.id}
                 name={v.name}
                 timer={v.timer}
                 nameChanged={self.nameChanged.bind(null, v.name) }
-                focus={v.focus}
-                start={self.start.bind(null, v.name) }
-                stop={self.stop.bind(null, v.name) }
+                focus={focusId === v.id}
+                start={self.start.bind(null, v.id) }
+                stop={self.stop.bind(null, v.id) }
+                delete={self.delete.bind(null, v.id) }
                 />;
         });
 

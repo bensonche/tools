@@ -7,7 +7,7 @@ var Task = React.createClass({
     isStarted: function () {
         if (!this.props.timer || this.props.timer.length === 0)
             return false;
-        
+
         return this.props.timer[this.props.timer.length - 1].stop === undefined;
     },
 
@@ -15,9 +15,21 @@ var Task = React.createClass({
         var StartStop;
         if (this.props.name !== undefined && this.props.name.length > 0) {
             if (this.isStarted())
-                StartStop = <button className="btn btn-danger btn-xs" onClick={this.props.stop}>Stop</button>
+                StartStop =
+                    <div>
+                        <button className="btn btn-danger btn-xs" onClick={this.props.stop}>Stop</button>
+                        <button type="button" className="btn btn-sm delete-button" onClick={this.props.delete}>
+                            <span className="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
             else
-                StartStop = <button className="btn btn-success btn-xs" onClick={this.props.start}>Start</button>
+                StartStop =
+                    <div>
+                        <button className="btn btn-success btn-xs" onClick={this.props.start}>Start</button>
+                        <button type="button" className="btn btn-sm delete-button" onClick={this.props.delete}>
+                            <span className="glyphicon glyphicon-trash"></span>
+                        </button>
+                    </div>
         }
 
         var input = <input type="text" value={this.props.name} onChange={this.props.nameChanged} />;

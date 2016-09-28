@@ -36,7 +36,7 @@ export function timeToString(elapsed, showHours) {
     if (showHours) {
         if (hours > 0)
             displayString = hours + "h";
-        
+
         displayString += parseInt(minutes) + "m";
         return displayString;
     }
@@ -65,9 +65,9 @@ export function isStarted(timerList) {
     var started = _.find(timerList, function (v) {
         if (v.timer.length === 0)
             return false;
-        
+
         if (v.timer[v.timer.length - 1].stop === undefined)
-            return true;    
+            return true;
     });
 
     return started !== undefined;
