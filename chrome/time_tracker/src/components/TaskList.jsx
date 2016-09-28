@@ -11,32 +11,7 @@ var TaskList = React.createClass({
             return { taskList: this.props.taskList };
 
         return {
-            taskList: [
-                // {
-                //     name: "test1",
-                //     timer: [{ start: 0, stop: 54353 }]
-                // },
-                // {
-                //     name: "test2",
-                //     timer: [{ start: 0, stop: 454654 }]
-                // },
-                // {
-                //     name: "test3",
-                //     timer: [{ start: 0, stop: 12252 }]
-                // },
-                // {
-                //     name: "test4",
-                //     timer: [{ start: 0, stop: 10000 }]
-                // },
-                // {
-                //     name: "test5",
-                //     timer: []
-                // },
-                // {
-                //     name: "test6",
-                //     timer: [{ start: Date.now() - 5000 }]
-                // }
-            ]
+            taskList: []
         };
     },
 
@@ -73,7 +48,7 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: this.state.taskList
-        });
+        }, this.saveChanges);
 
         var self = this;
 
@@ -82,8 +57,6 @@ var TaskList = React.createClass({
                 self.forceUpdate();
             }, 1000);
         }
-
-        this.saveChanges();
     },
 
     stop: function (id) {
@@ -92,12 +65,10 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: this.state.taskList
-        });
+        }, this.saveChanges);
 
         clearInterval(this.timer);
         this.timer = null;
-
-        this.saveChanges();
     },
 
     delete: function (id) {
@@ -112,9 +83,7 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: this.state.taskList
-        });
-
-        this.saveChanges();
+        }, this.saveChanges);
     },
 
     nameChanged: function (name, event) {
@@ -131,7 +100,7 @@ var TaskList = React.createClass({
                 id: now
             });
             this.focus = now;
-        }else {
+        } else {
             var task = _.findWhere(taskList, { name: name });
 
             task.name = newName;
@@ -139,15 +108,13 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: taskList
-        });
-
-        this.saveChanges();
+        }, this.saveChanges);
     },
 
     reset: function () {
         this.setState({
             taskList: []
-        });
+        }, this.saveChanges);
     },
 
     render: function () {
