@@ -11,37 +11,74 @@ var Task = React.createClass({
         return this.props.timer[this.props.timer.length - 1].stop === undefined;
     },
 
+    getInitialState: function () {
+        return { addTime: "" };
+    },
+
+    componentDidUpdate: function () {
+        if (this.props.focus !== undefined && this.props.focus) {
+            $(this.refs.input).focus();
+        }
+    },
+
+    componentDidMount: function () {
+        if (this.props.focus !== undefined && this.props.focus) {
+            $(this.refs.input).focus();
+        }
+    },
+
+    addTime: function (time) {
+        if (!isNaN(parseInt(this.state.addTime)))
+            this.props.addTime(parseInt(this.state.addTime));
+
+        this.setState({
+            addTime: ""
+        });
+    },
+
+    addTimeChanged: function (e) {
+        this.setState({
+            addTime: e.target.value
+        });
+    },
+
     render() {
-        var StartStop;
+        var controlButtons;
         if (this.props.name !== undefined && this.props.name.length > 0) {
+            var deleteBtn =
+                <button type="button" className="btn btn-sm pull-right" onClick={this.props.delete}>
+                    <span className="glyphicon glyphicon-trash"></span>
+                </button>;
+
+            var addTime =
+                <div className="addTime">
+                    <input type="text" onChange={this.addTimeChanged} value={this.state.addTime} />
+                    <button type="button" className="btn btn-sm" onClick={this.addTime}>
+                        <span className="glyphicon glyphicon-plus"></span>
+                    </button>
+                </div>;
+
+            var startStop;
             if (this.isStarted())
-                StartStop =
-                    <div>
-                        <button className="btn btn-danger btn-xs" onClick={this.props.stop}>Stop</button>
-                        <button type="button" className="btn btn-sm delete-button" onClick={this.props.delete}>
-                            <span className="glyphicon glyphicon-trash"></span>
-                        </button>
-                    </div>
+                startStop = <button className="btn btn-danger btn-xs" onClick={this.props.stop}>Stop</button>;
             else
-                StartStop =
-                    <div>
-                        <button className="btn btn-success btn-xs" onClick={this.props.start}>Start</button>
-                        <button type="button" className="btn btn-sm delete-button" onClick={this.props.delete}>
-                            <span className="glyphicon glyphicon-trash"></span>
-                        </button>
-                    </div>
+                startStop = <button className="btn btn-success btn-xs" onClick={this.props.start}>Start</button>;
+
+            controlButtons =
+                <div>
+                    {startStop}
+                    {deleteBtn}
+                    {addTime}
+                </div>;
         }
 
-        var input = <input type="text" value={this.props.name} onChange={this.props.nameChanged} />;
-        if (this.props.focus) {
-            input = <input autoFocus type="text" value={this.props.name} onChange={this.props.nameChanged} />;
-        }
+        var nameInput = <input ref="input" type="text" value={this.props.name} onChange={this.props.nameChanged} />;
 
         return (
             <div className="task">
-                {input}
+                {nameInput}
                 <div>Time elapsed: {Util.getElapsedTimeString(this.props.timer) }</div>
-                {StartStop}
+                {controlButtons}
             </div>
         );
     }

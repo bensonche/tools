@@ -37,6 +37,8 @@ var TaskList = React.createClass({
     start: function (id) {
         var task = _.findWhere(this.state.taskList, { id: id });
 
+        this.focus = task.id;
+
         var now = Date.now();
 
         _.each(this.state.taskList, function (v) {
@@ -62,6 +64,8 @@ var TaskList = React.createClass({
     stop: function (id) {
         var task = _.findWhere(this.state.taskList, { id: id });
         task.timer[task.timer.length - 1].stop = Date.now();
+
+        this.focus = task.id;
 
         this.setState({
             taskList: this.state.taskList
@@ -96,7 +100,6 @@ var TaskList = React.createClass({
             taskList.push({
                 name: newName,
                 timer: [],
-                focus: true,
                 id: now
             });
             this.focus = now;
@@ -108,6 +111,15 @@ var TaskList = React.createClass({
 
         this.setState({
             taskList: taskList
+        }, this.saveChanges);
+    },
+
+    addTime: function (id, time) {
+        var task = _.findWhere(this.state.taskList, { id: id });
+        task.timer.splice(0, 0, { start: 0, stop: time * 1000 * 60 });
+
+        this.setState({
+            taskList: this.state.taskList
         }, this.saveChanges);
     },
 
@@ -126,26 +138,26 @@ var TaskList = React.createClass({
             return -v.timer[v.timer.length - 1].start;
         });
 
-        var focusId = this.focus;
-        this.focus = null;
-
         var taskList = sortedTaskList.map(function (v, i) {
             return <Task
                 key={v.id}
                 name={v.name}
                 timer={v.timer}
                 nameChanged={self.nameChanged.bind(null, v.name) }
-                focus={focusId === v.id}
+                focus={self.focus === v.id}
                 start={self.start.bind(null, v.id) }
                 stop={self.stop.bind(null, v.id) }
                 delete={self.delete.bind(null, v.id) }
+                addTime={self.addTime.bind(null, v.id) }
                 />;
         });
+
+        this.focus = null;
 
         return (
             <div className="taskList">
                 <button className="btn btn-danger" onClick={this.reset}>Reset</button>
-                <span>{this.getTotalTime() }</span>
+                <span className="pull-right">{this.getTotalTime() }</span>
                 {taskList}
                 <Task name="" nameChanged={this.nameChanged.bind(null, null) }/>
             </div>

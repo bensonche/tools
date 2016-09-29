@@ -44,10 +44,15 @@ export function timeToString(elapsed, showHours) {
     if (seconds < 10)
         seconds = "0" + seconds;
 
-    if (hours > 0)
+    if (hours > 0) {
         displayString = hours + ":";
-
-    displayString += parseInt(minutes) + ":" + seconds;
+        if (minutes < 10)
+            displayString += "0";
+        displayString += parseInt(minutes) + ":" + seconds;
+    }
+    else {
+        displayString += parseInt(minutes) + ":" + seconds;
+    }
 
     return displayString;
 }
