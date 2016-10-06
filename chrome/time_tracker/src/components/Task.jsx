@@ -46,23 +46,28 @@ var Task = React.createClass({
         var controlButtons;
         if (this.props.name !== undefined && this.props.name.length > 0) {
             var deleteBtn =
-                <button type="button" className="btn btn-sm pull-right" onClick={this.props.delete}>
+                <button type="button" className="btn btn-default pull-right" onClick={this.props.delete}>
                     <span className="glyphicon glyphicon-trash"></span>
                 </button>;
 
             var addTime =
                 <div className="addTime">
-                    <input type="text" onChange={this.addTimeChanged} value={this.state.addTime} />
-                    <button type="button" className="btn btn-sm" onClick={this.addTime}>
-                        <span className="glyphicon glyphicon-plus"></span>
-                    </button>
+                    <div className="input-group input-group-sm">
+                        <input type="text" className="form-control" onChange={this.addTimeChanged} value={this.state.addTime} />
+
+                        <span className="input-group-btn">
+                            <button type="button" className="btn btn-default" onClick={this.addTime}>
+                                +
+                            </button>
+                        </span>
+                    </div>
                 </div>;
 
             var startStop;
             if (this.isStarted())
-                startStop = <button className="btn btn-danger btn-xs" onClick={this.props.stop}>Stop</button>;
+                startStop = <button className="btn btn-danger btn-sm startStop" onClick={this.props.stop}>Stop</button>;
             else
-                startStop = <button className="btn btn-success btn-xs" onClick={this.props.start}>Start</button>;
+                startStop = <button className="btn btn-success btn-sm startStop" onClick={this.props.start}>Start</button>;
 
             controlButtons =
                 <div>

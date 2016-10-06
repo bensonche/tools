@@ -156,8 +156,11 @@ var TaskList = React.createClass({
 
         return (
             <div className="taskList">
-                <button className="btn btn-danger" onClick={this.reset}>Reset</button>
-                <span className="pull-right">{this.getTotalTime() }</span>
+                <div id="infoPanel">
+                    <button className="btn btn-danger" onClick={this.reset}>Reset</button>
+                    <span className="pull-right">{this.getTotalTime() }</span>
+                </div>
+
                 {taskList}
                 <Task name="" nameChanged={this.nameChanged.bind(null, null) }/>
             </div>

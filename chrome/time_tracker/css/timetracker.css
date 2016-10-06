@@ -15,9 +15,15 @@
 {
     display: inline-block;
     padding-left: 1em;
+    width: 5.5em;
 }
-.addTime input
+
+#infoPanel
 {
-    width: 2em;
-    margin-right: .5em;
+    margin-bottom: 1em;
+}
+
+.startStop
+{
+    vertical-align: top;
 }
