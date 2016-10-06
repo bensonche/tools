@@ -1,7 +1,7 @@
 var webpack = require("webpack");
 var path = require("path");
 
-var BUILD_DIR = path.resolve(__dirname, "scripts/");
+var BUILD_DIR = path.resolve(__dirname, "chrome/scripts/");
 var APP_DIR = path.resolve(__dirname, "src/");
 
 var config = {
