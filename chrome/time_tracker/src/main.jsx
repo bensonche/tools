@@ -3,7 +3,7 @@ import {render} from "react-dom"
 
 import TaskList from "./components/TaskList.jsx"
 
-chrome.storage.local.get("taskList", function (result) {
+chrome.storage.sync.get("taskList", function (result) {
     if (result && result.taskList !== undefined && result.taskList !== null)
         render(<TaskList taskList={result.taskList} />, document.getElementById('main'));
     else

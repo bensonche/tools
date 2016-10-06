@@ -25,7 +25,7 @@ var TaskList = React.createClass({
     },
 
     saveChanges: function () {
-        chrome.storage.local.set({
+        chrome.storage.sync.set({
             taskList: this.state.taskList
         });
     },
