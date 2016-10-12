@@ -124,6 +124,15 @@ var TaskList = React.createClass({
     },
 
     reset: function () {
+        _.each(this.state.taskList, function (v) {
+            v.timer = [];
+        });
+        this.setState({
+            taskList: this.state.taskList
+        }, this.saveChanges);
+    },
+
+    clear: function () {
         this.setState({
             taskList: []
         }, this.saveChanges);
@@ -143,26 +152,33 @@ var TaskList = React.createClass({
                 key={v.id}
                 name={v.name}
                 timer={v.timer}
-                nameChanged={self.nameChanged.bind(null, v.name) }
+                nameChanged={self.nameChanged.bind(null, v.name)}
                 focus={self.focus === v.id}
-                start={self.start.bind(null, v.id) }
-                stop={self.stop.bind(null, v.id) }
-                delete={self.delete.bind(null, v.id) }
-                addTime={self.addTime.bind(null, v.id) }
+                start={self.start.bind(null, v.id)}
+                stop={self.stop.bind(null, v.id)}
+                delete={self.delete.bind(null, v.id)}
+                addTime={self.addTime.bind(null, v.id)}
                 />;
         });
+
+        var button = "";
+        if (this.getTotalTime() !== "0:00")
+            button = <button className="btn btn-danger" onClick={this.clear}>Clear</button>;
+        else if (this.state.taskList.length > 0)
+            button = <button className="btn btn-danger" onClick={this.reset}>Reset</button>;
 
         this.focus = null;
 
         return (
             <div className="taskList">
                 <div id="infoPanel">
-                    <button className="btn btn-danger" onClick={this.reset}>Reset</button>
-                    <span className="pull-right">{this.getTotalTime() }</span>
+                    {button}
+                    <span className="pull-right">{this.getTotalTime()}</span>
+                    <div className="clearfix"></div>
                 </div>
 
                 {taskList}
-                <Task name="" nameChanged={this.nameChanged.bind(null, null) }/>
+                <Task name="" nameChanged={this.nameChanged.bind(null, null)} />
             </div>
         );
     }

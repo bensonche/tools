@@ -42,6 +42,15 @@ var Task = React.createClass({
         });
     },
 
+    keypress: function (e) {
+        if (e.key === "Enter") { 
+            if (this.isStarted())
+                this.props.stop();
+            else
+                this.props.start();
+        }
+    },
+
     render() {
         var controlButtons;
         if (this.props.name !== undefined && this.props.name.length > 0) {
@@ -77,12 +86,12 @@ var Task = React.createClass({
                 </div>;
         }
 
-        var nameInput = <input ref="input" type="text" value={this.props.name} onChange={this.props.nameChanged} />;
+        var nameInput = <input ref="input" type="text" value={this.props.name} onChange={this.props.nameChanged} onKeyPress={this.keypress} />;
 
         return (
             <div className="task">
                 {nameInput}
-                <div>Time elapsed: {Util.getElapsedTimeString(this.props.timer) }</div>
+                <div>Time elapsed: {Util.getElapsedTimeString(this.props.timer)}</div>
                 {controlButtons}
             </div>
         );
