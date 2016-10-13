@@ -1,4 +1,5 @@
 declare @newDBName varchar(50) = 'RDI_Development'
+declare @scrubbed bit = 1
 
 declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
 declare @mdf varchar(1000) = @dir + @newDBName + '.mdf'
@@ -35,7 +36,7 @@ move 'resdat_be2000SQL_log' to @ldf
 
 print 'DB Restore Finished'
 
-if @newDBName = 'RDI_Development'
+if @scrubbed = 1
 begin
     print 'Begin scrub'
 

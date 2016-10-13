@@ -18,23 +18,23 @@ select
     REPLACE(REPLACE(a.title, CHAR(13), ' '), CHAR(10), ' ')
 from RDIItem a
     left join (
-        select a.rdiitemid, count(*) sql_ct
+        select a.rdiitemid, count(distinct a.itemfileid) sql_ct
         from ItemFile a
             left join DOC_METADATA c
                 on a.itemfileid = c.itemfileid
             left join lastQA d
                 on a.RDIItemId = d.RDIItemId
-        where DOC_EXTENSION = '.sql'
+        where DOC_EXTENSION like '%sql'
             and (d.date is null or a.ins_date > d.date)
         group by a.rdiitemid ) b
     on a.RDIItemId = b.RDIItemId
 
     left join (
-        select a.rdiitemid, count(*) sql_ct
+        select a.rdiitemid, count(distinct a.itemfileid) sql_ct
         from ItemFile a
             left join DOC_METADATA c
                 on a.itemfileid = c.itemfileid
-        where DOC_EXTENSION = '.sql'
+        where DOC_EXTENSION like '%sql'
         group by a.rdiitemid ) d
     on a.RDIItemId = d.RDIItemId
 
@@ -53,8 +53,8 @@ order by a.RDIItemId
     select
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
-        ,ROW_NUMBER() over (order by a.featurebranch desc) seq
-        ,ROW_NUMBER() over (order by a.featurebranch) reverseSeq
+        ,dense_rank() over (order by a.featurebranch desc) seq
+        ,dense_rank() over (order by a.featurebranch) reverseSeq
     from RDIItem a
     where
         a.CLIENT_ID = 363
@@ -73,12 +73,21 @@ select
 from cte1
 order by reverseSeq
 
----------------------------------------------
-declare @PTLink varchar(500)
+---------------------------------------------------------
 
-set @PTLink = '<a href=''https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=';
+select '/c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe privatedn/RDI.Intranet.csproj /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false /p:DeployOnBuild=true
+'
 
-with lastQA as
+---------------------------------------------------------
+
+declare @dateJs varchar(100) =
+    cast(datepart(yyyy, getdate()) as varchar)
+    + ', ' + cast(datepart(m, getdate()) - 1 as varchar)
+    + ', ' + cast(datepart(d, getdate()) as varchar)
+    + ', ' + cast(datepart(hh, getdate()) as varchar)
+    + ', ' + cast(datepart(mi, getdate()) as varchar)
+
+;with lastQA as
 (
     select rdiitemid, max(ChangeDate) changeDate
     from RDIItemHistory
@@ -87,72 +96,61 @@ with lastQA as
 ),
 result as
 (
-    select url, a.rdiitemid
-    from
+    select 
     (
-        select @PTlink + convert(varchar(10), a.RDIItemId) + '''>' + convert(varchar(10), a.RDIItemId) + isnull(b.url, '') + '</a><br />' url, a.RDIItemId
+        select a.RDIItemId, isnull(b.sqlcount, 0) as SQLCount, c.DeveloperId
         from RDIItem a
             left join (
-                select a.rdiitemid, ' - ' + convert(varchar, count(*)) as url
+                select count(distinct a.itemfileid) sqlcount, a.rdiitemid
                     from ItemFile a
                         left join DOC_METADATA c
                             on a.itemfileid = c.itemfileid
                         left join lastQA d
                             on a.RDIItemId = d.RDIItemId
-                where DOC_EXTENSION = '.sql'
+                where DOC_EXTENSION like '%sql'
                     and (d.changeDate is null or a.ins_date > d.changeDate)
                 group by a.rdiitemid 
                 having count(*) > 0
             ) b
                 on a.RDIItemId = b.RDIItemId
+        cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) c
         where
             CLIENT_ID = 363
             and PROJECT_NO = 9
             and StatusId = 48
             and AssignedTo = 10000
-    ) a
-
-    union all
-
-    select '<br /><br /><br /><br /><br />', 9988888
-
-    union all
-
-    select @PTLink + convert(varchar, a.RDIItemId) + '&bcempid=' + convert(varchar, b.developerid) + '''>' + convert(varchar(10), a.RDIItemId) + '</a><br />', 9999997
-    from rdiitem a
-    cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) b
-    where AssignedTo = 10000
-    and StatusId = 48
-    and client_id = 363
-    and PROJECT_NO = 9
-
-    union all
-
-    select '<br /><br /><br /><br /><br />', 9999998
-
-    union all
-
-    select '<a href="https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx">https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx">https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx">https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary">https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx">https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/Deposit.aspx">https://www.resdat.com/privatedn/Invoicing/Deposit.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx">https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx">https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx">https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4">https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx">https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320">https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Timesheet">https://www.resdat.com/privatedn/Timesheet</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/default.aspx">https://www.resdat.com/privatedn/ProjectTrack/default.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348">https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx">https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx">https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx</a>', 9999999
-    union all select '<br/><a href="https://www.resdat.com/privatedn/invoicing/invoicelist.aspx">https://www.resdat.com/privatedn/invoicing/invoicelist.aspx</a>', 9999999
-    union all select '<br/><a href="http://www.resdat.com/careers/apply">http://www.resdat.com/careers/apply</a>', 9999999
+        for xml path('Item'), root('PTItems')
+    ) PTItems,
+    (
+        select *
+        from
+        (
+            select 'https://www.resdat.com/privatedn/AccountsPayable/AccountsPayableHome.aspx' Page
+            union all select 'https://www.resdat.com/privatedn/BranchReports/BranchReport_Main.aspx'
+            union all select 'https://www.resdat.com/privatedn/Clients/ClientInfoSystem/ClientManagement.aspx'
+            union all select 'https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=detail'
+            union all select 'https://www.resdat.com/privatedn/Projects/Reports/ProjectCostReport.aspx?reporttype=summary'
+            union all select 'https://www.resdat.com/privatedn/Invoicing/DepositHome.aspx'
+            union all select 'https://www.resdat.com/privatedn/Invoicing/Deposit.aspx'
+            union all select 'https://www.resdat.com/privatedn/Payroll/Run_Payroll.aspx'
+            union all select 'https://www.resdat.com/privatedn/Employees/Phone/PhoneList.aspx'
+            union all select 'https://www.resdat.com/privatedn/ClientProjectPortal/Default.aspx'
+            union all select 'https://www.resdat.com/privatedn/ClientProjectPortal/ProjectMain.aspx?ClientID=117&ProjectNo=4'
+            union all select 'https://www.resdat.com/privatedn/Invoicing/DepositSearch.aspx'
+            union all select 'https://www.resdat.com/privatedn/Employees/SheetUpdate/EmployeeSheet.aspx?EmpId=320'
+            union all select 'https://www.resdat.com/privatedn/Timesheet'
+            union all select 'https://www.resdat.com/privatedn/ProjectTrack/default.aspx'
+            union all select 'https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348'
+            union all select 'https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx'
+            union all select 'https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx'
+            union all select 'https://www.resdat.com/privatedn/invoicing/invoicelist.aspx'
+            union all select 'http://www.resdat.com/careers/apply'
+        ) pages
+        for xml path(''), root('QAPages')
+    ) QAPages
 )
-select url
+select
+    'var PTItems = "' + PTItems + '";'
+    + 'var QAPages = "' + QAPages + '";'
+    + 'var current = new Date(' +  @dateJs + ');'
 from result
-order by rdiitemid

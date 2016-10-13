@@ -5,14 +5,14 @@
  set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
  set @dtFrom = dateadd(d, -13, @dtto)
 
- select @dtfrom, @dtto, '\\192.168.20.50\data\Projects\363 Intranet\Managment Meeting Reports'
+ select cast(@dtfrom as date), cast(@dtto as date), '\\resdat.com\files\Fairbanks\Projects\363 Intranet\Managment Meeting Reports'
 
 declare @dtFromMonthStart datetime = dateadd(m, -6, @dtTo)
 set @dtFromMonthStart = DATEADD(d, -(datepart(d, @dtFromMonthStart) - 1), @dtFromMonthStart)
 
 -- 1
 -- items assigned not including QA or Owners (unless the owner is Julie and it is in a working status)
-select count(*) as Assigned
+select cast(count(*) as varchar) as Assigned
 from rdiitem 
 where client_id = 363 and project_no = 9 
 	and statusid not in (2, 8, 10, 60)  -- Closed, Quality Assurance, Deleted, Delivered
@@ -23,7 +23,7 @@ where client_id = 363 and project_no = 9
 union all
 -- 2
 -- unassigned items
-select count(*) as Unassigned
+select cast(count(*) as varchar) as Unassigned
 from rdiitem 
 where client_id = 363 and project_no = 9 
 	and statusid in (1, 5)
@@ -32,7 +32,7 @@ where client_id = 363 and project_no = 9
 union all
 -- 3
 -- Intranet hours
-select SUM(amount) as IntranetHours
+select cast(cast(SUM(amount) as decimal(18, 2)) as varchar) as IntranetHours
 from time_sht
 where
 	CLIENT_ID = 363
@@ -42,7 +42,7 @@ where
 union all
 -- 4
 -- Staff count >= 4 hours
-select COUNT(*) as StaffCount
+select cast(COUNT(*) as varchar) as StaffCount
 from
 	(
 		select empid
@@ -59,7 +59,7 @@ from
 union all
 -- 5
 -- items assigned to owners (if the owner is Julie, new and open status only)
-select count(*) as Owners
+select cast(count(*) as varchar) as Owners
 from rdiitem 
 where client_id = 363 and project_no = 9 
 	and statusid not in (2, 8, 10, 60)
@@ -70,7 +70,7 @@ where client_id = 363 and project_no = 9
 union all
 -- 6
 -- people who created intranet tickets last 2 weeks
-select  count(*) as TicketsCreated
+select  cast(count(*) as varchar) as TicketsCreated
 from rdiitem i
 where i.ins_date between @dtFrom and @dtTo
 	and i.client_id = 363
@@ -78,7 +78,7 @@ where i.ins_date between @dtFrom and @dtTo
 	and i.itemtypeid in (1, 2, 3, 4, 5)
 
 union all
-select COUNT(*) as NewEmployees
+select cast(COUNT(*) as varchar) as NewEmployees
 from
 	(
 	select au.fullname2
