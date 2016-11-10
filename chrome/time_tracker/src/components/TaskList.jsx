@@ -162,7 +162,7 @@ var TaskList = React.createClass({
         });
 
         var button = "";
-        if (this.getTotalTime() !== "0:00")
+        if (this.getTotalTime() === "0:00")
             button = <button className="btn btn-danger" onClick={this.clear}>Clear</button>;
         else if (this.state.taskList.length > 0)
             button = <button className="btn btn-danger" onClick={this.reset}>Reset</button>;
