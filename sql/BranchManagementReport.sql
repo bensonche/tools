@@ -143,13 +143,32 @@ from total_cte a
 select
     au.fullname2,
     cast(sum(t.amount) as numeric(18,2)) as HrsLast2Wks,
-    ho.home_office + case when t.empid in (320, 198, 77) then ' (IG)' else '' end
+    ho.home_office + case when t.empid in (320, 198, 77) then ' (IG)' else '' end,
+	case when devs.empid is not null then null else 'non dev' end
 from time_sht t 
-	inner join allusers au on t.empid = au.empid
-	left join vw_all_active_employee_info ho on t.empid = ho.empid
+	inner join allusers au
+		on t.empid = au.empid
+	left join vw_all_active_employee_info ho
+		on t.empid = ho.empid
+	left join
+	(
+		select a.empid as empid
+		from time_sht a
+		inner join AllUsers b
+			on a.EMPID = b.USERID
+		where
+			a.CLIENT_ID = 363
+			and PROJECT_NO = 9
+			and wk_date between dateadd(dd, -14, @dtTo) and @dtTo
+			and RDIItemId is not null
+			and JOB_CODE in (332,340,345,430,435,305,310,311,1332,1340,1345,1430,1435,1305,1310,1311)
+		group by a.empid
+		having sum(a.amount) >= 4
+	) devs
+		on t.empid = devs.empid
 where t.client_id = 363 and t.project_no = 9
 	and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
-group by au.fullname2, ho.home_office, t.empid
+group by au.fullname2, ho.home_office, t.empid, devs.empid
 having sum(t.amount) >= 4
 order by sum(t.amount) desc
 
