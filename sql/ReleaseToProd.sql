@@ -50,7 +50,7 @@ order by a.RDIItemId
 
 ;with cte as
 (
-    select
+    select distinct
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
         ,dense_rank() over (order by a.featurebranch desc) seq
@@ -72,11 +72,6 @@ select
     mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix
 from cte1
 order by reverseSeq
-
----------------------------------------------------------
-
-select '/c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe privatedn/RDI.Intranet.csproj /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false /p:DeployOnBuild=true
-'
 
 ---------------------------------------------------------
 
@@ -152,5 +147,6 @@ result as
 select
     'var PTItems = "' + PTItems + '";'
     + 'var QAPages = "' + QAPages + '";'
-    + 'var current = new Date(' +  @dateJs + ');'
+    + 'var current = new Date(' +  @dateJs + ');' as JS,
+	'/c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe privatedn/RDI.Intranet.csproj /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd
 from result
