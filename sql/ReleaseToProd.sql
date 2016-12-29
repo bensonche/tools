@@ -148,5 +148,5 @@ select
     'var PTItems = "' + PTItems + '";'
     + 'var QAPages = "' + QAPages + '";'
     + 'var current = new Date(' +  @dateJs + ');' as JS,
-	'/c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe privatedn/RDI.Intranet.csproj /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd
+	'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe privatedn/RDI.Intranet.csproj /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd
 from result
