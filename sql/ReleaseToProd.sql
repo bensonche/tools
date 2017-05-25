@@ -12,7 +12,7 @@ select
     FeatureBranch,
     case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
     case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
-    case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as ChangedDescriptionCheck,
+    case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as CDC,
     e.DeveloperName,
     e.developerid,
     REPLACE(REPLACE(a.title, CHAR(13), ' '), CHAR(10), ' ')
@@ -148,5 +148,6 @@ select
     'var PTItems = "' + PTItems + '";'
     + 'var QAPages = "' + QAPages + '";'
     + 'var current = new Date(' +  @dateJs + ');' as JS,
-	'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd
+	'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd,
+	'git grx && /c/NuGet.exe restore RDIPublicSite.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe RDIPublicSite.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as publicBuildCmd
 from result

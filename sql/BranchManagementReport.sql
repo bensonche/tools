@@ -179,7 +179,6 @@ select
 	Anchorage,
 	Boise,
 	Corporate,
-	Fairbanks,
 	Houston,
 	Juneau,
 	Minneapolis,
@@ -190,7 +189,7 @@ from
 		a.LOCATION as Location,
 		a.date,
 		case
-			when totalhours = 0
+			when isnull(totalhours, 0) = 0
 				then 0
 			else
 				convert(numeric(18, 4), isnull(IntranetHours, 0) / TotalHours * 100)
