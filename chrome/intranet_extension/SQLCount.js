@@ -10,9 +10,9 @@ var SQLCount = React.createClass({
     },
 
     _getSQLCount: function _getSQLCount() {
-        var table = $("[id$=tpFiles_FileList]");
-        var extHeader = table.find(".RDIGridHeader td:contains(Extension)");
-        var updHeader = table.find(".RDIGridHeader td:contains(Updated)");
+        var table = $("[id$=gvDocList]");
+        var extHeader = table.find(".RDIGridHeader th:contains(Ext)");
+        var updHeader = table.find(".RDIGridHeader th:contains(Updated)");
 
         var colExtIndex = extHeader.parent().children().index(extHeader);
         var colUpdIndex = updHeader.parent().children().index(updHeader);
@@ -21,7 +21,8 @@ var SQLCount = React.createClass({
         $.each(table.find("tr"), function (index, value) {
             if (index == 0) return true;
 
-            if ($(value).find("td").eq(colExtIndex).text().trim() == ".sql") {
+            var extension = $(value).find("td").eq(colExtIndex).text().trim();
+            if (extension == ".sql" || extension == "sql") {
                 var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
                 if (!isNaN(Date.parse(dateString))) {
                     var updatedDate = new Date(dateString);

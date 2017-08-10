@@ -24,7 +24,7 @@
 
     function buildPullRequestLink() {
         function getPRId(url) {
-            return parseInt(url.match(/\d+$/));
+            return parseInt(url.match.match(/\d+$/));
         }
 
         if ($("#github-PR").length > 0)
@@ -37,7 +37,21 @@
             var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
 
             if (matches) {
-                allMatches = allMatches.concat(matches);
+                var obj = {
+                    match: matches,
+                    source: "Intranet"
+                };
+                allMatches = allMatches.concat(obj);
+            }
+
+            matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/RDIPublicSite\/pull\/\d+/i);
+
+            if (matches) {
+                var obj = {
+                    match: matches,
+                    source: "RDIPublicSite"
+                };
+                allMatches = allMatches.concat(obj);
             }
         });
 
@@ -50,15 +64,17 @@
         var $link;
         var validLink = false;
         var prId;
+        var source;
 
         if (allMatches.length === 0)
             $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
         else {
             prId = getPRId(allMatches[0]);
+            source = allMatches[0].source;
             var prCount = "";
             if (allMatches.length > 1)
                 prCount = "(" + allMatches.length + ")";
-            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
+            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches.match[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
             validLink = true;
         }
 
@@ -67,7 +83,7 @@
         if (validLink) {
             if (oauth !== null && oauth.length > 0) {
                 $.ajax({
-                    url: "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/" + prId + "?access_token=" + oauth
+                    url: "https://api.github.com/repos/ResourceDataInc/" + source + "/pulls/" + prId + "?access_token=" + oauth
                 }).done(function (d) {
                     if (d && d.head && d.head.ref) {
                         var branchname = d.head.ref;

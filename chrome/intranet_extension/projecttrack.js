@@ -6,127 +6,6 @@
     var selfID = null;
     var oauth = null;
 
-    var CompareLink = React.createClass({
-        displayName: "CompareLink",
-
-        getInitialState: function getInitialState() {
-            return {
-                branchName: $("[id$=txtBranch]").val()
-            };
-        },
-
-        componentDidMount: function componentDidMount() {
-            var context = this;
-            $("[id$=txtBranch]").on("input", function () {
-                context.setState({
-                    branchName: $(this).val()
-                });
-            });
-            context.setState({
-                branchName: $("[id$=txtBranch]").val()
-            });
-        },
-
-        render: function render() {
-            var context = this;
-            function getUrl(repo) {
-                return "https://github.com/ResourceDataInc/" + repo + "/compare/" + context.state.branchName;
-            }
-
-            if (this.state.branchName.trim() === "") return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                    "span",
-                    null,
-                    "No git branch"
-                )
-            );
-
-            return React.createElement(
-                "div",
-                null,
-                React.createElement(
-                    "a",
-                    { className: "RDIHyperLink", href: getUrl("Intranet"), target: "_blank" },
-                    "Compare"
-                ),
-                React.createElement(
-                    "a",
-                    { className: "RDIHyperLink", href: getUrl("RDIPublicSite"), target: "_blank" },
-                    "[p]"
-                )
-            );
-        }
-    });
-
-    var SQLCount = React.createClass({
-        displayName: "SQLCount",
-
-        getInitialState: function getInitialState() {
-            return {
-                count: this._getSQLCount()
-            };
-        },
-
-        _getSQLCount: function _getSQLCount() {
-            var table = $("[id$=gvDocList]");
-            var extHeader = table.find(".RDIGridHeader th:contains(Ext)");
-            var updHeader = table.find(".RDIGridHeader th:contains(Updated)");
-
-            var colExtIndex = extHeader.parent().children().index(extHeader);
-            var colUpdIndex = updHeader.parent().children().index(updHeader);
-
-            var sqlCount = 0;
-            $.each(table.find("tr"), function (index, value) {
-                if (index == 0) return true;
-                
-                var extension = $(value).find("td").eq(colExtIndex).text().trim();
-                if (extension == ".sql" || extension == "sql") {
-                    var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
-                    if (!isNaN(Date.parse(dateString))) {
-                        var updatedDate = new Date(dateString);
-
-                        if (updatedDate > getLatestQA()) sqlCount++;
-                    }
-                }
-            });
-
-            return sqlCount;
-        },
-
-        render: function render() {
-            var count = this.state.count;
-
-            if (count == 0) return React.createElement(
-                "span",
-                { "class": "RDIText" },
-                "No SQL"
-            );
-            if (count == 1) return React.createElement(
-                "span",
-                { "class": "RDIText" },
-                React.createElement(
-                    "b",
-                    null,
-                    count
-                ),
-                " SQL file"
-            );
-
-            return React.createElement(
-                "span",
-                { "class": "RDIText" },
-                React.createElement(
-                    "b",
-                    null,
-                    count
-                ),
-                " SQL files"
-            );
-        }
-    });
-
     var PRLink = React.createClass({
         displayName: "PRLink",
 
@@ -155,7 +34,7 @@
 
     function buildPullRequestLink() {
         function getPRId(url) {
-            return parseInt(url.match(/\d+$/));
+            return parseInt(url.match.match(/\d+$/));
         }
 
         if ($("#github-PR").length > 0) return;
@@ -167,7 +46,21 @@
             var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
 
             if (matches) {
-                allMatches = allMatches.concat(matches);
+                var obj = {
+                    match: matches,
+                    source: "Intranet"
+                };
+                allMatches = allMatches.concat(obj);
+            }
+
+            matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/RDIPublicSite\/pull\/\d+/i);
+
+            if (matches) {
+                var obj = {
+                    match: matches,
+                    source: "RDIPublicSite"
+                };
+                allMatches = allMatches.concat(obj);
             }
         });
 
@@ -180,12 +73,14 @@
         var $link;
         var validLink = false;
         var prId;
+        var source;
 
         if (allMatches.length === 0) $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");else {
             prId = getPRId(allMatches[0]);
+            source = allMatches[0].source;
             var prCount = "";
             if (allMatches.length > 1) prCount = "(" + allMatches.length + ")";
-            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
+            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches.match[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
             validLink = true;
         }
 
@@ -194,7 +89,7 @@
         if (validLink) {
             if (oauth !== null && oauth.length > 0) {
                 $.ajax({
-                    url: "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/" + prId + "?access_token=" + oauth
+                    url: "https://api.github.com/repos/ResourceDataInc/" + source + "/pulls/" + prId + "?access_token=" + oauth
                 }).done(function (d) {
                     if (d && d.head && d.head.ref) {
                         var branchname = d.head.ref;
