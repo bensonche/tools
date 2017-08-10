@@ -19,8 +19,6 @@
                 "*://*/privatedn/projecttrack/IssueGrid.aspx*"
             ],
             "js": [
-                "lib/react-15.1.0.min.js",
-                "lib/react-dom-15.1.0.min.js",
                 "lib/jquery-3.0.0.min.js",
                 "lib/underscore-1.8.3.min.js",
                 "lib/purl.js",
