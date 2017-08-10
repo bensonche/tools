@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Intranet Extension",
     "description": "Improvements for ProjectTrack",
-    "version": "5.6",
+    "version": "5.7",
     "options_page": "options.html",
     "permissions": [
         "storage"
@@ -24,8 +24,6 @@
                 "lib/jquery-3.0.0.min.js",
                 "lib/underscore-1.8.3.min.js",
                 "lib/purl.js",
-                "CompareLink.js",
-                "SQLCount.js",
                 "projecttrack.js"
             ],
             "css": [

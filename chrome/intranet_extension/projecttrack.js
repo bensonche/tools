@@ -1,43 +1,16 @@
-"use strict";
-
 (function () {
     var ran = false;
 
     var selfID = null;
     var oauth = null;
 
-    var PRLink = React.createClass({
-        displayName: "PRLink",
-
-        render: function render() {
-            return React.createElement(
-                "div",
-                null,
-                "PR"
-            );
-        }
-    });
-
-    var PTInfoMain = React.createClass({
-        displayName: "PTInfoMain",
-
-        render: function render() {
-            return React.createElement(
-                "div",
-                null,
-                React.createElement(CompareLink, null),
-                React.createElement(SQLCount, null),
-                React.createElement(PRLink, null)
-            );
-        }
-    });
-
     function buildPullRequestLink() {
         function getPRId(url) {
-            return parseInt(url.match.match(/\d+$/));
+            return parseInt(url.match(/\d+$/));
         }
 
-        if ($("#github-PR").length > 0) return;
+        if ($("#github-PR").length > 0)
+            return;
 
         var allMatches = [];
         $.each($(".RDIHistorySection p"), function (i, v) {
@@ -46,21 +19,7 @@
             var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
 
             if (matches) {
-                var obj = {
-                    match: matches,
-                    source: "Intranet"
-                };
-                allMatches = allMatches.concat(obj);
-            }
-
-            matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/RDIPublicSite\/pull\/\d+/i);
-
-            if (matches) {
-                var obj = {
-                    match: matches,
-                    source: "RDIPublicSite"
-                };
-                allMatches = allMatches.concat(obj);
+                allMatches = allMatches.concat(matches);
             }
         });
 
@@ -73,14 +32,15 @@
         var $link;
         var validLink = false;
         var prId;
-        var source;
 
-        if (allMatches.length === 0) $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");else {
+        if (allMatches.length === 0)
+            $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
+        else {
             prId = getPRId(allMatches[0]);
-            source = allMatches[0].source;
             var prCount = "";
-            if (allMatches.length > 1) prCount = "(" + allMatches.length + ")";
-            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches.match[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
+            if (allMatches.length > 1)
+                prCount = "(" + allMatches.length + ")";
+            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
             validLink = true;
         }
 
@@ -89,16 +49,20 @@
         if (validLink) {
             if (oauth !== null && oauth.length > 0) {
                 $.ajax({
-                    url: "https://api.github.com/repos/ResourceDataInc/" + source + "/pulls/" + prId + "?access_token=" + oauth
+                    url: "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/" + prId + "?access_token=" + oauth
                 }).done(function (d) {
                     if (d && d.head && d.head.ref) {
                         var branchname = d.head.ref;
-                        if ($("[id$=txtBranch]").val() === branchname) $("#github-PR .circle").removeClass("circle-orange").addClass("circle-green");else $("#github-PR .circle").removeClass("circle-orange").addClass("circle-red");
+                        if ($("[id$=txtBranch]").val() === branchname)
+                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-green");
+                        else
+                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-red");
                     }
                 }).fail(function (d) {
                     $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Bad OAth token</a>");
                 });
-            } else {
+            }
+            else {
                 $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Missing OAth token</a>");
             }
         }
@@ -192,7 +156,7 @@
 
     $.fn.findSelf = function () {
         return $(this[0]).find("option[value=" + selfID + "]");
-    };
+    }
 
     function buildQAButton() {
         if (isRTP()) {
@@ -216,9 +180,61 @@
                     $("input[id$=Submit]").click();
                 }
             });
+
+
         } else {
             $("input#QAButton").remove();
         }
+    }
+
+    var buildingSQL = false;
+    function buildSQLCount() {
+        if (buildingSQL)
+            return;
+
+        buildingSQL = true;
+
+        if ($("span#SQLCount").length > 0) {
+            return;
+        }
+
+        var table = $("[id$=gvDocList]");
+        var extHeader = table.find(".RDIGridHeader th:contains(Ext)");
+        var updHeader = table.find(".RDIGridHeader th:contains(Updated)");
+
+        var colExtIndex = extHeader.parent().children().index(extHeader);
+        var colUpdIndex = updHeader.parent().children().index(updHeader);
+
+        var sqlCount = 0;
+        $.each(table.find("tr"), function (index, value) {
+            if (index == 0)
+                return true;
+            var extension = $(value).find("td").eq(colExtIndex).text().trim();
+            if (extension == ".sql" || extension == "sql") {
+                var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
+                if (!isNaN(Date.parse(dateString))) {
+                    var updatedDate = new Date(dateString);
+
+                    if (updatedDate > getLatestQA())
+                        sqlCount++;
+                }
+            }
+        });
+
+        var txtBranch = $("[id$=txtBranch]");
+
+        if (txtBranch.length == 0) {
+            return;
+        }
+
+        if (sqlCount == 0)
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL</span>");
+        else if (sqlCount == 1)
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file</span>");
+        else
+            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files</span>");
+
+        buildingSQL = false;
     }
 
     function isRTP() {
@@ -226,6 +242,41 @@
             return $("[id$=ddlStatus]").val() == '48';
         }
         return false;
+    }
+
+    function buildCompareButton() {
+        if ($("a.githubCompare").length > 0) {
+            return;
+        }
+        var txtBranch = $("[id$=txtBranch]");
+
+        if (txtBranch.length == 0) {
+            return;
+        }
+
+        var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
+        var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'> [p]</a>");
+
+        txtBranch.after(compare);
+        compare.after(comparePublic);
+
+        updateLink();
+
+        txtBranch.keyup(function () {
+            updateLink();
+        });
+
+        function getURL(branch, repo) {
+            var github = "https://github.com/ResourceDataInc/" + repo + "/compare/";
+            return github + branch;
+        }
+
+        function updateLink() {
+            $("a.githubCompare").each(function (i, v) {
+                var repo = $(v).data("repo");
+                $(v).prop("href", getURL(txtBranch.val(), repo));
+            });
+        }
     }
 
     function readURL() {
@@ -260,15 +311,6 @@
         }, 5000);
     }
 
-    function buildPTInfo() {
-        if ($("#PTInfo").length > 0) return;
-
-        var txtBranch = $("[id$=txtBranch]");
-        txtBranch.after("<div id='PTInfo'></div>");
-
-        ReactDOM.render(React.createElement(PTInfoMain, null), document.getElementById("PTInfo"));
-    }
-
     function init() {
         var dfd = $.Deferred();
 
@@ -286,15 +328,17 @@
         }
 
         dfd.done(function () {
-            buildPTInfo();
-
+            buildSQLCount();
+            buildCompareButton();
             buildQAButton();
+            buildPullRequestLink();
             subscribeSelfCheckbox();
             reassignPTs();
         });
     }
 
+
     document.addEventListener("DOMSubtreeModified", function () {
         init();
     });
-})();
+})()
