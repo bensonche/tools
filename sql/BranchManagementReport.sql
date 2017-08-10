@@ -285,4 +285,4 @@ from
 			group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
 		) b
 		on a.LOCATION = b.location and a.date = b.date
-order by percentage desc
+order by percentage desc, Location
