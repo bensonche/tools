@@ -13,12 +13,16 @@ set @dtFromMonthStart = DATEADD(d, -(datepart(d, @dtFromMonthStart) - 1), @dtFro
 -- 1
 -- items assigned not including QA or Owners (unless the owner is Julie and it is in a working status)
 select cast(count(*) as varchar) as Assigned
-from rdiitem 
-where client_id = 363 and project_no = 9 
-	and statusid not in (2, 8, 10, 60)  -- Closed, Quality Assurance, Deleted, Delivered
-	and AssignedTo not in (select empid from tagowner where empid <> 77)  -- no owners except Julie
-	and not (assignedto = 77 and statusid in (1, 5)) -- only count Julie's if they aren't New or Open
+from rdiitem ri
+	inner join itemstatus ist
+		on ri.statusid = ist.itemstatusid
+	inner join allusers au
+		on ri.assignedto = au.userid
+where ri.client_id = 363 and ri.project_no = 9 
+	and statusid not in (2, 3, 8, 10, 60, 61)  -- Closed, Quality Assurance, Deleted, Delivered
 	and assignedto <> 10000 -- don't include Intranet Group
+	and ist.ApplicationId = 3 -- only look at PT (ignore Pivotal Tracker)
+	and assignedto not in (select distinct empid from tagowner)
 
 union all
 -- 2
@@ -137,6 +141,7 @@ select a.date, b.IntranetHours, a.TotalHours
 from total_cte a
 	left join Intranet_cte b
 		on a.date = b.date
+order by a.date
 
 -- 9
 -- people who billed time to the intranet last two weeks
