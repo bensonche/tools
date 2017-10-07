@@ -100,7 +100,7 @@ function create_db_script ()
 		local left=$hash
 		local right=head
 
-		local diff=$(git diff --name-status $left..head Database/)
+		local diff=$(git diff -M100% --name-status $left..head Database/)
 		local diffCount=$(echo -n "$diff" | wc -l)
 
 		if [ $diffCount -gt "0" ]
@@ -122,7 +122,7 @@ function create_db_script ()
 
 	if [ -z $ALL ]
 	then
-		local filelist=$(git diff --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep) 
+		local filelist=$(git diff -M100% --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep) 
 	else
 		local filelist=$(du -a Database/ | cut -f2 | sed '/sql$/!d')
 	fi
