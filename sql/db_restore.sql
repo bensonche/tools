@@ -10,7 +10,7 @@ declare @datestring varchar(20) = convert(varchar, datepart(yy, @yesterday)) + '
 set @datestring = @datestring + convert(varchar, datepart(m, @yesterday)) + '.'
 set @datestring = @datestring + convert(varchar, datepart(d, @yesterday))
 
-declare @bak varchar(max) = '\\anc-files\sqlbackups\RDI_Production.SqlServer3.' + @datestring + '.bak'
+declare @bak varchar(max) = '\\anc-backupnas02\sqlbackups\RDI_Production.SqlServer3.' + @datestring + '.bak'
 
 --RESTORE FILELISTONLY
 --FROM DISK = @bak
