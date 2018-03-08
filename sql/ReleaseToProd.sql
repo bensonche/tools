@@ -147,7 +147,7 @@ result as
 select
     'var PTItems = "' + PTItems + '";'
     + 'var QAPages = "' + QAPages + '";'
-    + 'var current = new Date(' +  @dateJs + ');' as JS,
-	'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd,
-	'git grx && /c/NuGet.exe restore RDIPublicSite.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe RDIPublicSite.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as publicBuildCmd
+    + 'var current = new Date(' +  @dateJs + ');' as JS
+	--'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd,
+	--'git grx && /c/NuGet.exe restore RDIPublicSite.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe RDIPublicSite.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as publicBuildCmd
 from result

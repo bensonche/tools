@@ -3,8 +3,6 @@ set nocount on
 begin try
 	begin tran
 
-	declare @join1 varchar(500)
-	declare @join2 varchar(500)
 	declare @startdate datetime
 	declare @enddate datetime
 
@@ -12,9 +10,11 @@ begin try
 
     declare @link1 varchar(max) = 'https://resdat.zoom.us/j/2173845937'
     declare @link2 varchar(max) = 'https://resdat.zoom.us/j/2173845937'
+    declare @link3 varchar(max) = 'https://zoom.us/j/818722140'
 	
-	set @join1 = 'Intranet Hangout on Zoom ' + @link1 + ' at '
-	set @join2 = 'Intranet Hangout on Zoom ' + @link2 + ' at '
+	declare @join1 varchar(max) = 'Intranet Hangout on Zoom ' + @link1 + ' at '
+	declare @join2 varchar(max) = 'Intranet Hangout on Zoom ' + @link2 + ' at '
+	declare @join3 varchar(max) = 'Intranet Orientation on Zoom ' + @link3 + ' at '
 
 	declare @title varchar(1000)
 	declare @id int
@@ -55,7 +55,26 @@ begin try
 	exec Notification_Insert @title, @link2, @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 5
 	exec Notification_LocationInsert @id, 7
-	
+	---------------------------------------------------------
+	-- Orientation
+	set @startdate = DATEADD(d, 4, @startdate)
+	set @enddate = @startdate
+	set @title =  @join3 + '9AM AT'
+	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
+	exec Notification_LocationInsert @id, 0
+	exec Notification_LocationInsert @id, 1
+	exec Notification_LocationInsert @id, 2
+	exec Notification_LocationInsert @id, 4
+	set @title =  @join3 + '10AM PT'
+	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
+	exec Notification_LocationInsert @id, 6
+	set @title =  @join3 + '11AM MT'
+	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
+	exec Notification_LocationInsert @id, 3
+	set @title =  @join3 + '12PM CT'
+	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
+	exec Notification_LocationInsert @id, 5
+	exec Notification_LocationInsert @id, 7
 	commit
 end try
 begin catch
