@@ -1,14 +1,17 @@
- use rdi_production
- 
- declare @dtFrom datetime ,@dtTo datetime
+use rdi_production
 
- set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
- set @dtFrom = dateadd(d, -13, @dtto)
+declare @dtFrom datetime ,@dtTo datetime
 
- select cast(@dtfrom as date), cast(@dtto as date), '\\resdat.com\files\Fairbanks\Projects\363 Intranet\Managment Meeting Reports'
+set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
+set @dtFrom = dateadd(d, -13, @dtto)
 
-declare @dtFromMonthStart datetime = dateadd(m, -6, @dtTo)
-set @dtFromMonthStart = DATEADD(d, -(datepart(d, @dtFromMonthStart) - 1), @dtFromMonthStart)
+select cast(@dtfrom as date), cast(@dtto as date), '\\resdat.com\files\Fairbanks\Projects\363 Intranet\Managment Meeting Reports'
+
+declare @dtFromMonthStart datetime = dateadd(m, -18, @dtTo)
+set @dtFromMonthStart = DATEADD(wk, DATEDIFF(wk, 0, @dtFromMonthStart), -1) -- Get sunday
+
+declare @dtFromMonthStart2 datetime = dateadd(m, -12, @dtTo)
+set @dtFromMonthStart2 = DATEADD(wk, DATEDIFF(wk, 0, @dtFromMonthStart2), -1) -- Get sunday
 
 -- 1
 -- items assigned not including QA or Owners (unless the owner is Julie and it is in a working status)
@@ -116,26 +119,22 @@ order by au.fullname2
 ;with Intranet_cte as
 (
 	select
-		cast(datepart(yy, t.wk_date) as varchar(4))
-			+ '-'
-			+ right('0' + cast(datepart(mm, t.wk_date) as varchar(2)), 2) as date, 
+		cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date) as date, -- Get sunday of the week
 		sum(t.amount) as IntranetHours
 	from time_sht t
 	where t.client_id = 363 and t.project_no = 9
 		and WK_DATE between @dtFromMonthStart and @dtTo
-	group by datepart(yy, t.wk_date), datepart(mm, t.wk_date)
+	group by cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date)
 ),
 Total_cte as
 (
 	select
-		cast(datepart(yy, t.wk_date) as varchar(4))
-			+ '-'
-			+ right('0' + cast(datepart(mm, t.wk_date) as varchar(2)), 2) as date, 
+		cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date) as date,
 		sum(t.amount) as TotalHours
 	from time_sht t
 	where EMPID < 1000
 		and WK_DATE between @dtFromMonthStart and @dtTo
-	group by datepart(yy, t.wk_date), datepart(mm, t.wk_date)
+	group by cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date)
 )
 select a.date, b.IntranetHours, a.TotalHours
 from total_cte a
@@ -177,10 +176,8 @@ group by au.fullname2, ho.home_office, t.empid, devs.empid
 having sum(t.amount) >= 4
 order by sum(t.amount) desc
 
--- declare @dtTo datetime = getdate()
-
 select
-	date as [Yr-Mo],
+	cast(date as date) as [Yr-Mo],
 	Anchorage,
 	Boise,
 	Corporate,
@@ -202,32 +199,28 @@ from
 		(
 			select
 				LOCATION,
-				cast(datepart(yy, wk_date) as varchar(4))
-					+ '-'
-					+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
+				dateadd(dd, -(datediff(dd, a.wk_date, @dtTo) / 14) * 14 - 13, @dtTo) as date,
 				SUM(a.amount) TotalHours
 			from time_sht a
 				inner join RDI_Employee b
 					on a.EMPID = b.empid
-			where WK_DATE between @dtFromMonthStart and @dtTo
-			group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+			where WK_DATE between @dtFromMonthStart2 and @dtTo
+			group by b.LOCATION, datediff(dd, a.wk_date, @dtTo) / 14
 		) a
 		left join
 			(
 				select
 					LOCATION,
-					cast(datepart(yy, wk_date) as varchar(4))
-						+ '-'
-						+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
+					dateadd(dd, -(datediff(dd, a.wk_date, @dtTo) / 14) * 14 - 13, @dtTo) as date,
 					SUM(a.amount) IntranetHours
 				from time_sht a
 					inner join RDI_Employee b
 						on a.EMPID = b.empid
 				where
-					WK_DATE between @dtFromMonthStart and @dtTo
+					WK_DATE between @dtFromMonthStart2 and @dtTo
 					and CLIENT_ID = 363
 					and PROJECT_NO = 9
-				group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+				group by b.LOCATION, datediff(dd, a.wk_date, @dtTo) / 14
 			) b
 			on a.LOCATION = b.location and a.date = b.date
 ) main
@@ -251,43 +244,70 @@ order by date
 select
 	a.LOCATION as Location,
 	case
-		when totalhours = 0
+		when a.totalhours = 0
 			then 0
 		else
-			convert(numeric(18, 2), isnull(IntranetHours, 0) / TotalHours * 100)
-	end as Percentage
+			convert(numeric(18, 2), isnull(b.IntranetHours, 0) / a.TotalHours * 100)
+	end as Percentage,
+	case
+		when c.totalhours = 0
+			then 0
+		else
+			convert(numeric(18, 2), isnull(d.IntranetHours, 0) / c.TotalHours * 100)
+	end as OldPercentage
 from
 	(
 		select
 			LOCATION,
-			cast(datepart(yy, wk_date) as varchar(4))
-				+ '-'
-				+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
 			SUM(a.amount) TotalHours
 		from time_sht a
 			inner join RDI_Employee b
 				on a.EMPID = b.empid
-		where WK_DATE between CONVERT(VARCHAR(25),DATEADD(dd,-(DAY(getdate())-1),getdate()),101) and getdate()
-		group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+		where WK_DATE between @dtFrom and @dtTo
+		group by b.LOCATION
 	) a
 	left join
 		(
 			select
 				LOCATION,
-				cast(datepart(yy, wk_date) as varchar(4))
-					+ '-'
-					+ right('0' + cast(datepart(mm, wk_date) as varchar(2)), 2) as date,
 				SUM(a.amount) IntranetHours
 			from time_sht a
 				inner join RDI_Employee b
 					on a.EMPID = b.empid
 			where
-				WK_DATE between CONVERT(VARCHAR(25),DATEADD(dd,-(DAY(getdate())-1),getdate()),101) and getdate()
+				WK_DATE between @dtFrom and @dtTo
 				and CLIENT_ID = 363
 				and PROJECT_NO = 9
-			group by b.LOCATION, DATEPART(yy, a.wk_date), DATEPART(mm, a.wk_date)
+			group by b.LOCATION
 		) b
-		on a.LOCATION = b.location and a.date = b.date
+		on a.LOCATION = b.location
+	left join
+		(
+			select
+				LOCATION,
+				SUM(a.amount) TotalHours
+			from time_sht a
+				inner join RDI_Employee b
+					on a.EMPID = b.empid
+			where WK_DATE between dateadd(dd, -14, @dtFrom) and dateadd(dd, -14, @dtTo)
+			group by b.LOCATION
+		) c
+		on a.location = c.location
+		left join
+			(
+				select
+					LOCATION,
+					SUM(a.amount) IntranetHours
+				from time_sht a
+					inner join RDI_Employee b
+						on a.EMPID = b.empid
+				where
+					WK_DATE between dateadd(dd, -14, @dtFrom) and dateadd(dd, -14, @dtTo)
+					and CLIENT_ID = 363
+					and PROJECT_NO = 9
+				group by b.LOCATION
+			) d
+			on a.LOCATION = d.location
 order by percentage desc, Location
 
 
