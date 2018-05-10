@@ -53,6 +53,7 @@ order by a.RDIItemId
     select distinct
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
+		,'markBranch ' + FeatureBranch + ' ' + cast(a.RDIItemId as varchar) as markBranch
         ,dense_rank() over (order by a.featurebranch desc) seq
         ,dense_rank() over (order by a.featurebranch) reverseSeq
     from RDIItem a
@@ -69,7 +70,8 @@ cte1 as
 )
 select
     log, suffix,
-    mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix
+    mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix,
+    markBranch, suffix
 from cte1
 order by reverseSeq
 
