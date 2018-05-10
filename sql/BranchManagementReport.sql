@@ -92,7 +92,7 @@ from
 	from EmployeePosition ep
 		inner join allusers au on ep.empid = au.empid
 		inner join time_sht t on t.empid = ep.empid
-	where startdate >= dateadd(mm, -6, @dtTo)
+	where startdate >= dateadd(mm, -1, @dtTo)
 		and not exists (select 1 from EmployeePosition x where x.empid = ep.empid and x.EmployeePositionID <> ep.EmployeePositionID)
 		and t.client_id = 363 and t.project_no = 9
 		and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
@@ -101,12 +101,12 @@ from
 	) a
 
 -- 7
--- New staff < 6 months
+-- New staff < 1 months
 select au.fullname2 as NewStaff, sum(t.amount)
 from EmployeePosition ep
 	inner join allusers au on ep.empid = au.empid
 	inner join time_sht t on t.empid = ep.empid
-where startdate >= dateadd(mm, -6, @dtTo)
+where startdate >= dateadd(mm, -1, @dtTo)
 	and not exists (select 1 from EmployeePosition x where x.empid = ep.empid and x.EmployeePositionID <> ep.EmployeePositionID)
 	and t.client_id = 363 and t.project_no = 9
 	and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
