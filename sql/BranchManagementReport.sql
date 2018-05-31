@@ -123,7 +123,7 @@ order by au.fullname2
 		sum(t.amount) as IntranetHours
 	from time_sht t
 	where t.client_id = 363 and t.project_no = 9
-		and WK_DATE between @dtFromMonthStart and @dtTo
+		and WK_DATE between dateadd(dd, 1, dateadd(wk, -80, @dtTo)) and @dtTo
 	group by cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date)
 ),
 Total_cte as
@@ -133,7 +133,7 @@ Total_cte as
 		sum(t.amount) as TotalHours
 	from time_sht t
 	where EMPID < 1000
-		and WK_DATE between @dtFromMonthStart and @dtTo
+		and WK_DATE between dateadd(dd, 1, dateadd(wk, -80, @dtTo)) and @dtTo
 	group by cast(DATEADD(wk, DATEDIFF(wk, 0, t.WK_DATE), -1) as date)
 )
 select a.date, b.IntranetHours, a.TotalHours
@@ -338,8 +338,8 @@ order by percentage desc, Location
 	having HoursEstimated * 2 < sum(tst.amount)
 )
 select
-	i.RDIItemId,
 	i.LOCATION,
+	i.RDIItemId,
 	i.AssignedTo,
 	i.Title,
 	i.HoursEstimated,

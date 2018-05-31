@@ -54,6 +54,7 @@ order by a.RDIItemId
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
 		,'markBranch ' + FeatureBranch + ' ' + cast(a.RDIItemId as varchar) as markBranch
+		,'git checkout ' + FeatureBranch + ' && SKIP_BUILD_BEFORE_PUSH=1 && git push -f && SKIP_BUILD_BEFORE_PUSH=0' as pushAll
         ,dense_rank() over (order by a.featurebranch desc) seq
         ,dense_rank() over (order by a.featurebranch) reverseSeq
     from RDIItem a
@@ -71,7 +72,8 @@ cte1 as
 select
     log, suffix,
     mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix,
-    markBranch, suffix
+    markBranch, suffix,
+    pushAll, suffix
 from cte1
 order by reverseSeq
 
