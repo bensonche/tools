@@ -54,7 +54,7 @@ order by a.RDIItemId
         'log ' + featurebranch as log
         ,'mprod ' + featurebranch as mprod
 		,'markBranch ' + FeatureBranch + ' ' + cast(a.RDIItemId as varchar) as markBranch
-		,'git checkout ' + FeatureBranch + ' && SKIP_BUILD_BEFORE_PUSH=1 && git push -f && SKIP_BUILD_BEFORE_PUSH=0' as pushAll
+		,'git checkout ' + FeatureBranch + ' && export SKIP_BUILD_BEFORE_PUSH=1 && git push -f && export SKIP_BUILD_BEFORE_PUSH=0' as pushAll
         ,dense_rank() over (order by a.featurebranch desc) seq
         ,dense_rank() over (order by a.featurebranch) reverseSeq
     from RDIItem a
