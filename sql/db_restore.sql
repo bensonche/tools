@@ -1,7 +1,8 @@
 declare @newDBName varchar(50) = 'RDI_Development'
 declare @scrubbed bit = 1
 
-declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
+--declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
+declare @dir varchar(1000) = 'E:\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\'
 declare @mdf varchar(1000) = @dir + @newDBName + '.mdf'
 declare @ldf varchar(1000) = @dir + @newDBName + '.ldf'
 
