@@ -1,5 +1,5 @@
-declare @newDBName varchar(50) = 'RDI_Development'
-declare @scrubbed bit = 1
+declare @newDBName varchar(50) = 'RDI_Test'
+declare @scrubbed bit = 0
 
 --declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
 declare @dir varchar(1000) = 'E:\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\DATA\'
@@ -39,14 +39,14 @@ print 'DB Restore Finished'
 
 if @scrubbed = 1
 begin
-    print 'Begin scrub'
+	print 'Begin scrub'
 
-    set @sql = '
-        use ' + @newDBName + '
-	    exec rdi_cleandevdatabase'
-    exec(@sql)
+	set @sql = '
+		use ' + @newDBName + '
+		exec rdi_cleandevdatabase'
+	exec(@sql)
 
-    print 'End scrub'
+	print 'End scrub'
 end
 
 set @sql = '
@@ -55,35 +55,65 @@ set @sql = '
 exec(@sql)
 
 set @sql = '
-    use ' + @newDBName + '
+	use ' + @newDBName + '
 
-    DECLARE @username VARCHAR(25)
-    DECLARE @password VARCHAR(25)
-    DECLARE GetOrphanUsers CURSOR
-    FOR
-    SELECT UserName = name
-    FROM sysusers
-    WHERE issqluser = 1
-    AND (sid IS NOT NULL
-    AND sid <> 0x0)
-    AND SUSER_SNAME(sid) IS NULL
-    ORDER BY name
-    OPEN GetOrphanUsers
-    FETCH NEXT
-    FROM GetOrphanUsers
-    INTO @username
-    SET @password = @username
-    WHILE @@FETCH_STATUS = 0
-    BEGIN
-    IF @username=''dbo''
-    EXEC sp_changedbowner ''sa''
-    ELSE
-    EXEC sp_change_users_login ''Auto_Fix'', @username, NULL, @password
-    FETCH NEXT
-    FROM GetOrphanUsers
-    INTO @username
-    END
-    CLOSE GetOrphanUsers
-    DEALLOCATE GetOrphanUsers'
+	DECLARE @username VARCHAR(25)
+	DECLARE @password VARCHAR(25)
+	DECLARE GetOrphanUsers CURSOR
+	FOR
+	SELECT UserName = name
+	FROM sysusers
+	WHERE issqluser = 1
+	AND (sid IS NOT NULL
+	AND sid <> 0x0)
+	AND SUSER_SNAME(sid) IS NULL
+	ORDER BY name
+	OPEN GetOrphanUsers
+	FETCH NEXT
+	FROM GetOrphanUsers
+	INTO @username
+	SET @password = @username
+	WHILE @@FETCH_STATUS = 0
+	BEGIN
+	IF @username=''dbo''
+	EXEC sp_changedbowner ''sa''
+	ELSE
+	EXEC sp_change_users_login ''Auto_Fix'', @username, NULL, @password
+	FETCH NEXT
+	FROM GetOrphanUsers
+	INTO @username
+	END
+	CLOSE GetOrphanUsers
+	DEALLOCATE GetOrphanUsers
+	
+	declare @username varchar(max)
+	declare GetOrphanUsers cursor
+	for
+		select a.name
+		from sysusers a
+			left join sys.server_principals b
+				on a.sid = b.sid
+		where b.sid is null
+		and a.islogin = 1
+		and a.hasdbaccess = 1
+		and a.issqluser = 0
+
+	open GetOrphanUsers
+
+	fetch next
+	from GetOrphanUsers
+	into @username
+
+	while @@fetch_status = 0
+	begin
+		exec(''create login ['' + @username + ''] from windows'')
+
+		fetch next
+		from GetOrphanUsers
+		into @username
+	end
+
+	close GetOrphanUsers
+	deallocate GetOrphanUsers'
 
 exec (@sql)
