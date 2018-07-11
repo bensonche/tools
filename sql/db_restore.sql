@@ -84,8 +84,13 @@ set @sql = '
 	INTO @username
 	END
 	CLOSE GetOrphanUsers
-	DEALLOCATE GetOrphanUsers
-	
+	DEALLOCATE GetOrphanUsers'
+
+exec (@sql)
+
+set @sql = '
+	use ' + @newDBName + '
+
 	declare @username varchar(max)
 	declare GetOrphanUsers cursor
 	for
