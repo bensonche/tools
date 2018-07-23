@@ -71,9 +71,9 @@ cte1 as
 )
 select
     log, suffix,
-    mprod + ' && echo -e "\e[32m' + cast(seq as varchar) + ' remaining\e[39m"', suffix,
-    markBranch, suffix,
-    pushAll, suffix
+    'echo -e "\e[32m' + mprod + '\n' + cast(seq as varchar) + ' remaining\e[39m" && ' + mprod, suffix,
+    'echo -e "\e[32m' + markBranch + '\n' + cast(seq as varchar) + ' remaining\e[39m" && ' + markBranch, suffix,
+    'echo -e "\e[32m' + pushAll + '\n' + cast(seq as varchar) + ' remaining\e[39m" && ' + pushAll, suffix
 from cte1
 order by reverseSeq
 
