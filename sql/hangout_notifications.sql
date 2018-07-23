@@ -8,16 +8,16 @@ begin try
 
 	set @startdate = DATEADD(d, 1, dateadd(dd, 0, datediff(dd, 0, getdate())))
 
-    declare @link1 varchar(max) = ''
-    declare @link2 varchar(max) = ''
-    declare @link3 varchar(max) = ''
+	declare @link1 varchar(max) = ''
+	declare @link2 varchar(max) = ''
+	declare @link3 varchar(max) = ''
 	
 	declare @join1 varchar(max) = 'Intranet Hangout on Skype at '
 	declare @join2 varchar(max) = 'Intranet Hangout on Skype at '
 	declare @join3 varchar(max) = 'Intranet Orientation on Zoom at '
 	
 	declare @contact1 varchar(max) = '. Contact Benson or Quinn for invite.'
-	declare @contact2 varchar(max) = '. Contact Wilf for invite.'
+	declare @contact2 varchar(max) = '. Contact Ariel for invite.'
 
 	declare @title varchar(1000)
 	declare @id int
