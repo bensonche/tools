@@ -122,3 +122,5 @@ set @sql = '
 	deallocate GetOrphanUsers'
 
 exec (@sql)
+
+quit:
