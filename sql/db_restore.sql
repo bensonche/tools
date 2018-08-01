@@ -1,3 +1,5 @@
+use master
+go
 declare @newDBName varchar(50) = 'RDI_Test'
 declare @scrubbed bit = 0
 
