@@ -67,7 +67,7 @@ order by a.RDIItemId
 ),
 cte1 as
 (
-	select *, case when seq > 1 then ' &&' else '' end as suffix
+	select *, case when seq > 1 then ' &&' else ';' end as suffix
 	from cte
 )
 select
