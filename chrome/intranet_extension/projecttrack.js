@@ -191,7 +191,12 @@
             $("input#QAButton").click(function () {
                 if ($("[id$=ddlAssignedTo]").val() != 10000) {
                     $("select[id$=ddlStatus] option[value=8]").prop("selected", true);
-                    $("textarea[id$=txtComments]").val("In prod, please review.");
+                    
+                    var prodString = "In prod, please review.";
+                    prodString += "\n";
+                    prodString += "Please create a new branch for any additional work.";
+                    
+                    $("textarea[id$=txtComments]").val(prodString);
 
                     $("input[id$=Submit]").click();
                 }
