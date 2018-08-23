@@ -54,7 +54,7 @@ function create_db_script ()
 
 	local dev="-S inet-sql-dev -d RDI_Development"
 	local test="-S inet-sql-test -d RDI_Test"
-	local prod="-S sqlserver3 -d RDI_Production"
+	local prod="-S inet-sql-prod -d RDI_Production"
 
 	cmdline $@
 
