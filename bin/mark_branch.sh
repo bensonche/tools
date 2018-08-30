@@ -9,11 +9,11 @@ bc_mark_branch ()
 	
 	git checkout $branch
 	
-	git pull origin $branch
+	#git pull origin $branch
 	
 	git pull origin master
 	
-	git filter-branch -f --msg-filter "cat && printf '\n\nReleased to prod on ' && date +%x && printf 'PT ' && echo $ptNum" master..$branch
+	git filter-branch -f --msg-filter "cat && printf '\n\nReleased to prod on ' && date +%x && printf 'PT ' && echo $ptNum" origin/master..$branch
 }
 
 bc_mark_branch $1 $2
