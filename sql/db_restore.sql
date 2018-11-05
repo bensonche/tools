@@ -1,6 +1,6 @@
 use master
 go
-declare @newDBName varchar(50) = 'RDI_Test'
+declare @newDBName varchar(50) = 'RDI_Development'
 declare @scrubbed bit = 0
 
 --declare @dir varchar(1000) = 'c:\Program Files\Microsoft SQL Server\MSSQL10_50.MSSQLSERVER\MSSQL\DATA\'
@@ -13,7 +13,7 @@ declare @datestring varchar(20) = convert(varchar, datepart(yy, @yesterday)) + '
 set @datestring = @datestring + convert(varchar, datepart(m, @yesterday)) + '.'
 set @datestring = @datestring + convert(varchar, datepart(d, @yesterday))
 
-declare @bak varchar(max) = '\\anc-backupnas02\sqlbackups\RDI_Production.SqlServer3.' + @datestring + '.bak'
+declare @bak varchar(max) = '\\anc-backupnas02\sqlbackups\RDI_Production.inet-sql-prod.' + @datestring + '.bak'
 
 --RESTORE FILELISTONLY
 --FROM DISK = @bak
