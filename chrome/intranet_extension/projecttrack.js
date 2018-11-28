@@ -207,6 +207,41 @@
             $("input#QAButton").remove();
         }
     }
+    
+    function buildRTPButton() {
+        if (isReview()) {
+            if ($("input#RTPButton").length > 0) {
+                return;
+            }
+
+            // Check assigned to Intranet Group
+            if ($("span#assignedToDdSpan select option:selected").val() != 10000)
+                return;
+            
+            // Check git feature branch
+            if ($("input[id$=txtBranch]").val().trim() === "")
+                return;
+            
+            // Check change summary
+            if ($("textarea[id$=txtChangedDescription]").val().trim() === "")
+                return;
+
+            var assignTo = $("span#assignedToDdSpan");
+
+            if (assignTo.length == 0) {
+                return;
+            }
+
+            assignTo.after("<input type='button' id='RTPButton' value='Release to Prod' class='RDIButton' />");
+
+            $("input#RTPButton").click(function () {
+                    $("select[id$=ddlStatus] option[value=48]").prop("selected", true);
+                    $("input[id$=Submit]").click();
+            });
+        } else {
+            $("input#RTPButton").remove();
+        }
+    }
 
     var buildingSQL = false;
     function buildSQLCount() {
@@ -261,6 +296,13 @@
     function isRTP() {
         if ($("[id$=ddlStatus]").length > 0) {
             return $("[id$=ddlStatus]").val() == '48';
+        }
+        return false;
+    }
+
+    function isReview() {
+        if ($("[id$=ddlStatus]").length > 0) {
+            return $("[id$=ddlStatus]").val() == '7';
         }
         return false;
     }
@@ -352,6 +394,7 @@
             buildSQLCount();
             buildCompareButton();
             buildQAButton();
+            buildRTPButton();
             buildPullRequestLink();
             subscribeSelfCheckbox();
             reassignPTs();
