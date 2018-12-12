@@ -404,4 +404,5 @@ group by
 	i.Title,
 	i.HoursEstimated,
 	i.TotalHoursWorked
+having i.HoursEstimated < cast(sum(isnull(ts.amount, 0)) as decimal(18, 2))
 order by location, AssignedTo, i.RDIItemId
