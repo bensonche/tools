@@ -49,7 +49,7 @@ usage ()
 
 function create_db_script ()
 {
-	local sqlcmd_path="sqlcmd"
+	local sqlcmd_path='sqlcmd.exe'
 	local start_ssms="start"
 
 	local dev="-S inet-sql-dev -d RDI_Development"
@@ -91,10 +91,10 @@ function create_db_script ()
 		if [ $batchread -eq 1 ]
 		then
 			create_commit_hash_query
-			hash=`$sqlcmd_path $env -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\) *$/\1/"`
+			hash=`$sqlcmd_path $env -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\).*$/\1/"`
 			echo $hash
 			
-			start_ssms="ssms $env"
+			start_ssms="ssms.exe $env"
 		fi
 
 		local left=$hash
