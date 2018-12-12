@@ -1,17 +1,65 @@
 use rdi_production
 
-declare @dtFrom datetime ,@dtTo datetime
+declare @knownTuesday date = '12/11/2018'
 
-set @dtTo = convert(varchar, dateadd(d, -datepart(dw, getdate()), getdate()), 101)
-set @dtFrom = dateadd(d, -13, @dtto)
+declare @numbers table ( num int )
+declare @dates table ( date date )
 
-select cast(@dtfrom as date), cast(@dtto as date), '\\resdat.com\files\Fairbanks\Projects\363 Intranet\Managment Meeting Reports'
+insert into @numbers
+select top 31 row_number() over (order by name)
+from sys.all_columns
 
-declare @dtFromMonthStart datetime = dateadd(m, -18, @dtTo)
-set @dtFromMonthStart = DATEADD(wk, DATEDIFF(wk, 0, @dtFromMonthStart), -1) -- Get sunday
+insert into @dates
+select datefromparts(year(getdate()), month(getdate()), num)
+from @numbers
+where num <= day(eomonth(getdate()))
+union
+select datefromparts(year(dateadd(m, -1, getdate())), month(dateadd(m, -1, getdate())), num)
+from @numbers
+where num <= day(eomonth(dateadd(m, -1, getdate())))
+union
+select datefromparts(year(dateadd(m, -2, getdate())), month(dateadd(m, -2, getdate())), num)
+from @numbers
+where num <= day(eomonth(dateadd(m, -2, getdate())))
+
+declare @dtFrom date ,@dtTo date, @dt2MonthsAgo date
+
+-- Second Tues of last month
+set @dt2MonthsAgo = (
+	select date
+	from @dates
+	where
+		datepart(mm, date) = month(dateadd(m, -2, getdate()))
+		and datepart(dw, date) = datepart(dw, @knownTuesday)
+		and day(date) between 8 and 15
+)
+-- Second Tues of last month
+set @dtFrom = (
+	select date
+	from @dates
+	where
+		datepart(mm, date) = month(dateadd(m, -1, getdate()))
+		and datepart(dw, date) = datepart(dw, @knownTuesday)
+		and day(date) between 8 and 15
+)
+-- Second Tues of this month
+set @dtTo = (
+	select date
+	from @dates
+	where
+		datepart(mm, date) = month(getdate())
+		and datepart(dw, date) = datepart(dw, @knownTuesday)
+		and day(date) between 8 and 15
+)
+
+set @dt2MonthsAgo = dateadd(dd, -2, @dt2MonthsAgo)
+set @dtFrom = dateadd(dd, -2, @dtFrom)
+set @dtTo = dateadd(dd, -3, @dtTo)
 
 declare @dtFromMonthStart2 datetime = dateadd(m, -12, @dtTo)
 set @dtFromMonthStart2 = DATEADD(wk, DATEDIFF(wk, 0, @dtFromMonthStart2), -1) -- Get sunday
+
+select cast(@dtfrom as date), cast(@dtto as date)
 
 -- 1
 -- items assigned not including QA or Owners (unless the owner is Julie and it is in a working status)
@@ -106,7 +154,7 @@ select au.fullname2 as NewStaff, sum(t.amount)
 from EmployeePosition ep
 	inner join allusers au on ep.empid = au.empid
 	inner join time_sht t on t.empid = ep.empid
-where startdate >= dateadd(mm, -1, @dtTo)
+where startdate between @dtFrom and @dtTo
 	and not exists (select 1 from EmployeePosition x where x.empid = ep.empid and x.EmployeePositionID <> ep.EmployeePositionID)
 	and t.client_id = 363 and t.project_no = 9
 	and t.wk_date between dateadd(dd, -14, @dtTo) and @dtTo
@@ -289,7 +337,7 @@ from
 			from time_sht a
 				inner join RDI_Employee b
 					on a.EMPID = b.empid
-			where WK_DATE between dateadd(dd, -14, @dtFrom) and dateadd(dd, -14, @dtTo)
+			where WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom)
 			group by b.LOCATION
 		) c
 		on a.location = c.location
@@ -302,7 +350,7 @@ from
 					inner join RDI_Employee b
 						on a.EMPID = b.empid
 				where
-					WK_DATE between dateadd(dd, -14, @dtFrom) and dateadd(dd, -14, @dtTo)
+					WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom)
 					and CLIENT_ID = 363
 					and PROJECT_NO = 9
 				group by b.LOCATION
