@@ -55,7 +55,7 @@ order by a.RDIItemId
 		,'log ' + featurebranch as log
 		,'mprod ' + featurebranch as mprod
 		,'markBranch ' + FeatureBranch + ' ' + cast(a.RDIItemId as varchar) as markBranch
-		,'git checkout ' + FeatureBranch + ' && export SKIP_BUILD_BEFORE_PUSH=1 && git push -f && export SKIP_BUILD_BEFORE_PUSH=0' as pushAll
+		,'git checkout ' + FeatureBranch + ' && export SKIP_BUILD_BEFORE_PUSH=1 && git push -f && unset SKIP_BUILD_BEFORE_PUSH' as pushAll
 		,'echo -e "git checkout ' + FeatureBranch + ' && git reset --hard $(git rev-parse origin/' + FeatureBranch + ') &&" >> resetMark.sh' as resetMark
 		,dense_rank() over (order by a.featurebranch desc, rdiitemid desc) seq
 		,dense_rank() over (order by a.featurebranch, rdiitemid) reverseSeq
@@ -68,7 +68,7 @@ order by a.RDIItemId
 ),
 cte1 as
 (
-	select *, case when seq > 1 then ' &&' else ';' end as suffix
+	select *, case when seq > 1 then ' && ' else ';' end as suffix
 	from cte
 )
 select

@@ -26,30 +26,33 @@ declare @dtFrom date ,@dtTo date, @dt2MonthsAgo date
 
 -- Second Tues of last month
 set @dt2MonthsAgo = (
-	select date
+	select top 1 date
 	from @dates
 	where
 		datepart(mm, date) = month(dateadd(m, -2, getdate()))
 		and datepart(dw, date) = datepart(dw, @knownTuesday)
 		and day(date) between 8 and 15
+	order by date
 )
 -- Second Tues of last month
 set @dtFrom = (
-	select date
+	select top 1 date
 	from @dates
 	where
 		datepart(mm, date) = month(dateadd(m, -1, getdate()))
 		and datepart(dw, date) = datepart(dw, @knownTuesday)
 		and day(date) between 8 and 15
+	order by date
 )
 -- Second Tues of this month
 set @dtTo = (
-	select date
+	select top 1 date
 	from @dates
 	where
 		datepart(mm, date) = month(getdate())
 		and datepart(dw, date) = datepart(dw, @knownTuesday)
 		and day(date) between 8 and 15
+	order by date
 )
 
 set @dt2MonthsAgo = dateadd(dd, -2, @dt2MonthsAgo)
