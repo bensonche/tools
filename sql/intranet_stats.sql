@@ -504,3 +504,25 @@ select
 from results
 order by seq, EmployeeBranch, AssignedTo
 
+-- 6: Total Hours worked on Intranet
+;
+with dates as
+(
+	select cast(dateadd(day, -datepart(weekday, getdate()) + 1 - 7, getdate()) as date) as sunday
+	union all
+	select cast(dateadd(day, -datepart(weekday, getdate()) + 1 - 14, getdate()) as date)
+)
+select
+	'Total Hours worked on Intranet',
+	null
+	
+union all
+
+select cast(d.sunday as varchar) + ' to ' + cast(dateadd(day, 6, d.sunday) as varchar) as week, sum(amount) as total
+from time_sht ts
+inner join dates d
+	on ts.WK_DATE between d.sunday and dateadd(day, 6, sunday)
+where
+	ts.client_id = 363
+	and ts.project_no = 9
+group by d.sunday
