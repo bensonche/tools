@@ -1,6 +1,20 @@
+-- Change these flags if you want to run only portions of the query
+declare
+	@BeingWorkedNoEstimate bit = 1,
+	@BeingWorkedButStalled bit = 1,
+	@IntTestingButStalled bit = 1,
+	@EstimateExceeded bit = 1,
+	@StaffOnIntranetNotScheduled bit = 1,
+	@TotalHoursWorkedOnIntranet bit = 1
+
+
 drop table if exists #PTs
 
-;with TagOwnersCte as
+if @BeingWorkedNoEstimate = 1
+	or @BeingWorkedButStalled = 1
+	or @IntTestingButStalled = 1
+	or @EstimateExceeded = 1
+with TagOwnersCte as
 (
 	select o.RDIItemId, string_agg(o.fullname2, ', ') within group (order by o.fullname2) as Owner
 	from (
@@ -175,7 +189,7 @@ from ActivePTs ap
 
 -------------------------------------------------------------------------------------------------------------------
 -- 1: Being worked, no estimate
-;
+if @BeingWorkedNoEstimate = 1
 with ActiveNoEstimatePTs as
 (
 	select pt.rdiitemid, pt.title, pt.AssignedToName, pt.AssignedToBranch, pt.ItemStatus, pt.AssignedTo
@@ -223,7 +237,7 @@ from result
 order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
 -- 2: Being worked, but stalled
-;
+if @BeingWorkedButStalled = 1
 with result as
 (
 	select
@@ -280,7 +294,7 @@ from result
 order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
 -- 3: In testing, but stalled
-;
+if @IntTestingButStalled = 1
 with ActivePTs as
 (
 	select *
@@ -345,7 +359,7 @@ order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
 
 -- 4: Estimate exceeded
-;
+if @EstimateExceeded = 1
 with HasEstimate as
 (
 	select *
@@ -425,7 +439,7 @@ from result
 order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
 -- 5: Staff on Intranet, not scheduled
-;
+if @StaffOnIntranetNotScheduled = 1
 with dates as
 (
 		select
@@ -505,7 +519,7 @@ from results
 order by seq, EmployeeBranch, AssignedTo
 
 -- 6: Total Hours worked on Intranet
-;
+if @TotalHoursWorkedOnIntranet = 1
 with dates as
 (
 	select cast(dateadd(day, -datepart(weekday, getdate()) + 1 - 7, getdate()) as date) as sunday
