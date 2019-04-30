@@ -314,7 +314,7 @@ from
 		from time_sht a
 			inner join RDI_Employee b
 				on a.EMPID = b.empid
-		where WK_DATE between @dtFrom and @dtTo
+		where WK_DATE between @dtFrom and @dtTo and job_code <> 904
 		group by b.LOCATION
 	) a
 	left join
@@ -340,7 +340,7 @@ from
 			from time_sht a
 				inner join RDI_Employee b
 					on a.EMPID = b.empid
-			where WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom)
+			where WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom) and job_code <> 904
 			group by b.LOCATION
 		) c
 		on a.location = c.location
