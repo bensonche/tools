@@ -7,7 +7,6 @@ declare
 	@StaffOnIntranetNotScheduled bit = 1,
 	@TotalHoursWorkedOnIntranet bit = 1
 
-
 drop table if exists #PTs
 
 if @BeingWorkedNoEstimate = 1
@@ -48,9 +47,10 @@ with TagOwnersCte as
 		on ri.AssignedTo = e.EMPID
 	left join TagOwnersCte toc
 		on ri.RDIItemId = toc.RDIItemId
-
-	where ri.client_id = 363 and ri.project_no = 9
-			and statusid in (1, 5, 6, 7, 46, 47)
+	where
+		ri.client_id = 363
+		and ri.project_no = 9
+		and statusid in (1, 5, 6, 7, 46, 47)
 
 	EXCEPT
 
@@ -78,8 +78,8 @@ with TagOwnersCte as
 	left join TagOwnersCte toc
 		on ri.RDIItemId = toc.RDIItemId
 	where
-		assignedto = 10000 -- don't include Intranet Group
-				or AssignedTo = tgo.EmpId
+		au.type = 'Group'
+		or AssignedTo = tgo.EmpId
 ),PTReassignments as
 (
 		select
@@ -256,11 +256,8 @@ with result as
 	from #PTs apt
 	where apt.ItemStatus <> 'Testing'
 	and apt.lastAssignmentDate < dateadd(wk, -2, getdate())
-			and (
-		apt.LastWorkedOnByEmployee < dateadd(wk, -2, getdate())
-				or
-				apt.lastCommentDateByEmployee < dateadd(wk, -2, getdate())
-	)
+	and isnull(apt.LastWorkedOnByEmployee, '1/1/1970') < dateadd(wk, -2, getdate())
+	and isnull(apt.lastCommentDateByEmployee, '1/1/1970') < dateadd(wk, -2, getdate())
 
 	union all
 
@@ -318,11 +315,8 @@ with ActivePTs as
 		2 as seq
 	from ActivePTs c
 	where c.lastAssignmentDate < dateadd(wk, -2, getdate())
-			and (
-		c.LastWorkdOnByAnyone< dateadd(wk, -2, getdate())
-				or
-				c.lastCommentDateByAnyone < dateadd(wk, -2, getdate())
-	)
+	and isnull(c.LastWorkdOnByAnyone, '1/1/1970') < dateadd(wk, -2, getdate())
+	and isnull(c.lastCommentDateByAnyone, '1/1/1970')  < dateadd(wk, -2, getdate())
 
 	union all
 
