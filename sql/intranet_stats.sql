@@ -252,6 +252,7 @@ with result as
 		apt.lastCommentDateByEmployee as LastCommentDate,
 		datediff(d, apt.lastCommentDateByEmployee, getdate()) as DaysSinceLastComment,
 		apt.CommentByEmployee as LastComment,
+		datediff(d, isnull(apt.LastWorkedOnByEmployee, apt.lastAssignmentDate), isnull(apt.lastCommentDateByEmployee, apt.lastAssignmentDate)) as diff,
 		2 as seq
 	from #PTs apt
 	where apt.ItemStatus <> 'Testing'
@@ -273,6 +274,7 @@ with result as
 		null,
 		null,
 		null,
+		null,
 		1 as seq
 )
 select
@@ -286,7 +288,8 @@ select
 	DaysSinceLastWork,
 	LastCommentDate as LastCommentByAssignedToEmployee,
 	DaysSinceLastComment,
-	LastComment as LastCommentByAssignedToEmployee
+	LastComment as LastCommentByAssignedToEmployee,
+	abs(diff) as DaysBetweenLastWorkedAndCommented
 from result
 order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
@@ -312,6 +315,7 @@ with ActivePTs as
 		datediff(d, c.lastCommentDateByAnyone, getdate()) as DaysSinceLastComment,
 		c.CommentByAnyone as LastComment,
 		c.LastCommentBy as LastCommentBy,
+		datediff(d, isnull(c.LastWorkdOnByAnyone, c.lastAssignmentDate), isnull(c.lastCommentDateByAnyone, c.lastAssignmentDate)) as diff,
 		2 as seq
 	from ActivePTs c
 	where c.lastAssignmentDate < dateadd(wk, -2, getdate())
@@ -325,6 +329,7 @@ with ActivePTs as
 		null,
 		null,
 		'In testing, but stalled',
+		null,
 		null,
 		null,
 		null,
@@ -347,7 +352,8 @@ select
 	LastCommentDate,
 	DaysSinceLastComment,
 	LastComment,
-	LastCommentBy
+	LastCommentBy,
+	abs(diff) as DaysBetweenLastWorkedAndCommented
 from result
 order by seq, EmployeeBranch, AssignedTo, RDIItemId
 
