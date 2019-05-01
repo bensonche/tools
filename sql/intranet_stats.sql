@@ -5,7 +5,8 @@ declare
 	@IntTestingButStalled bit = 1,
 	@EstimateExceeded bit = 1,
 	@StaffOnIntranetNotScheduled bit = 1,
-	@TotalHoursWorkedOnIntranet bit = 1
+	@TotalHoursWorkedOnIntranet bit = 1,
+	@IntranetHoursByBranch bit = 1
 
 drop table if exists #PTs
 
@@ -540,3 +541,149 @@ where
 	ts.client_id = 363
 	and ts.project_no = 9
 group by d.sunday
+
+-- 7: IntranetHoursByBranch
+if @IntranetHoursByBranch = 1
+begin
+	declare @knownTuesday date = '12/11/2018'
+
+	declare @numbers table ( num int )
+	declare @dates table ( date date )
+
+	insert into @numbers
+	select top 31 row_number() over (order by name)
+	from sys.all_columns
+
+	insert into @dates
+	select datefromparts(year(getdate()), month(getdate()), num)
+	from @numbers
+	where num <= day(eomonth(getdate()))
+	union
+	select datefromparts(year(dateadd(m, -1, getdate())), month(dateadd(m, -1, getdate())), num)
+	from @numbers
+	where num <= day(eomonth(dateadd(m, -1, getdate())))
+	union
+	select datefromparts(year(dateadd(m, -2, getdate())), month(dateadd(m, -2, getdate())), num)
+	from @numbers
+	where num <= day(eomonth(dateadd(m, -2, getdate())))
+
+	declare @dtFrom date ,@dtTo date, @dt2MonthsAgo date
+	-- Second Tues of last month
+	set @dt2MonthsAgo = (
+		select top 1 date
+		from @dates
+		where
+			datepart(mm, date) = month(dateadd(m, -2, getdate()))
+			and datepart(dw, date) = datepart(dw, @knownTuesday)
+			and day(date) between 8 and 15
+		order by date
+	)
+	-- Second Tues of last month
+	set @dtFrom = (
+		select top 1 date
+		from @dates
+		where
+			datepart(mm, date) = month(dateadd(m, -1, getdate()))
+			and datepart(dw, date) = datepart(dw, @knownTuesday)
+			and day(date) between 8 and 15
+		order by date
+	)
+	-- Second Tues of this month
+	set @dtTo = (
+		select top 1 date
+		from @dates
+		where
+			datepart(mm, date) = month(getdate())
+			and datepart(dw, date) = datepart(dw, @knownTuesday)
+			and day(date) between 8 and 15
+		order by date
+	)
+
+	set @dt2MonthsAgo = dateadd(dd, -2, @dt2MonthsAgo)
+	set @dtFrom = dateadd(dd, -2, @dtFrom)
+	set @dtTo = dateadd(dd, -3, @dtTo)
+
+	declare @dtFromMonthStart2 datetime = dateadd(m, -12, @dtTo)
+	set @dtFromMonthStart2 = DATEADD(wk, DATEDIFF(wk, 0, @dtFromMonthStart2), -1) -- Get sunday
+
+	;
+	with result as
+	(
+		select
+			a.LOCATION as Location,
+			case
+				when a.totalhours = 0
+					then 0
+				else
+					convert(numeric(18, 2), isnull(b.IntranetHours, 0) / a.TotalHours * 100)
+			end as Percentage,
+			case
+				when c.totalhours = 0
+					then 0
+				else
+					convert(numeric(18, 2), isnull(d.IntranetHours, 0) / c.TotalHours * 100)
+			end as OldPercentage,
+			2 as seq
+		from
+			(
+				select
+					LOCATION,
+					SUM(a.amount) TotalHours
+				from time_sht a
+					inner join RDI_Employee b
+						on a.EMPID = b.empid
+				where WK_DATE between @dtFrom and @dtTo and job_code <> 904
+				group by b.LOCATION
+			) a
+			left join
+				(
+					select
+						LOCATION,
+						SUM(a.amount) IntranetHours
+					from time_sht a
+						inner join RDI_Employee b
+							on a.EMPID = b.empid
+					where
+						WK_DATE between @dtFrom and @dtTo
+						and CLIENT_ID = 363
+						and PROJECT_NO = 9
+					group by b.LOCATION
+				) b
+				on a.LOCATION = b.location
+			left join
+				(
+					select
+						LOCATION,
+						SUM(a.amount) TotalHours
+					from time_sht a
+						inner join RDI_Employee b
+							on a.EMPID = b.empid
+					where WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom) and job_code <> 904
+					group by b.LOCATION
+				) c
+				on a.location = c.location
+				left join
+					(
+						select
+							LOCATION,
+							SUM(a.amount) IntranetHours
+						from time_sht a
+							inner join RDI_Employee b
+								on a.EMPID = b.empid
+						where
+							WK_DATE between @dt2MonthsAgo and dateadd(dd, -1, @dtFrom)
+							and CLIENT_ID = 363
+							and PROJECT_NO = 9
+						group by b.LOCATION
+					) d
+					on a.LOCATION = d.location
+
+		union all
+					
+		select cast(@dtFrom as varchar) + ' to ' + cast(@dtTo as varchar), null, null, 1 as seq
+	)
+
+	select Location, Percentage, OldPercentage
+	from result
+	order by seq, percentage desc, Location
+end
