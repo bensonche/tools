@@ -15,7 +15,7 @@ union
 
 select userid, fullname2, email
 from allusers
-where empid in (198, 430, 116, 643)
+where empid in (198, 430, 116, 643, 368)
 
 order by FULLNAME2
 
