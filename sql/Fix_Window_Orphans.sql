@@ -18,6 +18,7 @@ into @username
 
 while @@fetch_status = 0
 begin
+    print 'create login [' + @username + '] from windows'
     exec('create login [' + @username + '] from windows')
 
     fetch next
