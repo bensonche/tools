@@ -35,7 +35,7 @@ declare cur cursor for
 select spid
 from @spwho
 where spid > 50
-and login = 'resdat\bche'
+and login = 'resdat\intranetprod'
 
 open cur
 
@@ -58,4 +58,4 @@ deallocate cur
 
 select *
 from @query
-order by eventtype
+order by eventtype, eventinfo
