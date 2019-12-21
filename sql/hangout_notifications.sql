@@ -12,9 +12,9 @@ begin try
 	declare @link2 varchar(max) = ''
 	declare @link3 varchar(max) = ''
 	
-	declare @join1 varchar(max) = 'Intranet Standup on Skype at '
-	declare @join2 varchar(max) = 'Intranet Standup on Skype at '
-	declare @join3 varchar(max) = 'Intranet Orientation on Skype at '
+	declare @join1 varchar(max) = 'Intranet Standup on Teams at '
+	declare @join2 varchar(max) = 'Intranet Standup on Teams at '
+	declare @join3 varchar(max) = 'Intranet Orientation on Teams at '
 	
 	declare @contact1 varchar(max) = '. Contact Benson or Quinn for invite.'
 	declare @contact2 varchar(max) = '. Contact Kami for invite.'
