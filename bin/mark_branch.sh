@@ -9,7 +9,7 @@ bc_mark_branch ()
 	
 	git checkout $branch
 	
-	#git pull origin $branch
+	git pull origin $branch
 	
 	git pull origin master
 	
