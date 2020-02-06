@@ -166,10 +166,10 @@ function create_db_script ()
 			grep Database/rep |
 			sed 's/\(.*\)\.sql$/\1/' |
 			sed 's/^Database\/repeatable\/\(.*\)/\1/' |
-			sed 's/triggers\/\(.*\)/drop trigger \1/' |
-			sed 's/procs\/\(.*\)/drop proc \1/' |
-			sed 's/functions\/\(.*\)/drop function \1/' |
-			sed 's/views\/\(.*\)/drop view \1/'	> db_deleted.sql
+			sed 's/triggers\/\(.*\)/drop trigger if exists \1/' |
+			sed 's/procs\/\(.*\)/drop proc if exists \1/' |
+			sed 's/functions\/\(.*\)/drop function if exists \1/' |
+			sed 's/views\/\(.*\)/drop view if exists \1/'	> db_deleted.sql
 	fi
 
 	echo "$filelist" |
