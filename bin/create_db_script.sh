@@ -100,7 +100,7 @@ function create_db_script ()
 		local left=$hash
 		local right=head
 
-		local diff=$(git diff -M100% --name-status $left..head Database/)
+		local diff=$(git diff -M100% --name-status $left..head Database/ | grep -v R100)
 		local diffCount=$(echo -n "$diff" | wc -l)
 
 		if [ $diffCount -gt "0" ]
@@ -122,17 +122,17 @@ function create_db_script ()
 
 	if [ -z $ALL ]
 	then
-		local filelist=$(git diff -M100% --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep) 
+		local filelist=$(git diff -M100% --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep)
+		local filelistOnetime=$(git diff -M100% --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/onetime | grep -v Database/onetime/archive)
 	else
 		local filelist=$(du -a Database/ | cut -f2 | sed '/sql$/!d')
 	fi
 
-	if [ -z "$filelist" ]
+	if [ -z "$filelist" ] && [ -z "$filelistOnetime" ]
 	then
 		echo "No database script created because there were no changes"
 		exit 0
 	fi
-
 
 	echo "$filelist" |
 		while read line; do
@@ -158,8 +158,32 @@ function create_db_script ()
 			fi
 		done
 
+	echo "$filelistOnetime" |
+		while read line; do
+			local file=$line
+			
+			grep -q ÿþ "$file"
+			if [ $? -eq 0 ]
+			then
+				echo "$file is in UTF-16"
+
+				iconv -f utf-16 -t ascii//TRANSLIT "$file" > cb_temp_sql
+				rm "$file"
+				mv cb_temp_sql "$file"
+			fi
+			grep -q ï»¿ "$file"
+			if [ $? -eq 0 ]
+			then
+				echo "$file is in UTF-8 with BOM"
+
+				sed '1s/^ï»¿//' "$file" > cb_temp_sql
+				rm "$file"
+				mv cb_temp_sql "$file"
+			fi
+		done
+
 	if [ -z $ALL ]
-	then	
+	then
 		git diff --name-status $left..head Database/ |
 			egrep '^D' |
 			sed 's/^[A-Z][ \t]\+//' |
@@ -172,28 +196,58 @@ function create_db_script ()
 			sed 's/views\/\(.*\)/drop view if exists \1/'	> db_deleted.sql
 	fi
 
+	# Repeatable scripts
 	echo "$filelist" |
-		sed 's/^/cat \"/' |
-		sed 's/$/\" >> db_script.sql; echo -e "\\ngo\\n" >> db_script.sql/' > db_files.txt
-	
-	if [ -s db_files.txt ]
+		sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_repeatable.sql; cat \"\1/' |
+		sed 's/$/\" >> db_script_repeatable.sql; echo -e "\\ngo\\n\\n" >> db_script_repeatable.sql/' > db_files_repeatable.txt
+
+	if [ -s db_files_repeatable.txt ]
 	then
-		echo -en "/*\nupdate CODES\nset code = '" >> db_script.sql
-		echo -n $left >> db_script.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n*/\n\n" >> db_script.sql
+		echo -en "/*\nupdate CODES\nset code = '" > db_script_repeatable.sql
+		echo -n $left >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n*/\n\n" >> db_script_repeatable.sql
+
+		echo "$filelist" |
+			sed 's/^/-- /' |
+			sed 's/$//' >> db_script_repeatable.sql
+
+		echo -e "\\n" >> db_script_repeatable.sql
 		
-		./db_files.txt
+		echo -e "\\n" >> db_script_onetime.sql
+		
+		./db_files_repeatable.txt
 	fi
 
-	if [ -s db_script.sql ]
+	if [ -s db_script_repeatable.sql ]
 	then
-		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script.sql
-		echo >> db_script.sql
-		echo -en "update CODES\nset code = '" >> db_script.sql
-		echo -en `git log -1 --format="%H"` >> db_script.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script.sql
+		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_repeatable.sql
+		echo >> db_script_repeatable.sql
+		echo -en "update CODES\nset code = '" >> db_script_repeatable.sql
+		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_repeatable.sql
 	else
-		echo "No database script created because there were no changes"
+		echo "No repeatable database script created because there were no changes"
+	fi
+
+	# One time scripts
+	echo "$filelistOnetime" |
+		sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_onetime.sql; cat \"\1/' |
+		sed 's/$/\" >> db_script_onetime.sql; echo -e "\\ngo\\n\\n" >> db_script_onetime.sql/' > db_files_onetime.txt
+
+	if [ -s db_files_onetime.txt ]
+	then
+		echo "$filelistOnetime" |
+			sed 's/^/-- /' |
+			sed 's/$//' > db_script_onetime.sql
+
+		echo -e "\\n" >> db_script_onetime.sql
+
+		./db_files_onetime.txt
+	fi
+
+	if [ ! -s db_script_onetime.sql ]
+	then
+		echo "No onetime database script created because there were no changes"
 	fi
 
 	cat db_deleted.sql
@@ -205,8 +259,10 @@ function create_db_script ()
 
 		if [ -d "$dir" ]
 		then
-			mv db_script.sql "$dir"
-			mv db_files.txt "$dir"
+			mv db_script_repeatable.sql "$dir"
+			mv db_files_repeatable.txt "$dir"
+			mv db_script_onetime.sql "$dir"
+			mv db_files_onetime.txt "$dir"
 			mv db_deleted.sql "$dir"
 		else
 			echo "Destination directory does not exist: $dir"
@@ -220,10 +276,16 @@ function create_db_script ()
 	fi
 
 	local files=""
-	if [ -s db_script.sql ]
+	if [ -s db_script_repeatable.sql ]
 	then
-		files="$files db_script.sql"
+		files="$files db_script_repeatable.sql"
 	fi
+	
+	if [ -s db_script_onetime.sql ]
+	then
+		files="$files db_script_onetime.sql"
+	fi
+	
 	if [ -s db_deleted.sql ]
 	then
 		files="$files db_deleted.sql"
