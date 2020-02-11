@@ -63,7 +63,7 @@ function create_db_script ()
 
 	if [ -z $COMMIT ] && [ -z $ALL ]
 	then
-		usage		
+		usage
 		exit 1
 	fi
 
@@ -93,7 +93,7 @@ function create_db_script ()
 			create_commit_hash_query
 			hash=`$sqlcmd_path $env -i create_commit_hash_query.sql | grep db | sed "s/db \([0-9a-zA-Z]*\).*$/\1/"`
 			echo $hash
-			
+
 			start_ssms="ssms.exe $env"
 		fi
 
@@ -137,7 +137,7 @@ function create_db_script ()
 	echo "$filelist" |
 		while read line; do
 			local file=$line
-			
+
 			grep -q ÿþ "$file"
 			if [ $? -eq 0 ]
 			then
@@ -161,7 +161,7 @@ function create_db_script ()
 	echo "$filelistOnetime" |
 		while read line; do
 			local file=$line
-			
+
 			grep -q ÿþ "$file"
 			if [ $? -eq 0 ]
 			then
@@ -193,7 +193,7 @@ function create_db_script ()
 			sed 's/triggers\/\(.*\)/drop trigger if exists \1/' |
 			sed 's/procs\/\(.*\)/drop proc if exists \1/' |
 			sed 's/functions\/\(.*\)/drop function if exists \1/' |
-			sed 's/views\/\(.*\)/drop view if exists \1/'	> db_deleted.sql
+			sed 's/views\/\(.*\)/drop view if exists \1/' > db_deleted.sql
 	fi
 
 	# Repeatable scripts
@@ -212,9 +212,9 @@ function create_db_script ()
 			sed 's/$//' >> db_script_repeatable.sql
 
 		echo -e "\\n" >> db_script_repeatable.sql
-		
+
 		echo -e "\\n" >> db_script_onetime.sql
-		
+
 		./db_files_repeatable.txt
 	fi
 
@@ -280,12 +280,12 @@ function create_db_script ()
 	then
 		files="$files db_script_repeatable.sql"
 	fi
-	
+
 	if [ -s db_script_onetime.sql ]
 	then
 		files="$files db_script_onetime.sql"
 	fi
-	
+
 	if [ -s db_deleted.sql ]
 	then
 		files="$files db_deleted.sql"
