@@ -139,7 +139,7 @@ function create_db_script ()
 	then
 		rm db_deleted.sql
 	fi
-	
+
 	if [ -z $ALL ]
 	then
 		local filelist=$(git diff -M100% --name-status $left..head Database/ | egrep '^[a-ce-zA-CE-Z]' | sed 's/^[A-Z][ \t]\+//' | grep Database/rep)
@@ -182,31 +182,30 @@ function create_db_script ()
 				mv cb_temp_sql "$file"
 			fi
 		done
-		
+
 		echo "$filelist" |
 			sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_repeatable.sql; cat \"\1/' |
 			sed 's/$/\" >> db_script_repeatable.sql; echo -e "\\ngo\\n\\n" >> db_script_repeatable.sql/' > db_files_repeatable.txt
-		
-		if [ -s db_files_repeatable.txt ]
-		then
-			echo -en "/*\nupdate CODES\nset code = '" > db_script_repeatable.sql
-			echo -n $left >> db_script_repeatable.sql
-			echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n*/\n\n" >> db_script_repeatable.sql
 
-			echo "$filelist" |
-				sed 's/^/-- /' |
-				sed 's/$//' >> db_script_repeatable.sql
+		echo -en "/*\nupdate CODES\nset code = '" > db_script_repeatable.sql
+		echo -n $left >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_repeatable.sql
 
-			echo -e "\\n" >> db_script_repeatable.sql
+		echo -en "List of files in this commit:\n" >> db_script_repeatable.sql
 
-			./db_files_repeatable.txt
+		echo "$filelist" |
+			sed 's/^/\t/' |
+			sed 's/$//' >> db_script_repeatable.sql
 
-			echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_repeatable.sql
-			echo >> db_script_repeatable.sql
-			echo -en "update CODES\nset code = '" >> db_script_repeatable.sql
-			echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
-			echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_repeatable.sql
-		fi
+		echo -en "*/\n\n" >> db_script_repeatable.sql
+
+		./db_files_repeatable.txt
+
+		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_repeatable.sql
+		echo >> db_script_repeatable.sql
+		echo -en "update CODES\nset code = '" >> db_script_repeatable.sql
+		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_repeatable.sql
 	fi
 
 	if [ -z "$filelistOnetime" ]
@@ -241,27 +240,26 @@ function create_db_script ()
 		echo "$filelistOnetime" |
 			sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_onetime.sql; cat \"\1/' |
 			sed 's/$/\" >> db_script_onetime.sql; echo -e "\\ngo\\n\\n" >> db_script_onetime.sql/' > db_files_onetime.txt
-		
-		if [ -s db_files_onetime.txt ]
-		then
-			echo -en "/*\nupdate CODES\nset code = '" > db_script_onetime.sql
-			echo -n $left >> db_script_onetime.sql
-			echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n*/\n\n" >> db_script_onetime.sql
 
-			echo "$filelistOnetime" |
-				sed 's/^/-- /' |
-				sed 's/$//' >> db_script_onetime.sql
+		echo -en "/*\nupdate CODES\nset code = '" > db_script_onetime.sql
+		echo -n $left >> db_script_onetime.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_onetime.sql
 
-			echo -e "\\n" >> db_script_onetime.sql
+		echo -en "List of files in this commit:\n" >> db_script_onetime.sql
 
-			./db_files_onetime.txt
+		echo "$filelistOnetime" |
+			sed 's/^/\t/' |
+			sed 's/$//' >> db_script_onetime.sql
 
-			echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_onetime.sql
-			echo >> db_script_onetime.sql
-			echo -en "update CODES\nset code = '" >> db_script_onetime.sql
-			echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
-			echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_onetime.sql
-		fi
+		echo -en "*/\n\n" >> db_script_onetime.sql
+
+		./db_files_onetime.txt
+
+		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_onetime.sql
+		echo >> db_script_onetime.sql
+		echo -en "update CODES\nset code = '" >> db_script_onetime.sql
+		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_onetime.sql
 	fi
 
 	if [ -z $ALL ]
