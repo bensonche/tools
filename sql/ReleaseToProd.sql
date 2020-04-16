@@ -10,35 +10,12 @@ with lastQA as
 select
 	a.RDIItemId id,
 	FeatureBranch,
-	case when b.sql_ct is null then '' else convert(varchar(2), b.sql_ct) end [sql count],
-	case when d.sql_ct is null then '' else convert(varchar(2), d.sql_ct) end [all sql count],
 	case when rtrim(ltrim(isnull(ChangedDescription, ''))) = '' then 'missing change description' else '' end as CDC,
 	e.DeveloperName,
 	e.developerid,
 	REPLACE(REPLACE(a.title, CHAR(13), ' '), CHAR(10), ' ')
 from RDIItem a
-	left join (
-		select a.rdiitemid, count(distinct a.itemfileid) sql_ct
-		from ItemFile a
-			left join DOC_METADATA c
-				on a.itemfileid = c.itemfileid
-			left join lastQA d
-				on a.RDIItemId = d.RDIItemId
-		where DOC_EXTENSION like '%sql'
-			and (d.date is null or a.ins_date > d.date)
-		group by a.rdiitemid ) b
-	on a.RDIItemId = b.RDIItemId
-
-	left join (
-		select a.rdiitemid, count(distinct a.itemfileid) sql_ct
-		from ItemFile a
-			left join DOC_METADATA c
-				on a.itemfileid = c.itemfileid
-		where DOC_EXTENSION like '%sql'
-		group by a.rdiitemid ) d
-	on a.RDIItemId = d.RDIItemId
-
-	cross apply RDI_GetPTReleaseInfo(a.rdiitemid) e
+cross apply RDI_GetPTReleaseInfo(a.rdiitemid) e
 where
 	a.CLIENT_ID = 363
 	and a.PROJECT_NO = 9
@@ -101,21 +78,8 @@ result as
 (
 	select 
 	(
-		select a.RDIItemId, isnull(b.sqlcount, 0) as SQLCount, c.DeveloperId
+		select a.RDIItemId, 0 as SQLCount, c.DeveloperId
 		from RDIItem a
-			left join (
-				select count(distinct a.itemfileid) sqlcount, a.rdiitemid
-					from ItemFile a
-						left join DOC_METADATA c
-							on a.itemfileid = c.itemfileid
-						left join lastQA d
-							on a.RDIItemId = d.RDIItemId
-				where DOC_EXTENSION like '%sql'
-					and (d.changeDate is null or a.ins_date > d.changeDate)
-				group by a.rdiitemid 
-				having count(*) > 0
-			) b
-				on a.RDIItemId = b.RDIItemId
 		cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) c
 		where
 			CLIENT_ID = 363
