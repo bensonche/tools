@@ -10,11 +10,11 @@ custom_bashrc_intranet ()
 	alias ptt="ptt.sh"
 
 	alias testdb="cd ../db && git fetch && git grx && git co $(testbranch.sh) && git po && db test"
-	
+
 	alias build="
-/c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false"
-	alias buildPublic="/c/NuGet.exe restore RDIPublicSite.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe RDIPublicSite.sln /p:Configuration=Release 	/p:AspNetConfiguration=Release /p:RunCodeAnalysis=false"
-	
+/c/NuGet.exe restore Intranet.sln && /c/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe Intranet.sln //p:Configuration=Release //p:AspNetConfiguration=Release //p:RunCodeAnalysis=false"
+	alias buildPublic="/c/NuGet.exe restore RDIPublicSite.sln && /c/Windows/Microsoft.NET/Framework64/v4.0.30319/MSBuild.exe RDIPublicSite.sln //p:Configuration=Release //p:AspNetConfiguration=Release //p:RunCodeAnalysis=false"
+
 	export GIT_MERGE_AUTOEDIT=no
 }
 
