@@ -1,6 +1,12 @@
-use rdi_production;
+use rdi_production
 
-with lastQA as
+set nocount on
+
+declare
+	@newline char(1) = char(13),
+	@newLineTab char(2) =  char(13) + char(9)
+
+;with lastQA as
 (
 	select RDIItemId, max(changedate) date
 	from RDIItemHistory
@@ -24,6 +30,7 @@ where
 order by a.RDIItemId
 
 ---------------------------------------------------------------------------------
+declare @json varchar(max)
 
 ;with cte as
 (
@@ -78,7 +85,7 @@ result as
 (
 	select 
 	(
-		select a.RDIItemId, 0 as SQLCount, c.DeveloperId
+		select a.RDIItemId, c.DeveloperId
 		from RDIItem a
 		cross apply dbo.RDI_GetPTReleaseInfo(a.rdiitemid) c
 		where
@@ -86,7 +93,7 @@ result as
 			and PROJECT_NO = 9
 			and StatusId = 48
 			and AssignedTo = 10000
-		for xml path('Item'), root('PTItems')
+		for json path
 	) PTItems,
 	(
 		select *
@@ -113,13 +120,20 @@ result as
 			union all select 'https://www.resdat.com/privatedn/invoicing/invoicelist.aspx'
 			union all select 'http://www.resdat.com/careers/apply'
 		) pages
-		for xml path(''), root('QAPages')
+		for json auto
 	) QAPages
 )
-select
-	'var PTItems = "' + PTItems + '";'
-	+ 'var QAPages = "' + QAPages + '";'
-	+ 'var current = new Date(' +  @dateJs + ');' as JS
+select @json =
+	'var PTItems = ' + PTItems + ';'
+	+ 'var QAPages = ' + QAPages + ';'
+	+ 'var current = new Date(' +  @dateJs + ');'
 	--'git grx && /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe Intranet.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as buildCmd,
 	--'git grx && /c/NuGet.exe restore RDIPublicSite.sln && /c/Program\ Files\ \(x86\)/MSBuild/14.0/Bin/MSBuild.exe RDIPublicSite.sln /p:Configuration=Release /p:AspNetConfiguration=Release /p:RunCodeAnalysis=false' as publicBuildCmd
 from result
+
+--set @json = replace(@json, '[', '[' + @newline)
+set @json = replace(@json, '{', @newline + '{' + @newLineTab)
+set @json = replace(@json, '}', @newline + '}')
+set @json = replace(@json, ';', ';' + @newline + @newline)
+
+print @json
