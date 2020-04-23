@@ -99,7 +99,7 @@ bc_setup ()
 		$git_conf alias.po "!git pull origin \$(git rev-parse --abbrev-ref HEAD)"
 		$git_conf alias.gp "!git grep --break --heading"
 		$git_conf alias.lt "!git for-each-ref --sort=taggerdate --format '%(refname) %09 %(color:yellow)%(taggerdate)' refs/tags | sed 's/^refs\/tags\///' | egrep '^Release'"
-		$git_conf alias.coo "\"!f() { echo $(git branch -l | grep $1 | wc -l) branches found; git checkout $(git branch -l --sort=-committerdate | grep $1 | head -1 | sed 's|^\\*||'); }; f\""
+		$git_conf alias.coo "!f() { echo \$(git branch -l | grep \$1 | wc -l) branches found; git checkout \$(git branch -l --sort=-committerdate | grep \$1 | head -1 | sed 's|^\\*||'); }; f"
 		$git_conf push.default current
 		$git_conf rebase.autosquash true
 		$git_conf color.status always
