@@ -8,10 +8,10 @@ declare @dir varchar(1000) = 'E:\Microsoft SQL Server\MSSQL14.MSSQLSERVER\MSSQL\
 declare @mdf varchar(1000) = @dir + @newDBName + '.mdf'
 declare @ldf varchar(1000) = @dir + @newDBName + '.ldf'
 
-declare @yesterday date = dateadd(d, -1, convert(varchar, getdate(), 101))
-declare @datestring varchar(20) = convert(varchar, datepart(yy, @yesterday)) + '.'
-set @datestring = @datestring + convert(varchar, datepart(m, @yesterday)) + '.'
-set @datestring = @datestring + convert(varchar, datepart(d, @yesterday))
+declare @today date = getdate()
+declare @datestring varchar(20) = convert(varchar, datepart(yy, @today)) + '.'
+set @datestring = @datestring + convert(varchar, datepart(m, @today)) + '.'
+set @datestring = @datestring + convert(varchar, datepart(d, @today))
 
 declare @bak varchar(max) = '\\anc-backupnas02\sqlbackups\RDI_Production.inet-sql-prod.' + @datestring + '.bak'
 
