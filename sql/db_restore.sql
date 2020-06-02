@@ -125,4 +125,23 @@ set @sql = '
 
 exec (@sql)
 
+declare @envShortName varchar(10) = null
+if charindex('dev', @newDBName) > 0
+	set @envShortName = 'dev'
+else if charindex('test', @newDBName) > 0
+	set @envShortName = 'test'
+
+if @envShortName is not null
+begin
+	set @sql = '
+		use ' + @newDBName + '
+
+		CREATE USER [RESDAT\svc.' + @envShortName + 'api] FOR LOGIN [RESDAT\svc.' + @envShortName + 'api]
+
+		alter role IntranetApplicationAccount
+		add member [resdat\svc.' + @envShortName + 'api]'
+
+	exec (@sql)
+end
+
 quit:
