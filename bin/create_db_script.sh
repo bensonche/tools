@@ -281,7 +281,7 @@ function create_db_script ()
 	if [ $COPY ]
 	then
 		local date=`date +%Y-%m-%d`
-		local dir="/c/users/bche/Dropbox/work/release/${date}"
+		local dir="/c/users/bche.RESDAT/SynologyDrive/work/release/${date}"
 
 		if [ -d "$dir" ]
 		then
