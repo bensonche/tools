@@ -18,8 +18,14 @@ into @username
 
 while @@fetch_status = 0
 begin
-    print 'create login [' + @username + '] from windows'
-    exec('create login [' + @username + '] from windows')
+	alter user [resdat\glee] with login = [resdat\glee]
+
+	begin try
+		print 'create login [' + @username + '] from windows'
+		exec('create login [' + @username + '] from windows')
+	end try
+	begin catch
+	end catch
 
     fetch next
     from GetOrphanUsers
