@@ -117,8 +117,6 @@ set @sql = '
 
 	while @@fetch_status = 0
 	begin
-		alter user [resdat\glee] with login = [resdat\glee]
-
 		begin try
 			print ''create login ['' + @username + ''] from windows''
 			exec(''create login ['' + @username + ''] from windows'')
