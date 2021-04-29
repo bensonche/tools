@@ -116,7 +116,6 @@ result as
 			union all select 'https://www.resdat.com/privatedn/ProjectTrack/default.aspx'
 			union all select 'https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348'
 			union all select 'https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx'
-			union all select 'https://www.resdat.com/privatedn/Employees/InOutBoard/inOutBoard.aspx'
 			union all select 'https://www.resdat.com/privatedn/invoicing/invoicelist.aspx'
 			union all select 'http://www.resdat.com/careers/apply'
 		) pages
