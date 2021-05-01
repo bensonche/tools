@@ -34,8 +34,20 @@ print 'Begin DB Restore'
 
 restore database @newDBName
 from disk = @bak
-with move 'resdat_be2000SQL_dat' to @mdf,
-move 'resdat_be2000SQL_log' to @ldf
+with
+	move 'resdat_be2000SQL_dat' to @mdf,
+	move 'resdat_be2000SQL_log' to @ldf,
+	stats = 1
+
+set @sql = '
+	ALTER DATABASE ' + @newDBName + '
+	SET recovery simple'
+exec( @sql)
+
+set @sql = '
+	use ' + @newDBName + '
+	dbcc shrinkfile (resdat_be2000SQL_log, 1)'
+exec(@sql)
 
 print 'DB Restore Finished'
 
