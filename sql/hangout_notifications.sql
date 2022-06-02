@@ -14,10 +14,8 @@ begin try
 	
 	declare @join1 varchar(max) = 'Intranet Standup on Teams at '
 	declare @join2 varchar(max) = 'Intranet Standup on Teams at '
-	declare @join3 varchar(max) = 'Intranet Orientation on Teams at '
 	
 	declare @contact1 varchar(max) = '. Contact Benson or Quinn for invite.'
-	declare @contact2 varchar(max) = '. Contact Kami for invite.'
 
 	declare @title varchar(1000)
 	declare @id int
@@ -56,26 +54,6 @@ begin try
 	exec Notification_LocationInsert @id, 3
 	set @title =  @join1 + '2PM CT' + @contact1
 	exec Notification_Insert @title, @link2, @startdate, @enddate, @id output
-	exec Notification_LocationInsert @id, 5
-	exec Notification_LocationInsert @id, 7
-	---------------------------------------------------------
-	-- Orientation
-	set @startdate = DATEADD(d, 4, @startdate)
-	set @enddate = @startdate
-	set @title =  @join3 + '8:30AM AT' + @contact2
-	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
-	exec Notification_LocationInsert @id, 0
-	exec Notification_LocationInsert @id, 1
-	exec Notification_LocationInsert @id, 2
-	exec Notification_LocationInsert @id, 4
-	set @title =  @join3 + '9:30AM PT' + @contact2
-	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
-	exec Notification_LocationInsert @id, 6
-	set @title =  @join3 + '10:30AM MT' + @contact2
-	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
-	exec Notification_LocationInsert @id, 3
-	set @title =  @join3 + '11:30PM CT' + @contact2
-	exec Notification_Insert @title, @link3, @startdate, @enddate, @id output
 	exec Notification_LocationInsert @id, 5
 	exec Notification_LocationInsert @id, 7
 	commit

@@ -52,9 +52,9 @@ function create_db_script ()
 	local sqlcmd_path='sqlcmd.exe'
 	local start_ssms="start"
 
-	local dev="-S inet-sql-dev -d RDI_Development"
-	local test="-S inet-sql-test -d RDI_Test"
-	local prod="-S inet-sql-prod -d RDI_Production"
+	local dev="-S inet-sql-dev-az -d RDI_Development"
+	local test="-S inet-sql-tst-az -d RDI_Test"
+	local prod="-S inet-sql-prd -d RDI_Production"
 
 	cmdline $@
 
