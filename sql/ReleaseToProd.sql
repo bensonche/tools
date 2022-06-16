@@ -63,7 +63,7 @@ select
 	'="echo -e ""\e[32m" & ' + markBranch + ' & "\n' + cast(seq as varchar) + ' remaining\e[39m"" && " & ' + markBranch as ' & "markBranch---------------------------------"', suffix,
 	'="echo -e ""\e[32m" & ' + pushAll + ' & "\n' + cast(seq as varchar) + ' remaining\e[39m"" && " & ' + pushAll as ' & "pushAll---------------------------------"', suffix,
 	'="echo -e ""\e[32m" & INDIRECT(ADDRESS(ROW(), 1)) & "\n' + cast(seq as varchar) + ' remaining\e[39m"" && " & ' + resetMark as ' & "resetMark---------------------------------"', suffix,
-	'="echo -e ""\e[32m" & ' + deleteBranch + ' & "\n' + cast(seq as varchar) + ' remaining\e[39m"" && " & ' + deleteBranch as ' & "deleteBranch---------------------------------"', suffix
+	'="echo -e ""\e[32m" & ' + deleteBranch + ' & "\n' + cast(seq as varchar) + ' remaining\e[39m"" && " & ' + deleteBranch as ' & "deleteBranch---------------------------------"', ';'
 from cte1
 order by reverseSeq
 
