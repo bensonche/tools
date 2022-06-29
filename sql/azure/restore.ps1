@@ -190,8 +190,12 @@ function Run-Restore-Database {
         use master
         go
 
-        alter database $($databaseName)
-        set single_user with rollback immediate
+        begin try
+            alter database $($databaseName)
+            set single_user with rollback immediate
+        end try
+        begin catch
+        end catch
         go
 
         print 'Begin DB Restore'
@@ -200,9 +204,9 @@ function Run-Restore-Database {
         from $($fullBackupPaths)
         with
             stats = 1,
-            move 'resdat_be2000SQL_dat' to 'F:\Database\$($databaseName).mdf,
-            move 'resdat_be2000SQL_log' to 'F:\Database\$($databaseName).ldf
-            $(recoveryString)
+            move 'resdat_be2000SQL_dat' to 'F:\Database\$($databaseName).mdf',
+            move 'resdat_be2000SQL_log' to 'L:\Database\$($databaseName).ldf'
+            $($recoveryString)
         go
         "
     
@@ -249,7 +253,7 @@ function Run-Restore-Database {
     
     Write-Output $query
     
-    invoke-sqlcmd -query $query -Database $databaseName -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0
+    invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
 }
 
 Main
