@@ -3,16 +3,19 @@ using namespace System.IO
 using namespace System
 
 param(
-    [String]$restoreDestination = "c:\temp\testAzure",
+    [String]$restoreDestination = "g:\backups\",
     [String]$azureUrl = "https://prdintranetbackups.blob.core.windows.net/",
     [string]$fullContainerName = "backup-full",
     [string]$differentialContainerName = "backup-differential",
-    [bool]$downloadFromAzure = $false
+    [bool]$downloadFromAzure = $true
 )
 
 $ErrorActionPreference = "Stop"
 
 function Main {
+    $start = Get-Date
+
+    # return
     $databaseList = New-Object List[Database]
 
     # Autodetect which databases to restore if the list is null.
@@ -79,6 +82,14 @@ function Main {
                 $context | Get-AzStorageBlobContent -Container $differentialContainerName -Blob $blob -Destination $fullPath
             }
         }
+        
+        $end = get-date
+        $span = $end - $start
+
+        Write-Output 'Download from Azure took:'
+        write-output $span
+
+        $start = $end
     }
 
     $fullBackupPaths = Get-Csv-Backup-Paths $latestFullBackupList
@@ -90,7 +101,15 @@ function Main {
     Write-Output $fullBackupPaths
     Write-Output $differentialBackupPaths
 
+
     Run-Restore-Database "inet-sql-dev-az" "RDI_Development_2" $fullBackupPaths $differentialBackupPaths
+
+    $end = get-date
+    $span = $end - $start
+
+    Write-Output 'Restore took:'
+    write-output $span
+
 }
 
 class Database {
