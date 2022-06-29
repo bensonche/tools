@@ -180,6 +180,12 @@ function Run-Restore-Database {
         [bool]$scrub
     )
 
+    $recoveryString = ""
+    if ($null -ne $differentialBackupPaths)
+    {
+        $recoveryString = ", norecovery"
+    }
+
     $query = "
         use master
         go
@@ -192,7 +198,11 @@ function Run-Restore-Database {
 
         restore database $($databaseName)
         from $($fullBackupPaths)
-        with stats = 1
+        with
+            stats = 1,
+            move 'resdat_be2000SQL_dat' to 'F:\Database\$($databaseName).mdf,
+            move 'resdat_be2000SQL_log' to 'F:\Database\$($databaseName).ldf
+            $(recoveryString)
         go
         "
     
@@ -239,7 +249,7 @@ function Run-Restore-Database {
     
     Write-Output $query
     
-    invoke-sqlcmd -query $query -Database $databaseName -ServerInstance $serverName
+    invoke-sqlcmd -query $query -Database $databaseName -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0
 }
 
 Main
