@@ -214,7 +214,7 @@ function Run-Restore-Database {
     {
         $query += "
             restore database $($databaseName)
-            from $($fullBackupPaths)
+            from $($differentialBackupPaths)
             with stats = 1
             go
             "
@@ -244,7 +244,7 @@ function Run-Restore-Database {
     $query += "
         use $($databaseName)
         go
-        dbcc shrinkfile (resdat_bd2000SQL_log, 1)
+        dbcc shrinkfile (resdat_be2000SQL_log, 1)
         go
         
         alter database $($databaseName)
