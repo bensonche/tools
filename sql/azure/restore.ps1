@@ -4,7 +4,7 @@ using namespace System
 
 param(
     [String]$restoreDestination = "g:\backups\",
-    [String]$azureUrl = "https://prdintranetbackups.blob.core.windows.net/",
+    [String]$azureUrl = "https://prdintranetbackups-secondary.blob.core.windows.net/",
     [string]$fullContainerName = "backup-full",
     [string]$differentialContainerName = "backup-differential",
     [bool]$downloadFromAzure = $true
