@@ -101,10 +101,8 @@ function Main {
     Write-Output $fullBackupPaths
     Write-Output $differentialBackupPaths
 
-    $ErrorActionPreference = "Continue"
-
-    foreach($database in $databaseList)
-    {
+    foreach ($database in $databaseList) {
+        Write-Output "Restoring $($database.Name), Scrub: $($database.Scrub)"
         Run-Restore-Database "localhost" $database.Name $fullBackupPaths $differentialBackupPaths $database.Scrub
     }
 
@@ -187,8 +185,7 @@ function Run-Restore-Database {
     Write-Output "Restoring $($databaseName) starting at $($start.ToShortTimeString())"
 
     $recoveryString = ""
-    if ($null -ne $differentialBackupPaths)
-    {
+    if ($null -ne $differentialBackupPaths) {
         $recoveryString = ", norecovery"
     }
 
@@ -216,8 +213,7 @@ function Run-Restore-Database {
         go
         "
     
-    if ($null -ne $differentialBackupPaths)
-    {
+    if ($null -ne $differentialBackupPaths) {
         $query += "
             restore database $($databaseName)
             from $($differentialBackupPaths)
@@ -234,9 +230,11 @@ function Run-Restore-Database {
         print 'DB Restore Finished'
         "
 
-    if ($true -eq $scrub)
-    {
-        $query += "
+    Write-Output $query
+    invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
+
+    if ($true -eq $scrub) {
+        $query = "
             print 'Begin scrub'
 
             use $($databaseName)
@@ -245,9 +243,16 @@ function Run-Restore-Database {
 
             print 'End scrub'
             "
+
+        $ErrorActionPreference = "Continue"
+
+        Write-Output $query
+        invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
+        
+        $ErrorActionPreference = "Stop"
     }
 
-    $query += "
+    $query = "
         use $($databaseName)
         go
         dbcc shrinkfile (resdat_be2000SQL_log, 1)
@@ -258,7 +263,80 @@ function Run-Restore-Database {
         "
     
     Write-Output $query
+    invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
+
+    $query = "
+        use $($databaseName)
+        go
+        declare @username varchar(max)
+        declare @orphans table
+        (
+            username varchar(max),
+            userSid varchar(max)
+        )
     
+        insert into @orphans
+        exec sp_change_users_login 'report'
+    
+        declare GetOrphanUsers cursor
+        for
+        select username
+        FROM @orphans
+    
+        open GetOrphanUsers
+    
+        fetch next
+        from GetOrphanUsers
+        into @username
+    
+        while @@fetch_status = 0
+        begin
+            exec sp_change_users_login 'Auto_Fix', @username
+            
+            fetch next
+            from GetOrphanUsers
+            into @username
+        end
+    
+        close GetOrphanUsers
+        deallocate GetOrphanUsers
+    
+        declare GetOrphanUsers2 cursor
+        for
+            select a.name
+            from sysusers a
+                left join sys.server_principals b
+                    on a.sid = b.sid
+            where b.sid is null
+            and a.islogin = 1
+            and a.hasdbaccess = 1
+            and a.issqluser = 0
+    
+        open GetOrphanUsers2
+    
+        fetch next
+        from GetOrphanUsers2
+        into @username
+    
+        while @@fetch_status = 0
+        begin
+            begin try
+                print 'create login [' + @username + '] from windows'
+                exec('create login [' + @username + '] from windows')
+            end try
+            begin catch
+            end catch
+    
+            fetch next
+            from GetOrphanUsers2
+            into @username
+        end
+    
+        close GetOrphanUsers2
+        deallocate GetOrphanUsers2
+        "
+
+    Write-Output $query
     invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
 
     $end = get-date
