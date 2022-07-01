@@ -101,15 +101,18 @@ function Main {
     Write-Output $fullBackupPaths
     Write-Output $differentialBackupPaths
 
+    $ErrorActionPreference = "Continue"
 
-    Run-Restore-Database "inet-sql-dev-az" "RDI_Development_2" $fullBackupPaths $differentialBackupPaths
+    foreach($database in $databaseList)
+    {
+        Run-Restore-Database "localhost" $database.Name $fullBackupPaths $differentialBackupPaths $database.Scrub
+    }
 
     $end = get-date
     $span = $end - $start
 
-    Write-Output 'Restore took:'
+    Write-Output 'Restore all databases took:'
     write-output $span
-
 }
 
 class Database {
@@ -179,6 +182,9 @@ function Run-Restore-Database {
         [string]$differentialBackupPaths,
         [bool]$scrub
     )
+
+    $start = Get-Date
+    Write-Output "Restoring $($databaseName) starting at $($start.ToShortTimeString())"
 
     $recoveryString = ""
     if ($null -ne $differentialBackupPaths)
@@ -254,6 +260,12 @@ function Run-Restore-Database {
     Write-Output $query
     
     invoke-sqlcmd -query $query -Database master -ServerInstance $serverName -ConnectionTimeout 0 -QueryTimeout 0 -Verbose
+
+    $end = get-date
+    $span = $end - $start
+
+    Write-Output "Restore $($databaseName) finished, taking:"
+    write-output $span
 }
 
 Main
