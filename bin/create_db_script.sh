@@ -191,6 +191,10 @@ function create_db_script ()
 		echo -n $left >> db_script_repeatable.sql
 		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_repeatable.sql
 
+		echo -en "\nuse RDI_Development_2\ngo\n" >> db_script_repeatable.sql
+		echo -en "\nuse RDI_Test_2\ngo\n" >> db_script_repeatable.sql
+		echo -en "\nuse RDI_Production\ngo\n\n\n" >> db_script_repeatable.sql
+
 		echo -en "List of files in this commit:\n" >> db_script_repeatable.sql
 
 		echo "$filelist" |
@@ -244,6 +248,10 @@ function create_db_script ()
 		echo -en "/*\nupdate CODES\nset code = '" > db_script_onetime.sql
 		echo -n $left >> db_script_onetime.sql
 		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_onetime.sql
+
+		echo -en "\nuse RDI_Development_2\ngo\n" >> db_script_onetime.sql
+		echo -en "\nuse RDI_Test_2\ngo\n" >> db_script_onetime.sql
+		echo -en "\nuse RDI_Production\ngo\n\n\n" >> db_script_onetime.sql
 
 		echo -en "List of files in this commit:\n" >> db_script_onetime.sql
 
