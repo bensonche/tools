@@ -5,9 +5,10 @@ begin try
 
 	declare @startdate datetime
 	declare @enddate datetime
+	declare @today datetime = getdate()
 
-	declare @knownMonday date = '6/26/2023'
-	set @startdate = cast(dateadd(day, datepart(WEEKDAY, @knownMonday) - datepart(WEEKDAY, getdate()), getdate()) as date)
+	declare @knownTuesday date = '6/27/2023'
+	set @startdate = cast(dateadd(day, datepart(WEEKDAY, @knownTuesday) - datepart(WEEKDAY, @today), @today) as date)
 
 	declare @link1 varchar(max) = ''
 	declare @link2 varchar(max) = ''
