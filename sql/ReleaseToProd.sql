@@ -119,7 +119,7 @@ result as
 			union all select 'https://www.resdat.com/privatedn/ProjectTrack/IssueGrid.aspx?IssueID=65348'
 			union all select 'https://www.resdat.com/privatedn/Employees/EmployeeTrack/EmployeeTrack.aspx'
 			union all select 'https://www.resdat.com/privatedn/invoicing/invoicelist.aspx'
-			union all select 'http://www.resdat.com/careers/apply'
+			union all select 'https://intranet.resourcedata.com/Standards/UserInterfaceStandards'
 		) pages
 		for json auto
 	) QAPages
@@ -138,3 +138,5 @@ set @json = replace(@json, '}', @newline + '}')
 set @json = replace(@json, ';', ';' + @newline + @newline)
 
 print @json
+
+select @json
