@@ -269,6 +269,28 @@ function create_db_script ()
 		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
 		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_onetime.sql
 	fi
+	
+	echo -en "create proc #DropTrigger\n" >> db_deleted.sql
+	echo -en "	@name varchar(max)\n" >> db_deleted.sql
+	echo -en "as\n" >> db_deleted.sql
+	echo -en "begin\n" >> db_deleted.sql
+	echo -en "	declare @fullName varchar(max)\n" >> db_deleted.sql
+	echo -en "	\n" >> db_deleted.sql
+	echo -en "	select @fullName = '[' + s.name + '],[' + t.name + ']'\n" >> db_deleted.sql
+	echo -en "	from sys.triggers t\n" >> db_deleted.sql
+	echo -en "	inner join sys.tables tb\n" >> db_deleted.sql
+	echo -en "		on t.parent_id = tb.object_id\n" >> db_deleted.sql
+	echo -en "	inner join sys.schemas s\n" >> db_deleted.sql
+	echo -en "		on tb.schema_id = s.schema_id\n" >> db_deleted.sql
+	echo -en "	where t.name = @name\n" >> db_deleted.sql
+	echo -en "	\n" >> db_deleted.sql
+	echo -en "	if @fullName is not NULL\n" >> db_deleted.sql
+	echo -en "	begin\n" >> db_deleted.sql
+	echo -en "		exec('drop trigger if exists ' + @fullName)\n" >> db_deleted.sql
+	echo -en "	end\n" >> db_deleted.sql
+	echo -en "end\n" >> db_deleted.sql
+	echo -en "go\n" >> db_deleted.sql
+	echo -en "\n" >> db_deleted.sql
 
 	if [ -z $ALL ]
 	then
@@ -278,10 +300,10 @@ function create_db_script ()
 			grep Database/rep |
 			sed 's/\(.*\)\.sql$/\1/' |
 			sed 's/^Database\/repeatable\/\(.*\)/\1/' |
-			sed 's/triggers\/\(.*\)/drop trigger if exists \1/' |
+			sed 's/triggers\/\(.*\)/exec #DropTrigger '\''\1'\''/' |
 			sed 's/procs\/\(.*\)/drop proc if exists \1/' |
 			sed 's/functions\/\(.*\)/drop function if exists \1/' |
-			sed 's/views\/\(.*\)/drop view if exists \1/' > db_deleted.sql
+			sed 's/views\/\(.*\)/drop view if exists \1/' >> db_deleted.sql
 	fi
 
 	cat db_deleted.sql
