@@ -270,13 +270,15 @@ function create_db_script ()
 		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_onetime.sql
 	fi
 	
+	echo -en "drop proc if exists #DropTrigger\n" >> db_deleted.sql
+	echo -en "go\n" >> db_deleted.sql
 	echo -en "create proc #DropTrigger\n" >> db_deleted.sql
 	echo -en "	@name varchar(max)\n" >> db_deleted.sql
 	echo -en "as\n" >> db_deleted.sql
 	echo -en "begin\n" >> db_deleted.sql
 	echo -en "	declare @fullName varchar(max)\n" >> db_deleted.sql
 	echo -en "	\n" >> db_deleted.sql
-	echo -en "	select @fullName = '[' + s.name + '],[' + t.name + ']'\n" >> db_deleted.sql
+	echo -en "	select @fullName = '[' + s.name + '].[' + t.name + ']'\n" >> db_deleted.sql
 	echo -en "	from sys.triggers t\n" >> db_deleted.sql
 	echo -en "	inner join sys.tables tb\n" >> db_deleted.sql
 	echo -en "		on t.parent_id = tb.object_id\n" >> db_deleted.sql
