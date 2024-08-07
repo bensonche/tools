@@ -1,14 +1,21 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
     "name": "Intranet Extension",
     "description": "Improvements for ProjectTrack",
-    "version": "5.10.1",
+    "version": "6.0.0",
     "options_page": "options.html",
     "permissions": [
         "storage"
     ],
     "web_accessible_resources": [
-        "options.html"
+        {
+            "resources": [
+                "options.html"
+            ],
+            "matches": [
+                "*://*/*"
+            ]
+        }
     ],
     "content_scripts": [
         {

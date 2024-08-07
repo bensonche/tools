@@ -2,7 +2,6 @@
     var ran = false;
 
     var selfID = null;
-    var oauth = null;
 
     function buildPullRequestLink() {
         function getPRId(url) {
@@ -17,71 +16,72 @@
             var body = $(v).text();
 
             var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
+            if(matches)
+            {
+            for (let i = 0; i < matches.length; i++) {
+                if (matches[i] !== null) {
+                    allMatches = allMatches.concat(matches[i]);
 
-            if (matches) {
-                var obj = {
-                    match: matches,
-                    source: "Intranet"
-                };
-                allMatches = allMatches.concat(obj);
+                }
             }
+        }
 
-            matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/RDIPublicSite\/pull\/\d+/i);
-
-            if (matches) {
-                var obj = {
-                    match: matches,
-                    source: "RDIPublicSite"
-                };
-                allMatches = allMatches.concat(obj);
+            matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/ModernIntranet\/pull\/\d+/i);
+            if(matches)
+                {
+                for (let i = 0; i < matches.length; i++) {
+                    if (matches[i] !== null) {
+                        allMatches = allMatches.concat(matches[i]);
+    
+                    }
+                }
             }
         });
 
         allMatches = _.sortBy(allMatches, function (x) {
-            return -getPRId(x.match[0]);
+            return -getPRId(x);
         });
 
         allMatches = _.uniq(allMatches, true);
 
         var $link;
-        var validLink = false;
-        var prId;
-        var source;
 
         if (allMatches.length === 0)
             $link = $("<div id='github-PR' class='RDIText'>PR missing</div>");
         else {
-            prId = getPRId(allMatches[0].match[0]);
-            source = allMatches[0].source;
-            var prCount = "";
-            if (allMatches.length > 1)
-                prCount = "(" + allMatches.length + ")";
-            $link = $("<div id='github-PR'><a target='_blank' class='RDIHyperLink' href='" + allMatches[0].match[0] + "'>PR " + prId + " " + prCount + "</a><div class='circle circle-orange'></div></div>");
-            validLink = true;
+            var prId;
+            var source;
+
+            let link = "<div id='github-PR'>";
+
+            const maxToDisplay =5;
+
+            for (var i = 0; i < allMatches.length; i++) {
+
+                if(i > maxToDisplay){
+                    const remaining = allMatches.length;
+
+                    link += `<div>${remaining} other PRs not shown</div>`;
+
+                    break;
+                }
+                const currentMatch = allMatches[i];
+
+                prId = getPRId(currentMatch);
+
+                const isMI = currentMatch.search(/ModernIntranet/i) > -1;
+
+                const environment = isMI ? "MI" : "Legacy";
+
+                link += `<div><a target='_blank' class='RDIHyperLink' href='${currentMatch}'>${environment} PR ${prId}</a></div>`;
+            }
+
+            link += "</div>";
+
+            $link = $(link);
         }
 
-        $("[id$=txtBranch]").parents("td").first().append($link);
-
-        if (validLink) {
-            if (oauth !== null && oauth.length > 0) {
-                $.ajax({
-                    url: "https://api.github.com/repos/ResourceDataInc/" + source + "/pulls/" + prId + "?access_token=" + oauth
-                }).done(function (d) {
-                    if (d && d.head && d.head.ref) {
-                        var branchname = d.head.ref;
-                        if ($("[id$=txtBranch]").val() === branchname)
-                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-green");
-                        else
-                            $("#github-PR .circle").removeClass("circle-orange").addClass("circle-red");
-                    }
-                }).fail(function (d) {
-                    $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Bad OAth token</a>");
-                });
-            }
-            else {
-                $("#github-PR .circle").removeClass("circle").removeClass("circle-orange").addClass("error-link").html("<a class='RDIHyperLink' target='_blank' href='" + chrome.extension.getURL("options.html") + "'>Missing OAth token</a>");
-            }
-        }
+        $(".githubLinks").append($link);
     }
 
     function getLatestQA() {
@@ -191,11 +191,11 @@
             $("input#QAButton").click(function () {
                 if ($("[id$=ddlAssignedTo]").val() != 10000) {
                     $("select[id$=ddlStatus] option[value=8]").prop("selected", true);
-                    
+
                     var prodString = "In prod, please review.";
                     prodString += "\n";
                     prodString += "Please create a new branch for any additional work.";
-                    
+
                     $("textarea[id$=txtComments]").val(prodString);
 
                     $("input[id$=Submit]").click();
@@ -207,7 +207,7 @@
             $("input#QAButton").remove();
         }
     }
-    
+
     function buildRTPButton() {
         if (isReview()) {
             if ($("input#RTPButton").length > 0) {
@@ -217,11 +217,11 @@
             // Check assigned to Intranet Group
             if ($("span#assignedToDdSpan select option:selected").val() != 10000)
                 return;
-            
+
             // Check git feature branch
             if ($("input[id$=txtBranch]").val().trim() === "")
                 return;
-            
+
             // Check change summary
             if ($("textarea[id$=txtChangedDescription]").val().trim() === "")
                 return;
@@ -235,62 +235,12 @@
             assignTo.after("<input type='button' id='RTPButton' value='Release to Prod' class='RDIButton' />");
 
             $("input#RTPButton").click(function () {
-                    $("select[id$=ddlStatus] option[value=48]").prop("selected", true);
-                    $("input[id$=Submit]").click();
+                $("select[id$=ddlStatus] option[value=48]").prop("selected", true);
+                $("input[id$=Submit]").click();
             });
         } else {
             $("input#RTPButton").remove();
         }
-    }
-
-    var buildingSQL = false;
-    function buildSQLCount() {
-        if (buildingSQL)
-            return;
-
-        buildingSQL = true;
-
-        if ($("span#SQLCount").length > 0) {
-            return;
-        }
-
-        var table = $("[id$=gvDocList]");
-        var extHeader = table.find(".RDIGridHeader th:contains(Ext)");
-        var updHeader = table.find(".RDIGridHeader th:contains(Updated)");
-
-        var colExtIndex = extHeader.parent().children().index(extHeader);
-        var colUpdIndex = updHeader.parent().children().index(updHeader);
-
-        var sqlCount = 0;
-        $.each(table.find("tr"), function (index, value) {
-            if (index == 0)
-                return true;
-            var extension = $(value).find("td").eq(colExtIndex).text().trim();
-            if (extension == ".sql" || extension == "sql") {
-                var dateString = $(value).find("td").eq(colUpdIndex).text().trim();
-                if (!isNaN(Date.parse(dateString))) {
-                    var updatedDate = new Date(dateString);
-
-                    if (updatedDate > getLatestQA())
-                        sqlCount++;
-                }
-            }
-        });
-
-        var txtBranch = $("[id$=txtBranch]");
-
-        if (txtBranch.length == 0) {
-            return;
-        }
-
-        if (sqlCount == 0)
-            txtBranch.parent().append("<span id='SQLCount' class='RDIText'>No SQL</span>");
-        else if (sqlCount == 1)
-            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL file</span>");
-        else
-            txtBranch.parent().append("<span id='SQLCount' class='RDIText'><b>" + sqlCount + "</b> SQL files</span>");
-
-        buildingSQL = false;
     }
 
     function isRTP() {
@@ -317,11 +267,9 @@
             return;
         }
 
-        var compare = $("<a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a>");
-        var comparePublic = $("<a class='githubCompare RDIHyperLink' data-repo='RDIPublicSite' href='#' target='_blank'> [p]</a>");
+        var compare = $("<div class='githubLinks'><a class='githubCompare RDIHyperLink' data-repo='Intranet' href='#' target='_blank'>Compare</a></div>");
 
         txtBranch.after(compare);
-        compare.after(comparePublic);
 
         updateLink();
 
@@ -380,10 +328,8 @@
         if (isNaN(parseInt(selfID))) {
             chrome.storage.sync.get({
                 empid: '',
-                oauth: ''
             }, function (item) {
                 selfID = item.empid;
-                oauth = item.oauth;
                 dfd.resolve();
             });
         } else {
@@ -391,7 +337,6 @@
         }
 
         dfd.done(function () {
-            buildSQLCount();
             buildCompareButton();
             buildQAButton();
             buildRTPButton();
@@ -402,7 +347,7 @@
     }
 
 
-    document.addEventListener("DOMSubtreeModified", function () {
+    $(document).ready(function () {
         init();
     });
 })()
