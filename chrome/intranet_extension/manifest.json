@@ -4,7 +4,7 @@
     "description": "Improvements for ProjectTrack",
     "version": "6.0.0",
     "options_page": "options.html",
-    "optional_permissions": [
+    "permissions": [
         "storage"
     ],
     "web_accessible_resources": [
