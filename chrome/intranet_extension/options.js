@@ -1,10 +1,8 @@
 function save_options() {
     var empid = $("#txtID").val();
-    var oauth = $("#oAuth").val();
     
     chrome.storage.sync.set({
-        empid: empid,
-        oauth: oauth
+        empid: empid
     }, function () {
         $("#Message").text("saved");
         setTimeout(function() {
@@ -15,11 +13,9 @@ function save_options() {
 
 function restore_options() {
     chrome.storage.sync.get({
-        empid: '',
-        oauth: ''
+        empid: ''
     }, function(items) {
         $("#txtID").val(items.empid);
-        $("#oAuth").val(items.oauth);
     });
 }
 

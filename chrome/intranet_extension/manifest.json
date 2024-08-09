@@ -4,7 +4,7 @@
     "description": "Improvements for ProjectTrack",
     "version": "6.0.0",
     "options_page": "options.html",
-    "permissions": [
+    "optional_permissions": [
         "storage"
     ],
     "web_accessible_resources": [
@@ -33,18 +33,6 @@
             ],
             "css": [
                 "intranet.css"
-            ]
-        },
-        {
-            "matches": [
-                "*://*/privatedn/security/login.aspx",
-                "*://*/privatedn/Security/login.aspx",
-                "*://*/privatedn/security/Login.aspx",
-                "*://*/privatedn/Security/Login.aspx"
-            ],
-            "js": [
-                "lib/jquery-3.0.0.min.js",
-                "login.js"
             ]
         },
         {
