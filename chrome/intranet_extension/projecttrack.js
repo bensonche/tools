@@ -32,7 +32,7 @@
                 for (let i = 0; i < matches.length; i++) {
                     if (matches[i] !== null) {
                         allMatches = allMatches.concat(matches[i]);
-    
+
                     }
                 }
             }
@@ -349,5 +349,14 @@
 
     $(document).ready(function () {
         init();
+
+        const callback = (_, _) => {
+            init();
+        };
+
+        const observer = new MutationObserver(callback);
+
+        const config = { attributes: true, childList: true, subtree: true };
+        observer.observe($("#ctl00_ctl00_BodyContentPlaceHolder_ProjectTrackPlaceHolder1_ctl00")[0], config);
     });
 })()

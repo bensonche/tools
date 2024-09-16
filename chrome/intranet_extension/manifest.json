@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "Intranet Extension",
     "description": "Improvements for ProjectTrack",
-    "version": "6.0.0",
+    "version": "6.0.1",
     "options_page": "options.html",
     "permissions": [
         "storage"
