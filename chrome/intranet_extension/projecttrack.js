@@ -350,7 +350,7 @@
     $(document).ready(function () {
         init();
 
-        const callback = (_, _) => {
+        const callback = (mutationList, observer) => {
             init();
         };
 
