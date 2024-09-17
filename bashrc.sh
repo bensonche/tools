@@ -11,7 +11,7 @@ custom_bashrc_intranet ()
 	alias ptt="ptt.sh"
 	alias markBranch="mark_branch.sh"
 
-	alias testdb="cd ../db && git fetch && git grx && git co origin/auto-dev-branch && tdb test"
+	alias testdb="cd ../db && git fetch && git grx && git co origin/master && tdb test"
 
 	alias build="
 /c/NuGet.exe restore Intranet.sln && /c/Program\ Files\ \(x86\)/Microsoft\ Visual\ Studio/2019/Enterprise/MSBuild/Current/Bin/MSBuild.exe Intranet.sln //p:Configuration=Release //p:AspNetConfiguration=Release //p:RunCodeAnalysis=false"

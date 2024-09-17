@@ -12,12 +12,17 @@ usage ()
 
 function create_test_db_script ()
 {
-	./merge.cmd -GithubToken <token> -Label "Test-DB-scripts-ran"
+	git fetch --tags
+
+	./merge.cmd -GithubToken <token> -Label "ignore"
+
+	TAG_NAME=Test_DB_Script_$(date +%s)
+
+	git tag $TAG_NAME
+	git push origin $TAG_NAME
 
 	create_db_script.sh $@
 
-	git tag -f Test_DB_Script
-	git push -f origin Test_DB_Script
 }
 
 create_test_db_script $@
