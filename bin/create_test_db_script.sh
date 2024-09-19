@@ -14,7 +14,7 @@ function create_test_db_script ()
 {
 	git fetch --tags
 
-	./merge.cmd -GithubToken <token> -Label "Test-DB-scripts-ran"
+	./merge.cmd -GithubToken $INTRANET_TOKEN -Label "Test-DB-scripts-ran"
 
 	TAG_NAME=Test_DB_Script_$(date +%s)
 
