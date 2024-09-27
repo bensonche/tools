@@ -14,6 +14,11 @@ function create_test_db_script ()
 {
 	git fetch --tags
 
+	if [[ -z $INTRANET_TOKEN ]] then
+		echo "Missing INTRANET_TOKEN environment variable"
+		exit 1
+	fi
+
 	./merge.cmd -GithubToken $INTRANET_TOKEN -Label "Test-DB-scripts-ran"
 
 	TAG_NAME=Test_DB_Script_$(date +%s)
