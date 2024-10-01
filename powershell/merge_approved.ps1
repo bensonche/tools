@@ -10,9 +10,6 @@ if ($null -eq $token)
     exit 1
 }
 
-git fetch
-git checkout origin/master
-
 $Headers = @{
     'Authorization' = "token $token"
 }
@@ -47,65 +44,49 @@ $PullRequests | ForEach-Object {
     }
 }
 
-$results = @()
-
 foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, created_at) {
     $hasLabel = $request.labels.Count -ne 0 -and $request.labels.name -contains "approved-for-release"
 
     if($hasLabel) {
         if($request.MergePrioritySort -eq -1) {
-            $results += @{
-                SortOrder = 1
-                Status = 'skipped'
-                Number = $request.number
-                Title = $request.title
-                Message = "Skipping PR $($request.number) - $($request.title) due to labels ($($request.labels.name))"
-                Color = "yellow"
-            }
-
             Write-Host "Skipping PR $($request.number) - $($request.title) due to labels ($($request.labels.name))" -Fore yellow
             Continue
         }
+        
+        # Fetch mergeable state
+        $retries = 0
 
-        Write-Host "Attempting to merge PR $($request.number) - $($request.title)" -Fore green
+        $pullRequest = Invoke-RestMethod -Uri $request.url -Headers $Headers
+        $stateUnknown = $pullRequest.mergeable_state -eq "unknown"
 
-        git -c user.email="intranet-pipeline@resorucedata.com" -c user.name="Intranet Pipeline" merge --no-edit origin/$($request.head.ref)
+        while($retries -lt 6 -and $stateUnknown) {
+            $retries++
+            Start-Sleep -Seconds 1
 
-        $conflicts = (git diff --check) | Out-String
-    
-        if($conflicts -like '*leftover conflict marker*') {
-            $results += @{
-                SortOrder = 3
-                Status = 'conflict'
-                Number = $request.number
-                Title = $request.title
-                Message = "Failed to merge PR $($request.number) - $($request.title) due to conflicts"
-                Color = "red"
-            }
+            $pullRequest = Invoke-RestMethod -Uri $request.url -Headers $Headers
+
+            $stateUnknown = $pullRequest.mergeable_state -eq "unknown"
+        }
+        
+        if($requestDetails.mergeable_state -ne 'clean') {
+            Write-Host "Skipping PR $($request.number) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
             
-            Write-Host "Failed to merge PR $($request.number) - $($request.title) due to conflicts" -Fore red
-
-            git reset --merge
-
             Continue
         }
 
-        $results += @{
-            SortOrder = 2
-            Status = 'deployed'
-            Title = $request.title
-            Number = $request.number
-            Message = "Merged $($request.number) - $($request.title)"
-            Color = "green"
+        # Invoke endpoint to merge
+        $url = "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/$($request.number)/merge" | Out-Null
+
+        try {
+            Invoke-RestMethod -Method Put -Uri $url -Headers $Headers -Body '{"merge_method": "squash"}'
+
+            Write-Host "Merged PR $($request.number) - $($request.title)" -Fore green
+        }
+        catch {
+            Write-Host "Failed to merge PR $($request.number) - $($request.title)" -Fore red
+            $_.Exception
+
+            Write-Host
         }
     }
-}
-
-Write-Host
-Write-Host
-Write-Host "Merge results:"
-Write-Host
-
-foreach($result in $results | Sort-Object -Property { $_.SortOrder, $_.Number }) {
-    Write-Host -Fore $result.Color $result.Message
 }
