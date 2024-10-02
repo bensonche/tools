@@ -70,7 +70,7 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
         
         if($requestDetails.mergeable_state -ne 'clean') {
             Write-Host "Skipping PR $($request.number) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
-            
+
             Continue
         }
 
@@ -78,7 +78,7 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
         $url = "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/$($request.number)/merge" | Out-Null
 
         try {
-            Invoke-RestMethod -Method Put -Uri $url -Headers $Headers -Body '{"merge_method": "squash"}'
+            Invoke-RestMethod -Method Put -Uri $url -Headers $Headers -Body '{"merge_method": "rebase"}'
 
             Write-Host "Merged PR $($request.number) - $($request.title)" -Fore green
         }
