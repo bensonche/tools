@@ -82,8 +82,8 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
             $stateUnknown = $pullRequest.mergeable_state -eq "unknown"
         }
 
-        if($requestDetails.mergeable_state -ne 'clean') {
-            Write-Host "Skipping PR $($request.number) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
+        if($pullRequest.mergeable_state -ne 'clean') {
+            Write-Host "Skipping PR $($request.number) ($($request.head.ref)) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
             
             Continue
         }
@@ -100,11 +100,11 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
                 Status = 'conflict'
                 Number = $request.number
                 Title = $request.title
-                Message = "Failed to merge PR $($request.number) - $($request.title) due to conflicts"
+                Message = "Failed to merge PR $($request.number) ($($request.head.ref)) - $($request.title) due to conflicts"
                 Color = "red"
             }
             
-            Write-Host "Failed to merge PR $($request.number) - $($request.title) due to conflicts" -Fore red
+            Write-Host "Failed to merge PR $($request.number) ($($request.head.ref)) - $($request.title) due to conflicts" -Fore red
 
             git reset --merge
 
@@ -116,7 +116,7 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
             Status = 'deployed'
             Title = $request.title
             Number = $request.number
-            Message = "Merged $($request.number) - $($request.title)"
+            Message = "Merged $($request.number) ($($request.head.ref)) - $($request.title)"
             Color = "green"
         }
     }

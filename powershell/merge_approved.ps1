@@ -49,7 +49,7 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
 
     if($hasLabel) {
         if($request.MergePrioritySort -eq -1) {
-            Write-Host "Skipping PR $($request.number) - $($request.title) due to labels ($($request.labels.name))" -Fore yellow
+            Write-Host "Skipping PR $($request.number) ($($request.head.ref)) - $($request.title) due to labels ($($request.labels.name))" -Fore yellow
             Continue
         }
         
@@ -68,8 +68,8 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
             $stateUnknown = $pullRequest.mergeable_state -eq "unknown"
         }
         
-        if($requestDetails.mergeable_state -ne 'clean') {
-            Write-Host "Skipping PR $($request.number) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
+        if($pullRequest.mergeable_state -ne 'clean') {
+            Write-Host "Skipping PR $($request.number) ($($request.head.ref)) - $($request.title) due to a state of $($requestDetails.mergeable_state)" -Fore orange
 
             Continue
         }
@@ -80,10 +80,10 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
         try {
             Invoke-RestMethod -Method Put -Uri $url -Headers $Headers -Body '{"merge_method": "rebase"}'
 
-            Write-Host "Merged PR $($request.number) - $($request.title)" -Fore green
+            Write-Host "Merged PR $($request.number) ($($request.head.ref)) - $($request.title)" -Fore green
         }
         catch {
-            Write-Host "Failed to merge PR $($request.number) - $($request.title)" -Fore red
+            Write-Host "Failed to merge PR $($request.number) ($($request.head.ref)) - $($request.title)" -Fore red
             $_.Exception
 
             Write-Host
