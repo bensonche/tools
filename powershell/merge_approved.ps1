@@ -75,7 +75,7 @@ foreach($request in $PullRequests | Sort-Object -Property MergePrioritySort, cre
         }
 
         # Invoke endpoint to merge
-        $url = "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/$($request.number)/merge" | Out-Null
+        $url = "https://api.github.com/repos/ResourceDataInc/Intranet/pulls/$($request.number)/merge"
 
         try {
             Invoke-RestMethod -Method Put -Uri $url -Headers $Headers -Body '{"merge_method": "rebase"}'
