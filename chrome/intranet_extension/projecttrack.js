@@ -257,6 +257,13 @@
         return false;
     }
 
+    function isCodeReview() {
+        if ($("[id$=ddlStatus]").length > 0) {
+            return $("[id$=ddlStatus]").val() == '98';
+        }
+        return false;
+    }
+
     function buildCompareButton() {
         if ($("a.githubCompare").length > 0) {
             return;
@@ -287,6 +294,37 @@
                 var repo = $(v).data("repo");
                 $(v).prop("href", getURL(txtBranch.val(), repo));
             });
+        }
+    }
+
+    function buildCodeReviewButtons() {
+        if (isCodeReview()) {
+            if ($("input#ApproveCodeReviewPButton").length > 0) {
+                return;
+            }
+
+            var assignTo = $("span#assignedToDdSpan");
+
+            assignTo.after("<input type='button' id='ApproveCodeReviewPButton' value='Approve' class='RDIButton' />");
+
+            $("input#ApproveCodeReviewPButton").click(function () {
+                $("select[id$=ddlStatus] option[value=99]").prop("selected", true);
+                $("input[id$=Submit]").click();
+            });
+
+            $("input#ApproveCodeReviewPButton").after("<input type='button' id='RejectCodeReviewPButton' value='Reject' class='RDIButton' style='margin-left: 10px;' />");
+
+            $("input#RejectCodeReviewPButton").click(function () {
+                $("select[id$=ddlStatus] option[value=6]").prop("selected", true);
+
+                var comment = "Please see comments on the PR.";
+                $("textarea[id$=txtComments]").val(comment);
+
+                $("input[id$=Submit]").click();
+            });
+        } else {
+            $("input#ApproveCodeReviewPButton").remove();
+            $("input#RejectCodeReviewPButton").remove();
         }
     }
 
@@ -340,6 +378,7 @@
             buildCompareButton();
             buildQAButton();
             buildRTPButton();
+            buildCodeReviewButtons();
             buildPullRequestLink();
             subscribeSelfCheckbox();
             reassignPTs();
