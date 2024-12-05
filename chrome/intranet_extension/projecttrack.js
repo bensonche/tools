@@ -2,6 +2,70 @@
     var ran = false;
 
     var selfID = null;
+    var token = null;
+
+    function setPRStatus(repo, id) {
+        var dfd = $.Deferred();
+
+        if (token === null) {
+            chrome.storage.sync.get({
+                oauth: '',
+            }, function (item) {
+                token = item.oauth;
+                dfd.resolve();
+            });
+        } else {
+            dfd.resolve();
+        }
+
+        dfd.done(function () {
+            $.ajax({
+                url: `https://api.github.com/repos/ResourceDataInc/${repo}/pulls/${id}`,
+                headers: {
+                    "Accept": "application/vnd.github+json",
+                    "Authorization": `Bearer ${token}`,
+                    "X-GitHub-Api-Version": "2022-11-28"
+                },
+                type: "GET",
+                success: function(result) {
+                    let $status = $(`#${repo}_${id}`);
+
+                    let label;
+                    let color;
+
+                    if (result.merged === true) {
+                        label = "merged";
+                        color = "purple";
+                    } else if (result.state === "open") {
+                        label = "open";
+                        color = "green";
+                    } else {
+                        label = "closed";
+                        color = "red";
+                    }
+
+                    var approved = result.labels.find((x) => x.name === "approved-for-release") !== undefined;
+
+                    if(approved) {
+                        label += " (approved-for-release)";
+                    }
+
+                    $status.css("color", color);
+                    $status.html(label);
+                },
+                error: function(result) {
+                    let $status = $(`#${repo}_${id}`);
+
+                    var span = $("<span style='color: red;'><a target='_blank'>Invalid token</a></span>");
+
+                    var url = span.find("a");
+                    url.prop("href", chrome.runtime.getURL("options.html"));
+
+                    $status.html(span)
+                }
+            });
+        });
+    }
 
     function buildPullRequestLink() {
         function getPRId(url) {
@@ -18,13 +82,13 @@
             var matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/Intranet\/pull\/\d+/i);
             if(matches)
             {
-            for (let i = 0; i < matches.length; i++) {
-                if (matches[i] !== null) {
-                    allMatches = allMatches.concat(matches[i]);
+                for (let i = 0; i < matches.length; i++) {
+                    if (matches[i] !== null) {
+                        allMatches = allMatches.concat(matches[i]);
 
+                    }
                 }
             }
-        }
 
             matches = body.match(/https:\/\/github\.com\/ResourceDataInc\/ModernIntranet\/pull\/\d+/i);
             if(matches)
@@ -54,17 +118,18 @@
 
             let link = "<div id='github-PR'>";
 
-            const maxToDisplay =5;
+            const maxToDisplay = 5;
 
             for (var i = 0; i < allMatches.length; i++) {
 
                 if(i > maxToDisplay){
-                    const remaining = allMatches.length;
+                    const remaining = allMatches.length - maxToDisplay - 1;
 
                     link += `<div>${remaining} other PRs not shown</div>`;
 
                     break;
                 }
+
                 const currentMatch = allMatches[i];
 
                 prId = getPRId(currentMatch);
@@ -72,8 +137,15 @@
                 const isMI = currentMatch.search(/ModernIntranet/i) > -1;
 
                 const environment = isMI ? "MI" : "Legacy";
+                const repoName = isMI ? "ModernIntranet" : "Intranet";
 
-                link += `<div><a target='_blank' class='RDIHyperLink' href='${currentMatch}'>${environment} PR ${prId}</a></div>`;
+                setPRStatus(repoName, prId);
+
+                link += `
+                    <div>
+                        <a target='_blank' class='RDIHyperLink' href='${currentMatch}'>${environment} PR ${prId}</a>
+                        <span id='${repoName}_${prId}'></span>
+                    </div>`;
             }
 
             link += "</div>";
@@ -133,7 +205,7 @@
             var span = $("<span style='color: red;'>Please set your employee ID <a target='_blank'>here</a> and refresh the page</span>");
 
             var url = span.find("a");
-            url.prop("href", chrome.extension.getURL("options.html"));
+            url.prop("href", chrome.runtime.getURL("options.html"));
 
             container.append(span);
 
