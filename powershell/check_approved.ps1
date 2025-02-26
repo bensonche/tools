@@ -45,7 +45,13 @@ $PullRequests | ForEach-Object {
             $_.MergePrioritySort = 100
         }
     }
+
+    # Default to medium if there's no priority set
+    if($_.MergePrioritySort -eq 100) {
+        $_.MergePrioritySort = 3
+    }
 }
+
 
 $results = @()
 

@@ -19,6 +19,8 @@ function create_test_db_script ()
 		exit 1
 	fi
 
+	git checkout origin/master
+
 	./merge.cmd -GithubToken $INTRANET_TOKEN -Label "Test-DB-scripts-ran"
 
 	TAG_NAME=Test_DB_Script_$(date +%s)
