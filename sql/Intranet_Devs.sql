@@ -24,7 +24,7 @@ inner join RDIItem ri
 where
 	a.CLIENT_ID = 363
 	and a.PROJECT_NO = 9
-	and WK_DATE > DATEADD(ww, -2, GETDATE())
+	and WK_DATE > DATEADD(ww, -1, GETDATE())
 	and a.RDIItemId is not null
 	--and a.RDIItemId not in (
 	--	select RDIItemId
