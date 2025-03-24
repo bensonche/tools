@@ -38,3 +38,5 @@ inner join minLevel ml
 	on a.MemberName = ml.MemberName
 where level > minlevel
 order by a.MemberName, level
+
+--exec RDISecurity.SynchronizeDatabaseRoleMembers
