@@ -17,6 +17,7 @@ where
 	and a.RDIItemId is not null
 	and JOB_CODE in (340,345,430,435,305,310,311, 502,1340,1345,1430,1435,1305,1310,1311, 502, 332, 1332, 322, 1322, 350, 1350, 346, 1346)
 	and b.TYPE = 'rdi'
+	and a.empid not in (84, 700)
 
 union
 
