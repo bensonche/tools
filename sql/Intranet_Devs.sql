@@ -23,10 +23,9 @@ union
 
 select userid, fullname2, email
 from allusers
-where empid in (198, 178)
+where empid in (198, 178, 722)
 
 order by FULLNAME2
-
 
 select *
 from #devs
