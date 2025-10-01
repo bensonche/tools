@@ -290,10 +290,6 @@
             if ($("span#assignedToDdSpan select option:selected").val() != 10000)
                 return;
 
-            // Check git feature branch
-            if ($("input[id$=txtBranch]").val().trim() === "")
-                return;
-
             // Check change summary
             if ($("textarea[id$=txtChangedDescription]").val().trim() === "")
                 return;
