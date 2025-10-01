@@ -34,23 +34,34 @@
                     let color;
 
                     if (result.merged === true) {
-                        label = "merged";
-                        color = "purple";
+                        label = "<span style='color: purple;'>merged</span>";
                     } else if (result.state === "open") {
-                        label = "open";
-                        color = "green";
+                        label = "<span style='color: green;'>open</span>";
                     } else {
-                        label = "closed";
-                        color = "red";
+                        label = "<span style='color: red;'>closed</span>";
                     }
 
-                    var approved = result.labels.find((x) => x.name === "approved-for-release") !== undefined;
+                    var tagSpan = [];
 
-                    if(approved) {
-                        label += " (approved-for-release)";
+                    var approvedForRelease = result.labels.find((x) => x.name === "approved-for-release");
+                    if(approvedForRelease !== undefined) {
+                        tagSpan.push(`<span style='color: purple;'>${approvedForRelease.name}</span>`);
                     }
 
-                    $status.css("color", color);
+                    var conflicted = result.labels.find((x) => x.name.startsWith("conflicted-"));
+                    if(conflicted !== undefined) {
+                        tagSpan.push(`<span style='color: red;'>${conflicted.name}</span>`);
+                    }
+
+                    var on = result.labels.find((x) => x.name.startsWith("on-"));
+                    if(on !== undefined) {
+                        tagSpan.push(`<span style='color: green;'>${on.name}</span>`);
+                    }
+                    
+                    if(tagSpan.length > 0) {
+                        label += " - " + tagSpan.join(", ");
+                    }
+
                     $status.html(label);
                 },
                 error: function(result) {
