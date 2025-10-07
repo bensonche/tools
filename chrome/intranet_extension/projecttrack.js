@@ -48,14 +48,18 @@
                         tagSpan.push(`<span style='color: purple;'>${approvedForRelease.name}</span>`);
                     }
 
-                    var conflicted = result.labels.find((x) => x.name.startsWith("conflicted-"));
-                    if(conflicted !== undefined) {
-                        tagSpan.push(`<span style='color: red;'>${conflicted.name}</span>`);
+                    var conflicted = result.labels.filter((x) => x.name.startsWith("conflicted-")).sort((a, b) => a.name.localeCompare(b.name));
+                    console.log("conflicted", conflicted);
+                    if(conflicted.length > 0) {
+                        var conflictedNames = conflicted.map(tag => `<span style='color: red;'>${tag.name}</span>`);
+                        tagSpan.push(conflictedNames.join(", "));
                     }
 
-                    var on = result.labels.find((x) => x.name.startsWith("on-"));
-                    if(on !== undefined) {
-                        tagSpan.push(`<span style='color: green;'>${on.name}</span>`);
+                    var on = result.labels.filter((x) => x.name.startsWith("on-")).sort((a, b) => a.name.localeCompare(b.name));
+                    console.log("on", on);
+                    if(on.length > 0) {
+                        var onNames = on.map(tag => `<span style='color: green;'>${tag.name}</span>`);
+                        tagSpan.push(onNames.join(", "));
                     }
                     
                     if(tagSpan.length > 0) {
