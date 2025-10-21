@@ -5,6 +5,12 @@ create_commit_hash_query ()
 	echo "select 'db ' + Code" > create_commit_hash_query.sql
 	echo "from CODES" >> create_commit_hash_query.sql
 	echo "where FieldName = 'CurrentGitCommit'" >> create_commit_hash_query.sql
+	echo >> create_commit_hash_query.sql
+	echo "union" >> create_commit_hash_query.sql
+	echo >> create_commit_hash_query.sql
+	echo "select 'db ' + Value" >> create_commit_hash_query.sql
+	echo "from ApplicationSettings" >> create_commit_hash_query.sql
+	echo "where Code = 'CurrentGitCommit'" >> create_commit_hash_query.sql
 	echo "go" >> create_commit_hash_query.sql
 }
 
@@ -45,6 +51,12 @@ usage ()
 	echo "    select 'db ' + Code"
 	echo "    from CODES"
 	echo "    where FieldName = 'CurrentGitCommit'"
+	echo
+	echo "    union"
+	echo
+	echo "    select 'db ' + Value"
+	echo "    from ApplicationSettings"
+	echo "    where Code = 'CurrentGitCommit'"
 }
 
 function create_db_script ()
