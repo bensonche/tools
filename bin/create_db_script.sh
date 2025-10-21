@@ -201,7 +201,10 @@ function create_db_script ()
 
 		echo -en "/*\nupdate CODES\nset code = '" > db_script_repeatable.sql
 		echo -n $left >> db_script_repeatable.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n" >> db_script_repeatable.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_repeatable.sql
+		echo -n $left >> db_script_repeatable.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n\n" >> db_script_repeatable.sql
 
 		echo -en "\nuse RDI_Development_2\ngo\n" >> db_script_repeatable.sql
 		echo -en "\nuse RDI_Test_2\ngo\n" >> db_script_repeatable.sql
@@ -221,7 +224,10 @@ function create_db_script ()
 		echo >> db_script_repeatable.sql
 		echo -en "update CODES\nset code = '" >> db_script_repeatable.sql
 		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_repeatable.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n" >> db_script_repeatable.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_repeatable.sql
+		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'" >> db_script_repeatable.sql
 	fi
 
 	if [ -z "$filelistOnetime" ]
@@ -259,7 +265,10 @@ function create_db_script ()
 
 		echo -en "/*\nupdate CODES\nset code = '" > db_script_onetime.sql
 		echo -n $left >> db_script_onetime.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n\n" >> db_script_onetime.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n" >> db_script_onetime.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
+		echo -n $left >> db_script_onetime.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n\n" >> db_script_onetime.sql
 
 		echo -en "\nuse RDI_Development_2\ngo\n" >> db_script_onetime.sql
 		echo -en "\nuse RDI_Test_2\ngo\n" >> db_script_onetime.sql
@@ -279,7 +288,10 @@ function create_db_script ()
 		echo >> db_script_onetime.sql
 		echo -en "update CODES\nset code = '" >> db_script_onetime.sql
 		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'" >> db_script_onetime.sql
+		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n" >> db_script_onetime.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
+		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'" >> db_script_onetime.sql
 	fi
 	
 	echo -en "drop proc if exists #DropTrigger\n" >> db_deleted.sql
