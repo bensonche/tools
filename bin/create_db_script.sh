@@ -175,7 +175,7 @@ function create_db_script ()
 		while read line; do
 			local file=$line
 
-			grep -q �� "$file"
+			grep -q ÿþ "$file"
 			if [ $? -eq 0 ]
 			then
 				echo "$file is in UTF-16"
@@ -184,12 +184,12 @@ function create_db_script ()
 				rm "$file"
 				mv cb_temp_sql "$file"
 			fi
-			grep -q ﻿ "$file"
+			grep -q ï»¿ "$file"
 			if [ $? -eq 0 ]
 			then
 				echo "$file is in UTF-8 with BOM"
 
-				sed '1s/^﻿//' "$file" > cb_temp_sql
+				sed '1s/^ï»¿//' "$file" > cb_temp_sql
 				rm "$file"
 				mv cb_temp_sql "$file"
 			fi
@@ -199,9 +199,9 @@ function create_db_script ()
 			sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_repeatable.sql; cat \"\1/' |
 			sed 's/$/\" >> db_script_repeatable.sql; echo -e "\\ngo\\n\\n" >> db_script_repeatable.sql/' > db_files_repeatable.txt
 
-		echo -en "/*\nupdate CODES\nset code = '" > db_script_repeatable.sql
+		echo -en "/*\nupdate ApplicationSettings\nset Value = '" > db_script_repeatable.sql
 		echo -n $left >> db_script_repeatable.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n" >> db_script_repeatable.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n" >> db_script_repeatable.sql
 		echo -en "update ApplicationSettings\nset Value = '" >> db_script_repeatable.sql
 		echo -n $left >> db_script_repeatable.sql
 		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n\n" >> db_script_repeatable.sql
@@ -222,9 +222,9 @@ function create_db_script ()
 
 		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_repeatable.sql
 		echo >> db_script_repeatable.sql
-		echo -en "update CODES\nset code = '" >> db_script_repeatable.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_repeatable.sql
 		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n" >> db_script_repeatable.sql
+		echo -en "'\nwhere code = 'CurrentGitCommit'\n" >> db_script_repeatable.sql
 		echo -en "update ApplicationSettings\nset Value = '" >> db_script_repeatable.sql
 		echo -en `git log -1 --format="%H"` >> db_script_repeatable.sql
 		echo -en "'\nwhere Code = 'CurrentGitCommit'" >> db_script_repeatable.sql
@@ -239,7 +239,7 @@ function create_db_script ()
 		while read line; do
 			local file=$line
 
-			grep -q �� "$file"
+			grep -q ÿþ "$file"
 			if [ $? -eq 0 ]
 			then
 				echo "$file is in UTF-16"
@@ -248,12 +248,12 @@ function create_db_script ()
 				rm "$file"
 				mv cb_temp_sql "$file"
 			fi
-			grep -q ﻿ "$file"
+			grep -q ï»¿ "$file"
 			if [ $? -eq 0 ]
 			then
 				echo "$file is in UTF-8 with BOM"
 
-				sed '1s/^﻿//' "$file" > cb_temp_sql
+				sed '1s/^ï»¿//' "$file" > cb_temp_sql
 				rm "$file"
 				mv cb_temp_sql "$file"
 			fi
@@ -263,9 +263,9 @@ function create_db_script ()
 			sed 's/\(^.*\)/echo \"--------------------- \1 ---------------------\" >> db_script_onetime.sql; cat \"\1/' |
 			sed 's/$/\" >> db_script_onetime.sql; echo -e "\\ngo\\n\\n" >> db_script_onetime.sql/' > db_files_onetime.txt
 
-		echo -en "/*\nupdate CODES\nset code = '" > db_script_onetime.sql
+		echo -en "/*\nupdate ApplicationSettings\nset Value = '" > db_script_onetime.sql
 		echo -n $left >> db_script_onetime.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n\n" >> db_script_onetime.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n" >> db_script_onetime.sql
 		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
 		echo -n $left >> db_script_onetime.sql
 		echo -en "'\nwhere Code = 'CurrentGitCommit'\n\n\n" >> db_script_onetime.sql
@@ -286,9 +286,9 @@ function create_db_script ()
 
 		echo "exec RDISecurity.SynchronizeIntranetItemAndDb" >> db_script_onetime.sql
 		echo >> db_script_onetime.sql
-		echo -en "update CODES\nset code = '" >> db_script_onetime.sql
+		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
 		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
-		echo -en "'\nwhere FieldName = 'CurrentGitCommit'\n" >> db_script_onetime.sql
+		echo -en "'\nwhere Code = 'CurrentGitCommit'\n" >> db_script_onetime.sql
 		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
 		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
 		echo -en "'\nwhere Code = 'CurrentGitCommit'" >> db_script_onetime.sql
