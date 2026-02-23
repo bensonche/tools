@@ -118,7 +118,6 @@ function create_db_script ()
 		if [ $diffCount -gt "0" ]
 		then
 			echo "$diff"
-			read -p "Press [Enter] key to continue..."
 		fi
 
 		git diff -w $left..head Database/
@@ -292,6 +291,9 @@ function create_db_script ()
 		echo -en "update ApplicationSettings\nset Value = '" >> db_script_onetime.sql
 		echo -en `git log -1 --format="%H"` >> db_script_onetime.sql
 		echo -en "'\nwhere Code = 'CurrentGitCommit'" >> db_script_onetime.sql
+		echo >> db_script_onetime.sql
+		echo >> db_script_onetime.sql
+		echo "exec RDISecurity.CreateTemporalTables" >> db_script_onetime.sql
 	fi
 	
 	echo -en "drop proc if exists #DropTrigger\n" >> db_deleted.sql
